@@ -1,0 +1,1119 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+
+class AppLocalizations {
+  AppLocalizations(this.locale);
+
+  final Locale locale;
+
+  static AppLocalizations of(BuildContext context) {
+    return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
+  }
+
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
+
+  Map<String, String> get _localizedValues {
+    if (locale.languageCode == 'tr') {
+      return {
+        'app_name': 'PassGuard Vault',
+        'welcome': 'Hoş Geldiniz',
+        'master_password': 'Ana Şifre',
+        'enter_master_password': 'Ana şifrenizi girin',
+        'confirm_master_password': 'Ana şifreyi onaylayın',
+        'create_master_password': 'Ana Şifre Oluştur',
+        'unlock_vault': 'Kasayı Aç',
+        'create_vault': 'Kasa Oluştur',
+        'vault_created': 'Kasa oluşturuldu',
+        'vault_unlocked': 'Kasa açıldı',
+        'passwords': 'Şifreler',
+        'notes': 'Notlar',
+        'add_password': 'Şifre Ekle',
+        'add_note': 'Not Ekle',
+        'search': 'Ara',
+        'settings': 'Ayarlar',
+        'biometric_auth': 'Biyometrik Kimlik Doğrulama',
+        'enable_biometric': 'Biyometrik kimlik doğrulamayı etkinleştir',
+        'biometric_enabled': 'Biyometrik kimlik doğrulama etkin',
+        'biometric_disabled': 'Biyometrik kimlik doğrulama devre dışı',
+        'use_biometric': 'Biyometrik kimlik doğrulama kullan',
+        'password': 'Şifre',
+        'username': 'Kullanıcı Adı',
+        'website': 'Web Sitesi',
+        'title': 'Başlık',
+        'content': 'İçerik',
+        'category': 'Kategori',
+        'save': 'Kaydet',
+        'cancel': 'İptal',
+        'delete': 'Sil',
+        'edit': 'Düzenle',
+        'copy': 'Kopyala',
+        'copied': 'Kopyalandı',
+        'password_strength': 'Şifre Gücü',
+        'weak': 'Zayıf',
+        'medium': 'Orta',
+        'strong': 'Güçlü',
+        'generate_password': 'Şifre Üret',
+        'logout': 'Çıkış Yap',
+        'confirm_logout': 'Çıkış yapmak istediğinizden emin misiniz?',
+        'yes': 'Evet',
+        'no': 'Hayır',
+        'error': 'Hata',
+        'success': 'Başarılı',
+        'loading': 'Yükleniyor...',
+        'no_data': 'Veri yok',
+        'no_passwords': 'Şifre bulunamadı',
+        'no_notes': 'Not bulunamadı',
+        'search_placeholder': 'Şifre veya not ara...',
+        'categories': 'Kategoriler',
+        'all': 'Tümü',
+        'work': 'İş',
+        'personal': 'Kişisel',
+        'banking': 'Bankacılık',
+        'social': 'Sosyal',
+        'shopping': 'Alışveriş',
+        'entertainment': 'Eğlence',
+        'security': 'Güvenlik',
+        'other': 'Diğer',
+        'password_copied': 'Şifre panoya kopyalandı',
+        'username_copied': 'Kullanıcı adı panoya kopyalandı',
+        'website_copied': 'Web sitesi panoya kopyalandı',
+        'content_copied': 'İçerik panoya kopyalandı',
+        'delete_confirmation': 'Bu öğeyi silmek istediğinizden emin misiniz?',
+        'delete_password': 'Şifreyi Sil',
+        'delete_note': 'Notu Sil',
+        'edit_password': 'Şifreyi Düzenle',
+        'edit_note': 'Notu Düzenle',
+        'password_saved': 'Şifre kaydedildi',
+        'note_saved': 'Not kaydedildi',
+        'password_updated': 'Şifre güncellendi',
+        'note_updated': 'Not güncellendi',
+        'password_deleted': 'Şifre silindi',
+        'note_deleted': 'Not silindi',
+        'biometric_not_available': 'Biyometrik kimlik doğrulama mevcut değil',
+        'biometric_not_enrolled': 'Biyometrik kimlik doğrulama aygıtınızda etkinleştirilmemiş',
+        'biometric_not_recognized': 'Biyometrik kimlik doğrulama tanınmadı',
+        'biometric_cancelled': 'Biyometrik kimlik doğrulama iptal edildi',
+        'biometric_locked_out': 'Biyometrik kimlik doğrulama geçici olarak devre dışı',
+        'session_timeout': 'Oturum zaman aşımına uğradı',
+        'session_timeout_message': 'Güvenlik nedeniyle oturumunuz kapatıldı. Lütfen tekrar giriş yapın.',
+        'vault_locked': 'Kasa kilitlendi',
+        'vault_locked_message': 'Kasa güvenliğiniz için kilitlendi. Lütfen ana şifrenizle tekrar giriş yapın.',
+        'invalid_master_password': 'Geçersiz ana şifre',
+        'passwords_do_not_match': 'Şifreler eşleşmiyor',
+        'password_too_short': 'Şifre en az 8 karakter olmalıdır',
+        'password_too_weak': 'Şifre çok zayıf',
+        'export_vault': 'Kasayı Dışa Aktar',
+        'import_vault': 'Kasayı İçe Aktar',
+        'export_success': 'Kasa dışa aktarıldı',
+        'import_success': 'Kasa içe aktarıldı',
+        'export_failed': 'Kasa dışa aktarılamadı',
+        'import_failed': 'Kasa içe aktarılamadı',
+        'file_permission_denied': 'Dosya izni reddedildi',
+        'file_not_found': 'Dosya bulunamadı',
+        'invalid_file_format': 'Geçersiz dosya formatı',
+        'backup_vault': 'Kasayı Yedekle',
+        'restore_vault': 'Kasayı Geri Yükle',
+        'backup_success': 'Kasa yedeklendi',
+        'restore_success': 'Kasa geri yüklendi',
+        'backup_failed': 'Kasa yedeklenemedi',
+        'restore_failed': 'Kasa geri yüklenemedi',
+        'theme': 'Tema',
+        'light_theme': 'Açık Tema',
+        'dark_theme': 'Koyu Tema',
+        'system_theme': 'Sistem Teması',
+        'language': 'Dil',
+        'select_language': 'Dil Seçin',
+        'about': 'Hakkında',
+        'version': 'Sürüm',
+        'privacy_policy': 'Gizlilik Politikası',
+        'terms_of_service': 'Kullanım Şartları',
+        'help': 'Yardım',
+        'feedback': 'Geri Bildirim',
+        'rate_app': 'Uygulamayı Değerlendir',
+        'share_app': 'Uygulamayı Paylaş',
+        'logout_confirmation': 'Çıkış Yap',
+        'logout_message': 'Kasayı kapatmak ve uygulamadan çıkmak istediğinizden emin misiniz?',
+        'vault_file': 'Kasa Dosyası',
+        'select_file': 'Dosya Seçin',
+        'file_size': 'Dosya Boyutu',
+        'created': 'Oluşturulma',
+        'modified': 'Değiştirilme',
+        'file_name': 'Dosya Adı',
+        'file_path': 'Dosya Yolu',
+        'select_location': 'Konum Seçin',
+        'save_location': 'Kaydetme Konumu',
+        'documents': 'Belgeler',
+        'downloads': 'İndirilenler',
+        'desktop': 'Masaüstü',
+        'pictures': 'Resimler',
+        'videos': 'Videolar',
+        'music': 'Müzik',
+        'select_category': 'Kategori Seçin',
+        'select': 'Seç',
+        'clear': 'Temizle',
+        'filter': 'Filtrele',
+        'sort': 'Sırala',
+        'sort_by': 'Şuna göre sırala',
+        'name': 'İsim',
+        'date': 'Tarih',
+        'ascending': 'Artan',
+        'descending': 'Azalan',
+        'recent': 'Son',
+        'oldest': 'En Eski',
+        'alphabetical': 'Alfabetik',
+        'strength': 'Güç',
+        'length': 'Uzunluk',
+        'include_uppercase': 'Büyük harf ekle',
+        'include_lowercase': 'Küçük harf ekle',
+        'include_numbers': 'Rakam ekle',
+        'include_symbols': 'Sembol ekle',
+        'exclude_similar': 'Benzer karakterleri çıkar',
+        'exclude_ambiguous': 'Belirsiz karakterleri çıkar',
+        'generate': 'Oluştur',
+        'copy_password': 'Şifreyi Kopyala',
+        'copy_username': 'Kullanıcı Adını Kopyala',
+        'copy_website': 'Web Sitesini Kopyala',
+        'copy_content': 'İçeriği Kopyala',
+        'view_password': 'Şifreyi Görüntüle',
+        'hide_password': 'Şifreyi Gizle',
+        'password_details': 'Şifre Detayları',
+        'note_details': 'Not Detayları',
+        'quick_actions': 'Hızlı İşlemler',
+        'quick_add': 'Hızlı Ekle',
+        'quick_search': 'Hızlı Ara',
+        'quick_copy': 'Hızlı Kopyala',
+        'quick_generate': 'Hızlı Üret',
+        'security_features': 'Güvenlik Özellikleri',
+        'encryption': 'Şifreleme',
+        'local_storage': 'Yerel Depolama',
+        'zero_knowledge': 'Sıfır Bilgi',
+        'biometric_security': 'Biyometrik Güvenlik',
+        'session_timeout': 'Oturum Zaman Aşımı',
+        'auto_lock': 'Otomatik Kilitleme',
+        'backup_encryption': 'Yedek Şifreleme',
+        'secure_backup': 'Güvenli Yedekleme',
+        'vault_security': 'Kasa Güvenliği',
+        'master_password_security': 'Ana Şifre Güvenliği',
+        'password_strength_checker': 'Şifre Güç Kontrolü',
+        'weak_password_warning': 'Zayıf şifre uyarısı',
+        'password_reuse_detection': 'Şifre tekrar kullanımı tespiti',
+        'security_audit': 'Güvenlik denetimi',
+        'security_score': 'Güvenlik puanı',
+        'improve_security': 'Güvenliği artır',
+        'security_recommendations': 'Güvenlik önerileri',
+        'change_master_password': 'Ana şifreyi değiştir',
+        'enable_two_factor': 'İki faktörlü kimlik doğrulamayı etkinleştir',
+        'backup_your_vault': 'Kasanızı yedekleyin',
+        'review_security': 'Güvenliği gözden geçirin',
+        'security_status': 'Güvenlik durumu',
+        'secure': 'Güvenli',
+        'warning': 'Uyarı',
+        'critical': 'Kritik',
+        'security_level': 'Güvenlik seviyesi',
+        'high': 'Yüksek',
+        'medium': 'Orta',
+        'low': 'Düşük',
+        'very_low': 'Çok Düşük',
+        'security_tips': 'Güvenlik ipuçları',
+        'tip_1': 'Güçlü ve benzersiz bir ana şifre kullanın',
+        'tip_2': 'Biyometrik kimlik doğrulamayı etkinleştirin',
+        'tip_3': 'Kasanızı düzenli olarak yedekleyin',
+        'tip_4': 'Şifrelerinizi periyodik olarak güncelleyin',
+        'tip_5': 'Güvenli bir ağda uygulamayı kullanın',
+        'tip_6': 'Uygulamayı güncel tutun',
+        'tip_7': 'Şifrelerinizi kimseyle paylaşmayın',
+        'tip_8': 'Güvenlik denetimlerini düzenli yapın',
+        'vault_health': 'Kasa Sağlığı',
+        'health_check': 'Sağlık kontrolü',
+        'check_now': 'Şimdi kontrol et',
+        'last_check': 'Son kontrol',
+        'vault_size': 'Kasa boyutu',
+        'total_items': 'Toplam öğe',
+        'password_count': 'Şifre sayısı',
+        'note_count': 'Not sayısı',
+        'encrypted_size': 'Şifreli boyut',
+        'backup_status': 'Yedekleme durumu',
+        'last_backup': 'Son yedekleme',
+        'backup_location': 'Yedekleme konumu',
+        'backup_encrypted': 'Yedek şifrelendi',
+        'backup_not_encrypted': 'Yedek şifrelenmedi',
+        'backup_missing': 'Yedek eksik',
+        'vault_integrity': 'Kasa bütünlüğü',
+        'integrity_check': 'Bütünlük kontrolü',
+        'integrity_passed': 'Bütünlük kontrolü başarılı',
+        'integrity_failed': 'Bütünlük kontrolü başarısız',
+        'integrity_error': 'Bütünlük hatası',
+        'repair_vault': 'Kasayı onar',
+        'repairing': 'Onarılıyor...',
+        'repair_complete': 'Onarım tamamlandı',
+        'repair_failed': 'Onarım başarısız',
+        'vault_repaired': 'Kasa onarıldı',
+        'vault_backup': 'Kasa yedekleme',
+        'create_backup': 'Yedek oluştur',
+        'restore_backup': 'Yedeği geri yükle',
+        'backup_location': 'Yedekleme konumu',
+        'backup_encryption_key': 'Yedekleme şifreleme anahtarı',
+        'backup_password': 'Yedekleme şifresi',
+        'backup_description': 'Yedekleme açıklaması',
+        'backup_date': 'Yedekleme tarihi',
+        'backup_size': 'Yedekleme boyutu',
+        'backup_format': 'Yedekleme formatı',
+        'backup_file_name': 'Yedekleme dosya adı',
+        'backup_file_path': 'Yedekleme dosya yolu',
+        'backup_file_size': 'Yedekleme dosya boyutu',
+        'backup_file_created': 'Yedekleme dosyası oluşturuldu',
+        'backup_file_modified': 'Yedekleme dosyası değiştirildi',
+        'backup_file_accessed': 'Yedekleme dosyası erişildi',
+        'backup_file_encrypted': 'Yedekleme dosyası şifrelendi',
+        'backup_file_decrypted': 'Yedekleme dosyası çözüldü',
+        'backup_file_corrupted': 'Yedekleme dosyası bozuldu',
+        'backup_file_missing': 'Yedekleme dosyası eksik',
+        'backup_file_invalid': 'Yedekleme dosyası geçersiz',
+        'backup_file_too_old': 'Yedekleme dosyası çok eski',
+        'backup_file_too_large': 'Yedekleme dosyası çok büyük',
+        'backup_file_too_small': 'Yedekleme dosyası çok küçük',
+        'backup_file_encryption_error': 'Yedekleme dosyası şifreleme hatası',
+        'backup_file_decryption_error': 'Yedekleme dosyası çözme hatası',
+        'backup_file_integrity_error': 'Yedekleme dosyası bütünlük hatası',
+        'backup_file_permission_error': 'Yedekleme dosyası izin hatası',
+        'backup_file_access_error': 'Yedekleme dosyası erişim hatası',
+        'backup_file_write_error': 'Yedekleme dosyası yazma hatası',
+        'backup_file_read_error': 'Yedekleme dosyası okuma hatası',
+        'backup_file_delete_error': 'Yedekleme dosyası silme hatası',
+        'backup_file_rename_error': 'Yedekleme dosyası yeniden adlandırma hatası',
+        'backup_file_copy_error': 'Yedekleme dosyası kopyalama hatası',
+        'backup_file_move_error': 'Yedekleme dosyası taşıma hatası',
+        'backup_file_compress_error': 'Yedekleme dosyası sıkıştırma hatası',
+        'backup_file_decompress_error': 'Yedekleme dosyası sıkıştırma açma hatası',
+        'backup_file_upload_error': 'Yedekleme dosyası yükleme hatası',
+        'backup_file_download_error': 'Yedekleme dosyası indirme hatası',
+        'backup_file_sync_error': 'Yedekleme dosyası senkronizasyon hatası',
+        'backup_file_conflict': 'Yedekleme dosyası çakışması',
+        'backup_file_duplicate': 'Yedekleme dosyası çoğaltması',
+        'backup_file_version': 'Yedekleme dosyası sürümü',
+        'backup_file_format': 'Yedekleme dosyası formatı',
+        'backup_file_compression': 'Yedekleme dosyası sıkıştırması',
+        'backup_file_encryption': 'Yedekleme dosyası şifrelemesi',
+        'backup_file_integrity': 'Yedekleme dosyası bütünlüğü',
+        'backup_file_permissions': 'Yedekleme dosyası izinleri',
+        'backup_file_access': 'Yedekleme dosyası erişimi',
+        'backup_file_write': 'Yedekleme dosyası yazma',
+        'backup_file_read': 'Yedekleme dosyası okuma',
+        'backup_file_delete': 'Yedekleme dosyası silme',
+        'backup_file_rename': 'Yedekleme dosyası yeniden adlandırma',
+        'backup_file_copy': 'Yedekleme dosyası kopyalama',
+        'backup_file_move': 'Yedekleme dosyası taşıma',
+        'backup_file_compress': 'Yedekleme dosyası sıkıştırma',
+        'backup_file_decompress': 'Yedekleme dosyası sıkıştırma açma',
+        'backup_file_upload': 'Yedekleme dosyası yükleme',
+        'backup_file_download': 'Yedekleme dosyası indirme',
+        'backup_file_sync': 'Yedekleme dosyası senkronizasyon',
+        'backup_file_conflict_resolution': 'Yedekleme dosyası çakışma çözümü',
+        'backup_file_duplicate_resolution': 'Yedekleme dosyası çoğaltma çözümü',
+        'backup_file_version_control': 'Yedekleme dosyası sürüm kontrolü',
+        'backup_file_format_conversion': 'Yedekleme dosyası format dönüşümü',
+        'backup_file_compression_conversion': 'Yedekleme dosyası sıkıştırma dönüşümü',
+        'backup_file_encryption_conversion': 'Yedekleme dosyası şifreleme dönüşümü',
+        'backup_file_integrity_conversion': 'Yedekleme dosyası bütünlük dönüşümü',
+        'backup_file_permissions_conversion': 'Yedekleme dosyası izin dönüşümü',
+        'backup_file_access_conversion': 'Yedekleme dosyası erişim dönüşümü',
+        'backup_file_write_conversion': 'Yedekleme dosyası yazma dönüşümü',
+        'backup_file_read_conversion': 'Yedekleme dosyası okuma dönüşümü',
+        'backup_file_delete_conversion': 'Yedekleme dosyası silme dönüşümü',
+        'backup_file_rename_conversion': 'Yedekleme dosyası yeniden adlandırma dönüşümü',
+        'backup_file_copy_conversion': 'Yedekleme dosyası kopyalama dönüşümü',
+        'backup_file_move_conversion': 'Yedekleme dosyası taşıma dönüşümü',
+        'backup_file_compress_conversion': 'Yedekleme dosyası sıkıştırma dönüşümü',
+        'backup_file_decompress_conversion': 'Yedekleme dosyası sıkıştırma açma dönüşümü',
+        'backup_file_upload_conversion': 'Yedekleme dosyası yükleme dönüşümü',
+        'backup_file_download_conversion': 'Yedekleme dosyası indirme dönüşümü',
+        'backup_file_sync_conversion': 'Yedekleme dosyası senkronizasyon dönüşümü',
+        'backup_file_conflict_resolution_conversion': 'Yedekleme dosyası çakışma çözümü dönüşümü',
+        'backup_file_duplicate_resolution_conversion': 'Yedekleme dosyası çoğaltma çözümü dönüşümü',
+        'backup_file_version_control_conversion': 'Yedekleme dosyası sürüm kontrolü dönüşümü',
+        'export_vault_desc': 'Şifreli .pgvault yedek dosyası oluştur',
+        'import_vault_desc': '.pgvault dosyasından içe aktar',
+        'import_mode_question': 'Nasıl içe aktarmak istersiniz?',
+        'merge': 'Birleştir',
+        'replace': 'Değiştir',
+        'imported': 'içe aktarıldı',
+        'skipped': 'atlandı',
+        'entries': 'Kayıtlar',
+        'too_many_attempts': 'Çok fazla başarısız deneme. Tekrar deneyin:',
+        'attempts_remaining': 'deneme hakkı kaldı',
+        'seconds': 'saniye',
+        'something_went_wrong': 'Bir hata oluştu. Lütfen tekrar deneyin.',
+        'biometric_failed': 'Biyometrik doğrulama başarısız',
+        'new_master_password': 'Yeni Ana Şifre',
+        'password_mismatch': 'Şifreler eşleşmiyor',
+        'new_password_same_as_old': 'Yeni şifre eski şifreyle aynı olamaz',
+        'password_changed': 'Ana şifre başarıyla değiştirildi',
+        'file_too_large': 'Dosya çok büyük (maksimum 50 MB)',
+        'developer': 'Geliştirici',
+        'biometric_first_time': 'Biyometrik doğrulama başarılı. Bir kereliğine ana şifrenizi girin, sonraki girişlerde otomatik açılacak.',
+      };
+    } else if (locale.languageCode == 'de') {
+      return {
+        'app_name': 'PassGuard Vault',
+        'welcome': 'Willkommen',
+        'master_password': 'Master-Passwort',
+        'enter_master_password': 'Geben Sie Ihr Master-Passwort ein',
+        'confirm_master_password': 'Master-Passwort bestätigen',
+        'create_master_password': 'Master-Passwort erstellen',
+        'unlock_vault': 'Tresor entsperren',
+        'create_vault': 'Tresor erstellen',
+        'vault_created': 'Tresor erstellt',
+        'vault_unlocked': 'Tresor entsperrt',
+        'passwords': 'Passwörter',
+        'notes': 'Notizen',
+        'add_password': 'Passwort hinzufügen',
+        'add_note': 'Notiz hinzufügen',
+        'search': 'Suche',
+        'settings': 'Einstellungen',
+        'biometric_auth': 'Biometrische Authentifizierung',
+        'enable_biometric': 'Biometrische Authentifizierung aktivieren',
+        'biometric_enabled': 'Biometrische Authentifizierung aktiviert',
+        'biometric_disabled': 'Biometrische Authentifizierung deaktiviert',
+        'use_biometric': 'Biometrische Authentifizierung verwenden',
+        'password': 'Passwort',
+        'username': 'Benutzername',
+        'website': 'Webseite',
+        'title': 'Titel',
+        'content': 'Inhalt',
+        'category': 'Kategorie',
+        'save': 'Speichern',
+        'cancel': 'Abbrechen',
+        'delete': 'Löschen',
+        'edit': 'Bearbeiten',
+        'copy': 'Kopieren',
+        'copied': 'Kopiert',
+        'password_strength': 'Passwortstärke',
+        'weak': 'Schwach',
+        'medium': 'Mittel',
+        'strong': 'Stark',
+        'generate_password': 'Passwort generieren',
+        'logout': 'Abmelden',
+        'confirm_logout': 'Möchten Sie sich wirklich abmelden?',
+        'yes': 'Ja',
+        'no': 'Nein',
+        'error': 'Fehler',
+        'success': 'Erfolg',
+        'loading': 'Wird geladen...',
+        'no_data': 'Keine Daten',
+        'no_passwords': 'Keine Passwörter gefunden',
+        'no_notes': 'Keine Notizen gefunden',
+        'search_placeholder': 'Passwort oder Notiz suchen...',
+        'categories': 'Kategorien',
+        'all': 'Alle',
+        'work': 'Arbeit',
+        'personal': 'Persönlich',
+        'banking': 'Banking',
+        'social': 'Sozial',
+        'shopping': 'Einkaufen',
+        'entertainment': 'Unterhaltung',
+        'security': 'Sicherheit',
+        'other': 'Andere',
+        'password_copied': 'Passwort in die Zwischenablage kopiert',
+        'username_copied': 'Benutzername in die Zwischenablage kopiert',
+        'website_copied': 'Webseite in die Zwischenablage kopiert',
+        'content_copied': 'Inhalt in die Zwischenablage kopiert',
+        'delete_confirmation': 'Möchten Sie diesen Eintrag wirklich löschen?',
+        'delete_password': 'Passwort löschen',
+        'delete_note': 'Notiz löschen',
+        'edit_password': 'Passwort bearbeiten',
+        'edit_note': 'Notiz bearbeiten',
+        'password_saved': 'Passwort gespeichert',
+        'note_saved': 'Notiz gespeichert',
+        'password_updated': 'Passwort aktualisiert',
+        'note_updated': 'Notiz aktualisiert',
+        'password_deleted': 'Passwort gelöscht',
+        'note_deleted': 'Notiz gelöscht',
+        'biometric_not_available': 'Biometrische Authentifizierung nicht verfügbar',
+        'biometric_not_enrolled': 'Biometrische Authentifizierung nicht auf Ihrem Gerät aktiviert',
+        'biometric_not_recognized': 'Biometrische Authentifizierung nicht erkannt',
+        'biometric_cancelled': 'Biometrische Authentifizierung abgebrochen',
+        'biometric_locked_out': 'Biometrische Authentifizierung vorübergehend deaktiviert',
+        'session_timeout': 'Sitzungszeitüberschreitung',
+        'session_timeout_message': 'Ihre Sitzung wurde aus Sicherheitsgründen geschlossen. Bitte melden Sie sich erneut an.',
+        'vault_locked': 'Tresor gesperrt',
+        'vault_locked_message': 'Der Tresor wurde aus Sicherheitsgründen gesperrt. Bitte melden Sie sich mit Ihrem Master-Passwort erneut an.',
+        'invalid_master_password': 'Ungültiges Master-Passwort',
+        'passwords_do_not_match': 'Passwörter stimmen nicht überein',
+        'password_too_short': 'Passwort muss mindestens 8 Zeichen lang sein',
+        'password_too_weak': 'Passwort ist zu schwach',
+        'export_vault': 'Tresor exportieren',
+        'import_vault': 'Tresor importieren',
+        'export_success': 'Tresor exportiert',
+        'import_success': 'Tresor importiert',
+        'export_failed': 'Tresor konnte nicht exportiert werden',
+        'import_failed': 'Tresor konnte nicht importiert werden',
+        'file_permission_denied': 'Dateiberechtigung verweigert',
+        'file_not_found': 'Datei nicht gefunden',
+        'invalid_file_format': 'Ungültiges Dateiformat',
+        'backup_vault': 'Tresor sichern',
+        'restore_vault': 'Tresor wiederherstellen',
+        'backup_success': 'Tresor gesichert',
+        'restore_success': 'Tresor wiederhergestellt',
+        'backup_failed': 'Tresor konnte nicht gesichert werden',
+        'restore_failed': 'Tresor konnte nicht wiederhergestellt werden',
+        'theme': 'Theme',
+        'light_theme': 'Helles Theme',
+        'dark_theme': 'Dunkles Theme',
+        'system_theme': 'Systemtheme',
+        'language': 'Sprache',
+        'select_language': 'Sprache auswählen',
+        'about': 'Über',
+        'version': 'Version',
+        'privacy_policy': 'Datenschutzrichtlinie',
+        'terms_of_service': 'Nutzungsbedingungen',
+        'help': 'Hilfe',
+        'feedback': 'Feedback',
+        'rate_app': 'App bewerten',
+        'share_app': 'App teilen',
+        'logout_confirmation': 'Abmelden',
+        'logout_message': 'Möchten Sie den Tresor schließen und die App verlassen?',
+        'export_vault_desc': 'Verschlüsselte .pgvault-Sicherung erstellen',
+        'import_vault_desc': 'Aus .pgvault-Datei importieren',
+        'import_mode_question': 'Wie möchten Sie importieren?',
+        'merge': 'Zusammenführen',
+        'replace': 'Ersetzen',
+        'imported': 'importiert',
+        'skipped': 'übersprungen',
+        'entries': 'Einträge',
+        'too_many_attempts': 'Zu viele fehlgeschlagene Versuche. Versuchen Sie es erneut in',
+        'attempts_remaining': 'Versuche übrig',
+        'seconds': 'Sekunden',
+        'something_went_wrong': 'Etwas ist schief gelaufen. Bitte versuchen Sie es erneut.',
+        'biometric_failed': 'Biometrische Authentifizierung fehlgeschlagen',
+        'new_master_password': 'Neues Master-Passwort',
+        'password_mismatch': 'Passwörter stimmen nicht überein',
+        'new_password_same_as_old': 'Neues Passwort darf nicht mit dem alten übereinstimmen',
+        'password_changed': 'Master-Passwort erfolgreich geändert',
+        'file_too_large': 'Datei zu groß (maximal 50 MB)',
+        'developer': 'Entwickler',
+        'biometric_first_time': 'Biometrische Authentifizierung erfolgreich. Geben Sie einmalig Ihr Master-Passwort ein.',
+      };
+    } else if (locale.languageCode == 'fr') {
+      return {
+        'app_name': 'PassGuard Vault',
+        'welcome': 'Bienvenue',
+        'master_password': 'Mot de passe principal',
+        'enter_master_password': 'Entrez votre mot de passe principal',
+        'confirm_master_password': 'Confirmer le mot de passe principal',
+        'create_master_password': 'Créer un mot de passe principal',
+        'unlock_vault': 'Déverrouiller le coffre',
+        'create_vault': 'Créer un coffre',
+        'vault_created': 'Coffre créé',
+        'vault_unlocked': 'Coffre déverrouillé',
+        'passwords': 'Mots de passe',
+        'notes': 'Notes',
+        'add_password': 'Ajouter un mot de passe',
+        'add_note': 'Ajouter une note',
+        'search': 'Rechercher',
+        'settings': 'Paramètres',
+        'biometric_auth': 'Authentification biométrique',
+        'enable_biometric': 'Activer l\'authentification biométrique',
+        'biometric_enabled': 'Authentification biométrique activée',
+        'biometric_disabled': 'Authentification biométrique désactivée',
+        'use_biometric': 'Utiliser l\'authentification biométrique',
+        'password': 'Mot de passe',
+        'username': 'Nom d\'utilisateur',
+        'website': 'Site Web',
+        'title': 'Titre',
+        'content': 'Contenu',
+        'category': 'Catégorie',
+        'save': 'Enregistrer',
+        'cancel': 'Annuler',
+        'delete': 'Supprimer',
+        'edit': 'Modifier',
+        'copy': 'Copier',
+        'copied': 'Copié',
+        'password_strength': 'Force du mot de passe',
+        'weak': 'Faible',
+        'medium': 'Moyen',
+        'strong': 'Fort',
+        'generate_password': 'Générer un mot de passe',
+        'logout': 'Se déconnecter',
+        'confirm_logout': 'Voulez-vous vraiment vous déconnecter?',
+        'yes': 'Oui',
+        'no': 'Non',
+        'error': 'Erreur',
+        'success': 'Succès',
+        'loading': 'Chargement...',
+        'no_data': 'Aucune donnée',
+        'no_passwords': 'Aucun mot de passe trouvé',
+        'no_notes': 'Aucune note trouvée',
+        'search_placeholder': 'Rechercher un mot de passe ou une note...',
+        'categories': 'Catégories',
+        'all': 'Tous',
+        'work': 'Travail',
+        'personal': 'Personnel',
+        'banking': 'Banque',
+        'social': 'Social',
+        'shopping': 'Achats',
+        'entertainment': 'Divertissement',
+        'security': 'Sécurité',
+        'other': 'Autre',
+        'password_copied': 'Mot de passe copié dans le presse-papiers',
+        'username_copied': 'Nom d\'utilisateur copié dans le presse-papiers',
+        'website_copied': 'Site Web copié dans le presse-papiers',
+        'content_copied': 'Contenu copié dans le presse-papiers',
+        'delete_confirmation': 'Voulez-vous vraiment supprimer cet élément?',
+        'delete_password': 'Supprimer le mot de passe',
+        'delete_note': 'Supprimer la note',
+        'edit_password': 'Modifier le mot de passe',
+        'edit_note': 'Modifier la note',
+        'password_saved': 'Mot de passe enregistré',
+        'note_saved': 'Note enregistrée',
+        'password_updated': 'Mot de passe mis à jour',
+        'note_updated': 'Note mise à jour',
+        'password_deleted': 'Mot de passe supprimé',
+        'note_deleted': 'Note supprimée',
+        'biometric_not_available': 'Authentification biométrique non disponible',
+        'biometric_not_enrolled': 'Authentification biométrique non activée sur votre appareil',
+        'biometric_not_recognized': 'Authentification biométrique non reconnue',
+        'biometric_cancelled': 'Authentification biométrique annulée',
+        'biometric_locked_out': 'Authentification biométrique temporairement désactivée',
+        'session_timeout': 'Délai de session expiré',
+        'session_timeout_message': 'Votre session a expiré pour des raisons de sécurité. Veuillez vous reconnecter.',
+        'vault_locked': 'Coffre verrouillé',
+        'vault_locked_message': 'Le coffre a été verrouillé pour des raisons de sécurité. Veuillez vous reconnecter avec votre mot de passe principal.',
+        'invalid_master_password': 'Mot de passe principal invalide',
+        'passwords_do_not_match': 'Les mots de passe ne correspondent pas',
+        'password_too_short': 'Le mot de passe doit contenir au moins 8 caractères',
+        'password_too_weak': 'Le mot de passe est trop faible',
+        'export_vault': 'Exporter le coffre',
+        'import_vault': 'Importer le coffre',
+        'export_success': 'Coffre exporté',
+        'import_success': 'Coffre importé',
+        'export_failed': 'Impossible d\'exporter le coffre',
+        'import_failed': 'Impossible d\'importer le coffre',
+        'file_permission_denied': 'Permission de fichier refusée',
+        'file_not_found': 'Fichier non trouvé',
+        'invalid_file_format': 'Format de fichier invalide',
+        'backup_vault': 'Sauvegarder le coffre',
+        'restore_vault': 'Restaurer le coffre',
+        'backup_success': 'Coffre sauvegardé',
+        'restore_success': 'Coffre restauré',
+        'backup_failed': 'Impossible de sauvegarder le coffre',
+        'restore_failed': 'Impossible de restaurer le coffre',
+        'theme': 'Thème',
+        'light_theme': 'Thème clair',
+        'dark_theme': 'Thème sombre',
+        'system_theme': 'Thème système',
+        'language': 'Langue',
+        'select_language': 'Choisir la langue',
+        'about': 'À propos',
+        'version': 'Version',
+        'privacy_policy': 'Politique de confidentialité',
+        'terms_of_service': 'Conditions d\'utilisation',
+        'help': 'Aide',
+        'feedback': 'Commentaires',
+        'rate_app': 'Évaluer l\'application',
+        'share_app': 'Partager l\'application',
+        'logout_confirmation': 'Se déconnecter',
+        'logout_message': 'Voulez-vous fermer le coffre et quitter l\'application?',
+        'export_vault_desc': 'Créer une sauvegarde .pgvault chiffrée',
+        'import_vault_desc': 'Importer depuis un fichier .pgvault',
+        'import_mode_question': 'Comment souhaitez-vous importer?',
+        'merge': 'Fusionner',
+        'replace': 'Remplacer',
+        'imported': 'importé(s)',
+        'skipped': 'ignoré(s)',
+        'entries': 'Entrées',
+        'too_many_attempts': 'Trop de tentatives échouées. Réessayez dans',
+        'attempts_remaining': 'tentatives restantes',
+        'seconds': 'secondes',
+        'something_went_wrong': 'Une erreur est survenue. Veuillez réessayer.',
+        'biometric_failed': 'Échec de l\'authentification biométrique',
+        'new_master_password': 'Nouveau mot de passe principal',
+        'password_mismatch': 'Les mots de passe ne correspondent pas',
+        'new_password_same_as_old': 'Le nouveau mot de passe ne peut pas être identique à l\'ancien',
+        'password_changed': 'Mot de passe principal modifié avec succès',
+        'file_too_large': 'Fichier trop volumineux (maximum 50 Mo)',
+        'developer': 'Développeur',
+        'biometric_first_time': 'Authentification biométrique réussie. Saisissez votre mot de passe principal une seule fois.',
+      };
+    } else if (locale.languageCode == 'ar') {
+      return {
+        'app_name': 'PassGuard Vault',
+        'welcome': 'أهلاً وسهلاً',
+        'master_password': 'كلمة المرور الرئيسية',
+        'enter_master_password': 'أدخل كلمة المرور الرئيسية',
+        'confirm_master_password': 'تأكيد كلمة المرور الرئيسية',
+        'create_master_password': 'إنشاء كلمة مرور رئيسية',
+        'unlock_vault': 'فتح الخزنة',
+        'create_vault': 'إنشاء خزنة',
+        'vault_created': 'تم إنشاء الخزنة',
+        'vault_unlocked': 'تم فتح الخزنة',
+        'passwords': 'كلمات المرور',
+        'notes': 'الملاحظات',
+        'add_password': 'إضافة كلمة مرور',
+        'add_note': 'إضافة ملاحظة',
+        'search': 'بحث',
+        'settings': 'الإعدادات',
+        'biometric_auth': 'المصادقة البيومترية',
+        'enable_biometric': 'تمكين المصادقة البيومترية',
+        'biometric_enabled': 'المصادقة البيومترية مفعلة',
+        'biometric_disabled': 'المصادقة البيومترية معطلة',
+        'use_biometric': 'استخدام المصادقة البيومترية',
+        'password': 'كلمة المرور',
+        'username': 'اسم المستخدم',
+        'website': 'الموقع الإلكتروني',
+        'title': 'العنوان',
+        'content': 'المحتوى',
+        'category': 'الفئة',
+        'save': 'حفظ',
+        'cancel': 'إلغاء',
+        'delete': 'حذف',
+        'edit': 'تعديل',
+        'copy': 'نسخ',
+        'copied': 'تم النسخ',
+        'password_strength': 'قوة كلمة المرور',
+        'weak': 'ضعيف',
+        'medium': 'متوسط',
+        'strong': 'قوي',
+        'generate_password': 'إنشاء كلمة مرور',
+        'logout': 'تسجيل الخروج',
+        'confirm_logout': 'هل أنت متأكد أنك تريد تسجيل الخروج؟',
+        'yes': 'نعم',
+        'no': 'لا',
+        'error': 'خطأ',
+        'success': 'نجاح',
+        'loading': 'جارٍ التحميل...',
+        'no_data': 'لا توجد بيانات',
+        'no_passwords': 'لم يتم العثور على كلمات مرور',
+        'no_notes': 'لم يتم العثور على ملاحظات',
+        'search_placeholder': 'ابحث عن كلمة مرور أو ملاحظة...',
+        'categories': 'الفئات',
+        'all': 'الكل',
+        'work': 'عمل',
+        'personal': 'شخصي',
+        'banking': 'بنوك',
+        'social': 'اجتماعي',
+        'shopping': 'تسوق',
+        'entertainment': 'ترفيه',
+        'security': 'أمن',
+        'other': 'أخرى',
+        'password_copied': 'تم نسخ كلمة المرور إلى الحافظة',
+        'username_copied': 'تم نسخ اسم المستخدم إلى الحافظة',
+        'website_copied': 'تم نسخ الموقع الإلكتروني إلى الحافظة',
+        'content_copied': 'تم نسخ المحتوى إلى الحافظة',
+        'delete_confirmation': 'هل أنت متأكد أنك تريد حذف هذا العنصر؟',
+        'delete_password': 'حذف كلمة المرور',
+        'delete_note': 'حذف الملاحظة',
+        'edit_password': 'تعديل كلمة المرور',
+        'edit_note': 'تعديل الملاحظة',
+        'password_saved': 'تم حفظ كلمة المرور',
+        'note_saved': 'تم حفظ الملاحظة',
+        'password_updated': 'تم تحديث كلمة المرور',
+        'note_updated': 'تم تحديث الملاحظة',
+        'password_deleted': 'تم حذف كلمة المرور',
+        'note_deleted': 'تم حذف الملاحظة',
+        'biometric_not_available': 'المصادقة البيومترية غير متوفرة',
+        'biometric_not_enrolled': 'المصادقة البيومترية غير مفعلة على جهازك',
+        'biometric_not_recognized': 'المصادقة البيومترية غير معترف بها',
+        'biometric_cancelled': 'تم إلغاء المصادقة البيومترية',
+        'biometric_locked_out': 'المصادقة البيومترية معطلة مؤقتًا',
+        'session_timeout': 'انتهت مدة الجلسة',
+        'session_timeout_message': 'انتهت جلستك لأسباب أمنية. يرجى تسجيل الدخول مرة أخرى.',
+        'vault_locked': 'تم قفل الخزنة',
+        'vault_locked_message': 'تم قفل الخزنة لأسباب أمنية. يرجى تسجيل الدخول مرة أخرى بكلمة المرور الرئيسية.',
+        'invalid_master_password': 'كلمة المرور الرئيسية غير صالحة',
+        'passwords_do_not_match': 'كلمات المرور غير متطابقة',
+        'password_too_short': 'يجب أن تكون كلمة المرور مكونة من 8 أحرف على الأقل',
+        'password_too_weak': 'كلمة المرور ضعيفة جدًا',
+        'export_vault': 'تصدير الخزنة',
+        'import_vault': 'استيراد الخزنة',
+        'export_success': 'تم تصدير الخزنة',
+        'import_success': 'تم استيراد الخزنة',
+        'export_failed': 'فشل تصدير الخزنة',
+        'import_failed': 'فشل استيراد الخزنة',
+        'file_permission_denied': 'تم رفض إذن الملف',
+        'file_not_found': 'الملف غير موجود',
+        'invalid_file_format': 'تنسيق ملف غير صالح',
+        'backup_vault': 'نسخ الخزنة احتياطيًا',
+        'restore_vault': 'استعادة الخزنة',
+        'backup_success': 'تم نسخ الخزنة احتياطيًا',
+        'restore_success': 'تم استعادة الخزنة',
+        'backup_failed': 'فشل نسخ الخزنة احتياطيًا',
+        'restore_failed': 'فشل استعادة الخزنة',
+        'theme': 'السمة',
+        'light_theme': 'السمة الفاتحة',
+        'dark_theme': 'السمة الداكنة',
+        'system_theme': 'سمة النظام',
+        'language': 'اللغة',
+        'select_language': 'اختر اللغة',
+        'about': 'حول',
+        'version': 'الإصدار',
+        'privacy_policy': 'سياسة الخصوصية',
+        'terms_of_service': 'شروط الخدمة',
+        'help': 'مساعدة',
+        'feedback': 'ملاحظات',
+        'rate_app': 'تقييم التطبيق',
+        'share_app': 'مشاركة التطبيق',
+        'logout_confirmation': 'تسجيل الخروج',
+        'logout_message': 'هل تريد إغلاق الخزنة والخروج من التطبيق؟',
+        'export_vault_desc': 'إنشاء نسخة احتياطية مشفرة .pgvault',
+        'import_vault_desc': 'استيراد من ملف .pgvault',
+        'import_mode_question': 'كيف تريد الاستيراد؟',
+        'merge': 'دمج',
+        'replace': 'استبدال',
+        'imported': 'مستورد',
+        'skipped': 'تم تخطيه',
+        'entries': 'إدخالات',
+        'too_many_attempts': 'محاولات فاشلة كثيرة. حاول مرة أخرى بعد',
+        'attempts_remaining': 'محاولات متبقية',
+        'seconds': 'ثانية',
+        'something_went_wrong': 'حدث خطأ ما. يرجى المحاولة مرة أخرى.',
+        'biometric_failed': 'فشل التحقق البيومتري',
+        'new_master_password': 'كلمة المرور الرئيسية الجديدة',
+        'password_mismatch': 'كلمات المرور غير متطابقة',
+        'new_password_same_as_old': 'لا يمكن أن تكون كلمة المرور الجديدة مثل القديمة',
+        'password_changed': 'تم تغيير كلمة المرور الرئيسية بنجاح',
+        'file_too_large': 'الملف كبير جدًا (الحد الأقصى 50 ميجابايت)',
+        'developer': 'المطور',
+        'biometric_first_time': 'تم التحقق البيومتري بنجاح. أدخل كلمة المرور الرئيسية مرة واحدة فقط.',
+      };
+    } else {
+      // Default to English
+      return {
+        'app_name': 'PassGuard Vault',
+        'welcome': 'Welcome',
+        'master_password': 'Master Password',
+        'enter_master_password': 'Enter your master password',
+        'confirm_master_password': 'Confirm master password',
+        'create_master_password': 'Create Master Password',
+        'unlock_vault': 'Unlock Vault',
+        'create_vault': 'Create Vault',
+        'vault_created': 'Vault created',
+        'vault_unlocked': 'Vault unlocked',
+        'passwords': 'Passwords',
+        'notes': 'Notes',
+        'add_password': 'Add Password',
+        'add_note': 'Add Note',
+        'search': 'Search',
+        'settings': 'Settings',
+        'biometric_auth': 'Biometric Authentication',
+        'enable_biometric': 'Enable biometric authentication',
+        'biometric_enabled': 'Biometric authentication enabled',
+        'biometric_disabled': 'Biometric authentication disabled',
+        'use_biometric': 'Use biometric authentication',
+        'password': 'Password',
+        'username': 'Username',
+        'website': 'Website',
+        'title': 'Title',
+        'content': 'Content',
+        'category': 'Category',
+        'save': 'Save',
+        'cancel': 'Cancel',
+        'delete': 'Delete',
+        'edit': 'Edit',
+        'copy': 'Copy',
+        'copied': 'Copied',
+        'password_strength': 'Password Strength',
+        'weak': 'Weak',
+        'medium': 'Medium',
+        'strong': 'Strong',
+        'generate_password': 'Generate Password',
+        'logout': 'Logout',
+        'confirm_logout': 'Are you sure you want to logout?',
+        'yes': 'Yes',
+        'no': 'No',
+        'error': 'Error',
+        'success': 'Success',
+        'loading': 'Loading...',
+        'no_data': 'No data',
+        'no_passwords': 'No passwords found',
+        'no_notes': 'No notes found',
+        'search_placeholder': 'Search passwords or notes...',
+        'categories': 'Categories',
+        'all': 'All',
+        'work': 'Work',
+        'personal': 'Personal',
+        'banking': 'Banking',
+        'social': 'Social',
+        'shopping': 'Shopping',
+        'entertainment': 'Entertainment',
+        'security': 'Security',
+        'other': 'Other',
+        'password_copied': 'Password copied to clipboard',
+        'username_copied': 'Username copied to clipboard',
+        'website_copied': 'Website copied to clipboard',
+        'content_copied': 'Content copied to clipboard',
+        'delete_confirmation': 'Are you sure you want to delete this item?',
+        'delete_password': 'Delete Password',
+        'delete_note': 'Delete Note',
+        'edit_password': 'Edit Password',
+        'edit_note': 'Edit Note',
+        'password_saved': 'Password saved',
+        'note_saved': 'Note saved',
+        'password_updated': 'Password updated',
+        'note_updated': 'Note updated',
+        'password_deleted': 'Password deleted',
+        'note_deleted': 'Note deleted',
+        'biometric_not_available': 'Biometric authentication not available',
+        'biometric_not_enrolled': 'Biometric authentication not enabled on your device',
+        'biometric_not_recognized': 'Biometric authentication not recognized',
+        'biometric_cancelled': 'Biometric authentication cancelled',
+        'biometric_locked_out': 'Biometric authentication temporarily disabled',
+        'session_timeout': 'Session timeout',
+        'session_timeout_message': 'Your session has timed out for security reasons. Please log in again.',
+        'vault_locked': 'Vault locked',
+        'vault_locked_message': 'Vault has been locked for security reasons. Please log in again with your master password.',
+        'invalid_master_password': 'Invalid master password',
+        'passwords_do_not_match': 'Passwords do not match',
+        'password_too_short': 'Password must be at least 8 characters',
+        'password_too_weak': 'Password is too weak',
+        'export_vault': 'Export Vault',
+        'import_vault': 'Import Vault',
+        'export_success': 'Vault exported',
+        'import_success': 'Vault imported',
+        'export_failed': 'Failed to export vault',
+        'import_failed': 'Failed to import vault',
+        'file_permission_denied': 'File permission denied',
+        'file_not_found': 'File not found',
+        'invalid_file_format': 'Invalid file format',
+        'backup_vault': 'Backup Vault',
+        'restore_vault': 'Restore Vault',
+        'backup_success': 'Vault backed up',
+        'restore_success': 'Vault restored',
+        'backup_failed': 'Failed to backup vault',
+        'restore_failed': 'Failed to restore vault',
+        'theme': 'Theme',
+        'light_theme': 'Light Theme',
+        'dark_theme': 'Dark Theme',
+        'system_theme': 'System Theme',
+        'language': 'Language',
+        'select_language': 'Select Language',
+        'about': 'About',
+        'version': 'Version',
+        'privacy_policy': 'Privacy Policy',
+        'terms_of_service': 'Terms of Service',
+        'help': 'Help',
+        'feedback': 'Feedback',
+        'rate_app': 'Rate App',
+        'share_app': 'Share App',
+        'logout_confirmation': 'Logout',
+        'logout_message': 'Do you want to close the vault and exit the app?',
+        'export_vault_desc': 'Export encrypted .pgvault backup',
+        'import_vault_desc': 'Import from .pgvault file',
+        'import_mode_question': 'How would you like to import?',
+        'merge': 'Merge',
+        'replace': 'Replace',
+        'imported': 'imported',
+        'skipped': 'skipped',
+        'entries': 'Entries',
+        'too_many_attempts': 'Too many failed attempts. Try again in',
+        'attempts_remaining': 'attempts remaining',
+        'seconds': 'seconds',
+        'something_went_wrong': 'Something went wrong. Please try again.',
+        'biometric_failed': 'Biometric authentication failed',
+        'new_master_password': 'New Master Password',
+        'password_mismatch': 'Passwords do not match',
+        'new_password_same_as_old': 'New password cannot be the same as old password',
+        'password_changed': 'Master password changed successfully',
+        'file_too_large': 'File too large (maximum 50 MB)',
+        'developer': 'Developer',
+        'biometric_first_time': 'Biometric verification successful. Enter your master password once, future logins will be automatic.',
+      };
+    }
+  }
+
+  String get appName => _localizedValues['app_name']!;
+  String get welcome => _localizedValues['welcome']!;
+  String get masterPassword => _localizedValues['master_password']!;
+  String get enterMasterPassword => _localizedValues['enter_master_password']!;
+  String get confirmMasterPassword => _localizedValues['confirm_master_password']!;
+  String get createMasterPassword => _localizedValues['create_master_password']!;
+  String get unlockVault => _localizedValues['unlock_vault']!;
+  String get createVault => _localizedValues['create_vault']!;
+  String get vaultCreated => _localizedValues['vault_created']!;
+  String get vaultUnlocked => _localizedValues['vault_unlocked']!;
+  String get passwords => _localizedValues['passwords']!;
+  String get notes => _localizedValues['notes']!;
+  String get addPassword => _localizedValues['add_password']!;
+  String get addNote => _localizedValues['add_note']!;
+  String get search => _localizedValues['search']!;
+  String get settings => _localizedValues['settings']!;
+  String get biometricAuth => _localizedValues['biometric_auth']!;
+  String get enableBiometric => _localizedValues['enable_biometric']!;
+  String get biometricEnabled => _localizedValues['biometric_enabled']!;
+  String get biometricDisabled => _localizedValues['biometric_disabled']!;
+  String get useBiometric => _localizedValues['use_biometric']!;
+  String get password => _localizedValues['password']!;
+  String get username => _localizedValues['username']!;
+  String get website => _localizedValues['website']!;
+  String get title => _localizedValues['title']!;
+  String get content => _localizedValues['content']!;
+  String get category => _localizedValues['category']!;
+  String get save => _localizedValues['save']!;
+  String get cancel => _localizedValues['cancel']!;
+  String get delete => _localizedValues['delete']!;
+  String get edit => _localizedValues['edit']!;
+  String get copy => _localizedValues['copy']!;
+  String get copied => _localizedValues['copied']!;
+  String get passwordStrength => _localizedValues['password_strength']!;
+  String get weak => _localizedValues['weak']!;
+  String get medium => _localizedValues['medium']!;
+  String get strong => _localizedValues['strong']!;
+  String get generatePassword => _localizedValues['generate_password']!;
+  String get logout => _localizedValues['logout']!;
+  String get confirmLogout => _localizedValues['confirm_logout']!;
+  String get yes => _localizedValues['yes']!;
+  String get no => _localizedValues['no']!;
+  String get error => _localizedValues['error']!;
+  String get success => _localizedValues['success']!;
+  String get loading => _localizedValues['loading']!;
+  String get noData => _localizedValues['no_data']!;
+  String get noPasswords => _localizedValues['no_passwords']!;
+  String get noNotes => _localizedValues['no_notes']!;
+  String get searchPlaceholder => _localizedValues['search_placeholder']!;
+  String get categories => _localizedValues['categories']!;
+  String get all => _localizedValues['all']!;
+  String get work => _localizedValues['work']!;
+  String get personal => _localizedValues['personal']!;
+  String get banking => _localizedValues['banking']!;
+  String get social => _localizedValues['social']!;
+  String get shopping => _localizedValues['shopping']!;
+  String get entertainment => _localizedValues['entertainment']!;
+  String get security => _localizedValues['security']!;
+  String get other => _localizedValues['other']!;
+  String get passwordCopied => _localizedValues['password_copied']!;
+  String get usernameCopied => _localizedValues['username_copied']!;
+  String get websiteCopied => _localizedValues['website_copied']!;
+  String get contentCopied => _localizedValues['content_copied']!;
+  String get deleteConfirmation => _localizedValues['delete_confirmation']!;
+  String get deletePassword => _localizedValues['delete_password']!;
+  String get deleteNote => _localizedValues['delete_note']!;
+  String get editPassword => _localizedValues['edit_password']!;
+  String get editNote => _localizedValues['edit_note']!;
+  String get passwordSaved => _localizedValues['password_saved']!;
+  String get noteSaved => _localizedValues['note_saved']!;
+  String get passwordUpdated => _localizedValues['password_updated']!;
+  String get noteUpdated => _localizedValues['note_updated']!;
+  String get passwordDeleted => _localizedValues['password_deleted']!;
+  String get noteDeleted => _localizedValues['note_deleted']!;
+  String get biometricNotAvailable => _localizedValues['biometric_not_available']!;
+  String get biometricNotEnrolled => _localizedValues['biometric_not_enrolled']!;
+  String get biometricNotRecognized => _localizedValues['biometric_not_recognized']!;
+  String get biometricCancelled => _localizedValues['biometric_cancelled']!;
+  String get biometricLockedOut => _localizedValues['biometric_locked_out']!;
+  String get sessionTimeout => _localizedValues['session_timeout']!;
+  String get sessionTimeoutMessage => _localizedValues['session_timeout_message']!;
+  String get vaultLocked => _localizedValues['vault_locked']!;
+  String get vaultLockedMessage => _localizedValues['vault_locked_message']!;
+  String get invalidMasterPassword => _localizedValues['invalid_master_password']!;
+  String get passwordsDoNotMatch => _localizedValues['passwords_do_not_match']!;
+  String get passwordTooShort => _localizedValues['password_too_short']!;
+  String get passwordTooWeak => _localizedValues['password_too_weak']!;
+  String get exportVault => _localizedValues['export_vault']!;
+  String get importVault => _localizedValues['import_vault']!;
+  String get exportSuccess => _localizedValues['export_success']!;
+  String get importSuccess => _localizedValues['import_success']!;
+  String get exportFailed => _localizedValues['export_failed']!;
+  String get importFailed => _localizedValues['import_failed']!;
+  String get filePermissionDenied => _localizedValues['file_permission_denied']!;
+  String get fileNotFound => _localizedValues['file_not_found']!;
+  String get invalidFileFormat => _localizedValues['invalid_file_format']!;
+  String get backupVault => _localizedValues['backup_vault']!;
+  String get restoreVault => _localizedValues['restore_vault']!;
+  String get backupSuccess => _localizedValues['backup_success']!;
+  String get restoreSuccess => _localizedValues['restore_success']!;
+  String get backupFailed => _localizedValues['backup_failed']!;
+  String get restoreFailed => _localizedValues['restore_failed']!;
+  String get theme => _localizedValues['theme']!;
+  String get lightTheme => _localizedValues['light_theme']!;
+  String get darkTheme => _localizedValues['dark_theme']!;
+  String get systemTheme => _localizedValues['system_theme']!;
+  String get language => _localizedValues['language']!;
+  String get selectLanguage => _localizedValues['select_language']!;
+  String get about => _localizedValues['about']!;
+  String get version => _localizedValues['version']!;
+  String get privacyPolicy => _localizedValues['privacy_policy']!;
+  String get termsOfService => _localizedValues['terms_of_service']!;
+  String get help => _localizedValues['help']!;
+  String get feedback => _localizedValues['feedback']!;
+  String get rateApp => _localizedValues['rate_app']!;
+  String get shareApp => _localizedValues['share_app']!;
+  String get logoutConfirmation => _localizedValues['logout_confirmation']!;
+  String get logoutMessage => _localizedValues['logout_message']!;
+  // Additional getters used by screens
+  String get app_name => _localizedValues['app_name'] ?? 'PassGuard Vault';
+  // appName already defined above
+  String get changeMasterPassword => _localizedValues['change_master_password'] ?? 'Change Master Password';
+  String get change_master_password => changeMasterPassword;
+  String get note => _localizedValues['note'] ?? 'Note';
+  String get createdAt => _localizedValues['created_at'] ?? 'Created At';
+  String get updatedAt => _localizedValues['updated_at'] ?? 'Updated At';
+  String get autoLock => _localizedValues['auto_lock'] ?? 'Auto Lock';
+  String get backup_vault => _localizedValues['backup_vault'] ?? 'Backup Vault';
+  String get restore_vault => _localizedValues['restore_vault'] ?? 'Restore Vault';
+  String get quick_tools => _localizedValues['quick_tools'] ?? 'Quick Tools';
+  String get quick_actions => _localizedValues['quick_actions'] ?? 'Quick Actions';
+  String get vault_backup => _localizedValues['vault_backup'] ?? 'Vault Backup';
+  String get vault_health => _localizedValues['vault_health'] ?? 'Vault Health';
+  String get vaultHealth => _localizedValues['vault_health'] ?? 'Vault Health';
+  String get security_features => _localizedValues['security_features'] ?? 'Security Features';
+  String get clear => _localizedValues['clear'] ?? 'Clear';
+  String get minutes => _localizedValues['minutes'] ?? 'minutes';
+  String get dart => _localizedValues['dart'] ?? 'Dark';
+  // Sort/filter getters
+  String get sort => _localizedValues['sort'] ?? 'Sort';
+  String get sortBy => _localizedValues['sort_by'] ?? 'Sort By';
+  String get ascending => _localizedValues['ascending'] ?? 'Ascending';
+  String get descending => _localizedValues['descending'] ?? 'Descending';
+  String get filter => _localizedValues['filter'] ?? 'Filter';
+  String get date => _localizedValues['date'] ?? 'Date';
+  String get name => _localizedValues['name'] ?? 'Name';
+  String get strength => _localizedValues['strength'] ?? 'Strength';
+  String get ok => _localizedValues['ok'] ?? 'OK';
+  String get usePassword => _localizedValues['use_password'] ?? 'Use Password';
+  // noData already defined above
+  // Backup/Import getters
+  String get exportVaultDesc => _localizedValues['export_vault_desc'] ?? 'Export encrypted .pgvault backup';
+  String get importVaultDesc => _localizedValues['import_vault_desc'] ?? 'Import from .pgvault file';
+  String get importModeQuestion => _localizedValues['import_mode_question'] ?? 'How would you like to import?';
+  String get merge => _localizedValues['merge'] ?? 'Merge';
+  String get replace => _localizedValues['replace'] ?? 'Replace';
+  String get imported => _localizedValues['imported'] ?? 'imported';
+  String get skipped => _localizedValues['skipped'] ?? 'skipped';
+  String get entries => _localizedValues['entries'] ?? 'Entries';
+
+  // Security / brute-force protection
+  String get tooManyAttempts => _localizedValues['too_many_attempts'] ?? 'Too many failed attempts. Try again in';
+  String get attemptsRemaining => _localizedValues['attempts_remaining'] ?? 'attempts remaining';
+  String get seconds => _localizedValues['seconds'] ?? 'seconds';
+  String get somethingWentWrong => _localizedValues['something_went_wrong'] ?? 'Something went wrong. Please try again.';
+  String get biometricFailed => _localizedValues['biometric_failed'] ?? 'Biometric authentication failed';
+  String get newMasterPassword => _localizedValues['new_master_password'] ?? 'New Master Password';
+  String get passwordMismatch => _localizedValues['password_mismatch'] ?? 'Passwords do not match';
+  String get newPasswordSameAsOld => _localizedValues['new_password_same_as_old'] ?? 'New password cannot be the same as old password';
+  String get passwordChanged => _localizedValues['password_changed'] ?? 'Master password changed successfully';
+  String get fileTooLarge => _localizedValues['file_too_large'] ?? 'File too large (maximum 50 MB)';
+  String get developer => _localizedValues['developer'] ?? 'Developer';
+  String get biometricFirstTime => _localizedValues['biometric_first_time'] ?? 'Biometric verification successful. Enter your master password once, future logins will be automatic.';
+}
+
+
+
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
+  const _AppLocalizationsDelegate();
+
+  @override
+  bool isSupported(Locale locale) {
+    return ['tr', 'en', 'de', 'fr', 'ar'].contains(locale.languageCode);
+  }
+
+  @override
+  Future<AppLocalizations> load(Locale locale) async {
+    return AppLocalizations(locale);
+  }
+
+  @override
+  bool shouldReload(_AppLocalizationsDelegate old) => false;
+}

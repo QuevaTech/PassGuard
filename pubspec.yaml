@@ -1,0 +1,65 @@
+name: passguard_vault_v0
+description: "PassGuard Vault v0 - Secure password manager with local file storage and biometric authentication"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # State Management
+  provider: ^6.1.1
+  flutter_riverpod: ^2.4.9
+  
+  # UI & Localization
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
+  
+  # Storage
+  path_provider: ^2.1.1
+  file: ^6.1.0
+  
+  # Encryption
+  encrypt: ^5.0.3
+  pointycastle: ^3.7.3
+  crypto: ^3.0.3
+  
+  # Authentication
+  local_auth: ^2.1.8
+  
+  # UI Components
+  flutter_svg: ^2.0.9
+  lottie: ^2.7.0
+  shimmer: ^3.0.0
+  cached_network_image: ^3.3.1
+  
+  # Utils
+  uuid: ^4.3.3
+  share_plus: ^7.2.1
+  url_launcher: ^6.2.3
+  permission_handler: ^11.1.0
+
+  # Archive & File Picking
+  archive: ^3.6.1
+  file_picker: ^8.0.0
+  
+  # Icons
+  cupertino_icons: ^1.0.6
+  font_awesome_flutter: ^10.6.0
+  flutter_secure_storage: ^10.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/images/
+    - assets/icons/
