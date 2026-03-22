@@ -392,7 +392,7 @@ class _VaultScreenState extends ConsumerState<VaultScreen> {
                     ),
                     if (isPassword) ...[
                       const SizedBox(height: 4),
-                      _buildPasswordStrengthIndicator(entry.password ?? ''),
+                      _buildPasswordStrengthIndicator(context, entry.password ?? ''),
                     ],
                   ],
                 ),
@@ -431,7 +431,7 @@ class _VaultScreenState extends ConsumerState<VaultScreen> {
     );
   }
 
-  Widget _buildPasswordStrengthIndicator(String password) {
+  Widget _buildPasswordStrengthIndicator(BuildContext context, String password) {
     final strength = PasswordGeneratorService.calculateStrength(password);
     final color = PasswordGeneratorService.getStrengthColor(strength);
     final level = PasswordGeneratorService.getStrengthLevel(strength);
@@ -441,7 +441,7 @@ class _VaultScreenState extends ConsumerState<VaultScreen> {
       height: 4,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(2),
-        color: Colors.grey[300],
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
       ),
       child: FractionallySizedBox(
         alignment: Alignment.centerLeft,

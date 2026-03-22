@@ -343,7 +343,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         label: Text(localizations.biometricAuth),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(context).colorScheme.primary,
-                          foregroundColor: isDarkMode ? Colors.black : Colors.white,
+                          foregroundColor: Colors.white,
                         ),
                       ),
                       const SizedBox(height: 20),

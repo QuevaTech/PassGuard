@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +11,7 @@ import 'package:passguard_vault_v0/services/clipboard_service.dart';
 import 'package:passguard_vault_v0/services/password_generator_service.dart';
 import '../../utils/app_localizations.dart';
 import '../../utils/app_theme.dart';
+import '../../providers/theme_provider.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -23,7 +25,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _biometricEnabled = false;
   bool _biometricAvailable = false;
   bool _biometricEnrolled = false;
-  String _themeMode = 'system';
   String _language = 'tr';
   bool _autoLockEnabled = true;
   int _autoLockMinutes = 5;
@@ -70,11 +71,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
       setState(() => _isExporting = false);
 
-      // Share the backup file
-      await Share.shareXFiles(
-        [XFile(backupPath)],
-        subject: 'PassGuard Vault Backup',
-      );
+      // Desktop: Save As dialog; Mobile: share sheet
+      final isDesktop = Platform.isMacOS || Platform.isWindows || Platform.isLinux;
+      if (isDesktop) {
+        final fileName = backupPath.split(Platform.pathSeparator).last;
+        final savePath = await FilePicker.platform.saveFile(
+          dialogTitle: AppLocalizations.of(context).backupVault,
+          fileName: fileName,
+          allowedExtensions: ['pgvault'],
+          type: FileType.custom,
+        );
+        if (savePath != null) {
+          await File(backupPath).copy(savePath);
+        }
+      } else {
+        await Share.shareXFiles(
+          [XFile(backupPath)],
+          subject: AppLocalizations.of(context).backupVault,
+        );
+      }
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -103,7 +118,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     // 1. Pick .pgvault file
     final result = await FilePicker.platform.pickFiles(
-      type: FileType.any,
+      type: FileType.custom,
+      allowedExtensions: ['pgvault'],
       allowMultiple: false,
     );
     if (result == null || result.files.isEmpty) return;
@@ -426,13 +442,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildStatRow('Total Entries', stats['total_entries'].toString()),
-                _buildStatRow('Passwords', stats['password_count'].toString()),
-                _buildStatRow('Notes', stats['note_count'].toString()),
-                _buildStatRow('Categories', stats['categories'].toString()),
+                _buildStatRow(AppLocalizations.of(context).entries, stats['total_entries'].toString()),
+                _buildStatRow(AppLocalizations.of(context).passwords, stats['password_count'].toString()),
+                _buildStatRow(AppLocalizations.of(context).notes, stats['note_count'].toString()),
+                _buildStatRow(AppLocalizations.of(context).categories, stats['categories'].toString()),
                 const SizedBox(height: 16),
                 Text(
-                  'Categories:',
+                  '${AppLocalizations.of(context).categories}:',
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
                 const SizedBox(height: 8),
@@ -547,6 +563,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     }
                   });
                 },
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Theme
+          _buildSectionHeader(localizations.theme),
+          const SizedBox(height: 8),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(localizations.theme, style: Theme.of(context).textTheme.bodyMedium),
+                  const SizedBox(height: 8),
+                  SegmentedButton<ThemeMode>(
+                    segments: [
+                      ButtonSegment(value: ThemeMode.light, label: Text(localizations.lightTheme), icon: const Icon(Icons.light_mode)),
+                      ButtonSegment(value: ThemeMode.system, label: Text(localizations.systemTheme), icon: const Icon(Icons.brightness_auto)),
+                      ButtonSegment(value: ThemeMode.dark, label: Text(localizations.darkTheme), icon: const Icon(Icons.dark_mode)),
+                    ],
+                    selected: {ref.watch(themeProvider)},
+                    onSelectionChanged: (modes) => ref.read(themeProvider.notifier).setMode(modes.first),
+                  ),
+                ],
               ),
             ),
           ),

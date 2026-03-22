@@ -205,7 +205,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
                       label: Text(localizations.biometricAuth),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.primary,
-                        foregroundColor: isDarkMode ? Colors.black : Colors.white,
+                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                     ),
