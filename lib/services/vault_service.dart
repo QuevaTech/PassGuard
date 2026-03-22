@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:archive/archive.dart';
+import 'package:path_provider/path_provider.dart';
 import '../models/vault_entry.dart';
 import 'encryption_service.dart';
 import 'session_service.dart';
@@ -22,14 +23,25 @@ class VaultService {
   static const int _maxImportFileSize = 50 * 1024 * 1024;
 
   static Future<Directory> _getVaultDirectory() async {
-    final home = Platform.environment['HOME'];
-    if (home == null || home.isEmpty) {
-      throw Exception('Could not determine home directory');
+    final Directory baseDir;
+    if (Platform.isAndroid || Platform.isIOS) {
+      baseDir = await getApplicationDocumentsDirectory();
+    } else if (Platform.isWindows) {
+      baseDir = await getApplicationSupportDirectory();
+    } else {
+      final home = Platform.environment['HOME'];
+      if (home == null || home.isEmpty) {
+        throw Exception('Could not determine home directory');
+      }
+      baseDir = Directory(home);
     }
-    final dir = Directory('$home/$_vaultDirName');
+
+    final dir = Directory('${baseDir.path}${Platform.pathSeparator}$_vaultDirName');
     if (!await dir.exists()) {
       await dir.create(recursive: true);
-      await Process.run('chmod', ['700', dir.path]);
+      if (Platform.isLinux || Platform.isMacOS) {
+        await Process.run('chmod', ['700', dir.path]);
+      }
     }
     return dir;
   }
@@ -40,7 +52,9 @@ class VaultService {
   }
 
   static Future<void> _lockFilePermissions(String filePath) async {
-    await Process.run('chmod', ['600', filePath]);
+    if (Platform.isLinux || Platform.isMacOS) {
+      await Process.run('chmod', ['600', filePath]);
+    }
   }
 
   // --- Per-Entry Encryption ---
