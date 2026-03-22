@@ -1,5 +1,5 @@
 name: passguard_vault_v0
-description: "PassGuard Vault v0 - Secure password manager with local file storage and biometric authentication"
+description: "PassGuard Vault - Secure password manager with local file storage and biometric authentication"
 publish_to: 'none'
 version: 1.0.0+1
 

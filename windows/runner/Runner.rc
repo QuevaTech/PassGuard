@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.quevatech" "\0"
-            VALUE "FileDescription", "passguard_vault_v0" "\0"
+            VALUE "FileDescription", "PassGuard Vault" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "passguard_vault_v0" "\0"
+            VALUE "InternalName", "passguard_vault" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 com.quevatech. All rights reserved." "\0"
-            VALUE "OriginalFilename", "passguard_vault_v0.exe" "\0"
-            VALUE "ProductName", "passguard_vault_v0" "\0"
+            VALUE "OriginalFilename", "passguard_vault.exe" "\0"
+            VALUE "ProductName", "PassGuard Vault" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

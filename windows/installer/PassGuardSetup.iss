@@ -1,7 +1,7 @@
 #define MyAppName "PassGuard Vault"
 #define MyAppVersion "1.0.0"
 #define MyAppPublisher "QuevaTech"
-#define MyAppExeName "passguard_vault_v0.exe"
+#define MyAppExeName "passguard_vault.exe"
 #define MyAppId "{{2F6247F0-670C-4C5F-89A1-BB90A8B5512E}"
 
 [Setup]
