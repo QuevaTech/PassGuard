@@ -330,7 +330,7 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
                 Expanded(
                   child: LinearProgressIndicator(
                     value: strength / 100,
-                    backgroundColor: Colors.grey[300],
+                    backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                     valueColor: AlwaysStoppedAnimation(strengthColor),
                     minHeight: 6,
                   ),

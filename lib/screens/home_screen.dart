@@ -113,9 +113,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               label: Text(localizations.biometricAuth),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.black
-                    : Colors.white,
+                foregroundColor: Colors.white,
               ),
             ),
           ],

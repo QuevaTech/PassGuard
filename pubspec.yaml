@@ -46,6 +46,9 @@ dependencies:
   # Archive & File Picking
   archive: ^3.6.1
   file_picker: ^8.0.0
+
+  # Preferences
+  shared_preferences: ^2.2.2
   
   # Icons
   cupertino_icons: ^1.0.6

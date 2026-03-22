@@ -32,15 +32,9 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
   Color _passwordStrengthColor = Colors.grey;
   int _passwordStrength = 0;
 
-  final List<String> _categories = [
-    'Personal',
-    'Work',
-    'Banking',
-    'Social',
-    'Shopping',
-    'Entertainment',
-    'Security',
-    'Other',
+  static const List<String> _categoryKeys = [
+    'Personal', 'Work', 'Banking', 'Social',
+    'Shopping', 'Entertainment', 'Security', 'Other',
   ];
 
   @override
@@ -276,10 +270,10 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
                   prefixIcon: const Icon(Icons.category),
                   border: const OutlineInputBorder(),
                 ),
-                items: _categories.map((category) {
+                items: _categoryKeys.map((key) {
                   return DropdownMenuItem(
-                    value: category,
-                    child: Text(category),
+                    value: key,
+                    child: Text(localizations.categoryList[_categoryKeys.indexOf(key)]),
                   );
                 }).toList(),
                 onChanged: (value) {
@@ -350,7 +344,7 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
                       Expanded(
                         child: LinearProgressIndicator(
                           value: _passwordStrength / 100,
-                          backgroundColor: Colors.grey[300],
+                          backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                           valueColor: AlwaysStoppedAnimation(_passwordStrengthColor),
                           minHeight: 6,
                         ),
