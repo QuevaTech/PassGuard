@@ -4,9 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:passguard_vault_v0/services/vault_service.dart';
 import 'package:passguard_vault_v0/services/biometric_service.dart';
 import 'package:passguard_vault_v0/services/session_service.dart';
+import 'package:passguard_vault_v0/services/encryption_service.dart';
 import 'package:passguard_vault_v0/services/password_generator_service.dart';
 import 'package:passguard_vault_v0/services/auth_guard_service.dart';
 import '../home_screen.dart';
+import '../../utils/app_theme.dart';
 import '../vault/vault_screen.dart';
 import '../../utils/app_localizations.dart';
 
@@ -110,8 +112,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         final Uint8List sessionKey = VaultService.deriveSessionKey(password, vault);
         await VaultService.saveVault(vault, sessionKey);
 
-        // Initialize session with derived key
+        // Initialize session with derived key (setSessionKey copies bytes)
         await SessionService.setSessionKey(sessionKey);
+        EncryptionService.clearKey(sessionKey);
         SessionService.initialize(biometricEnabled: _enableBiometric);
 
         // Navigate to home
@@ -133,8 +136,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           // Success - reset brute-force counter
           AuthGuardService.recordSuccess();
 
-          // Initialize session with derived key
+          // Initialize session with derived key (setSessionKey copies bytes)
           await SessionService.setSessionKey(sessionKey);
+          EncryptionService.clearKey(sessionKey);
           SessionService.initialize(biometricEnabled: _enableBiometric);
 
           // Navigate to vault
@@ -145,6 +149,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             );
           }
         } catch (e) {
+          // Vault created by a newer app version — don't count as failed attempt
+          if (e.toString().contains('vault_version_unsupported')) {
+            setState(() {
+              _errorMessage = AppLocalizations.of(context).vaultVersionUnsupported;
+              _isLoading = false;
+            });
+            return;
+          }
+
           // Record failed attempt for brute-force protection
           final lockedOut = AuthGuardService.recordFailedAttempt();
 
@@ -203,7 +216,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -238,7 +250,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ? localizations.createMasterPassword
                           : localizations.enterMasterPassword,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.secondary,
+                        color: AppTheme.textSecondaryColor,
                       ),
                       textAlign: TextAlign.center,
                     ),

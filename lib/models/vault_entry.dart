@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart' show Color;
 
 enum VaultEntryType { password, note }
 
@@ -18,6 +18,15 @@ class VaultEntry {
   // Note fields (decrypted, in-memory only)
   final String? content;
 
+  // Extra notes for any entry type (decrypted, in-memory only)
+  final String? notes;
+
+  // Non-sensitive metadata
+  final bool isFavorite;
+
+  /// ARGB color value for quick color tagging. Null means no color assigned.
+  final int? colorValue;
+
   // Per-entry encryption metadata (stored in vault JSON)
   final String? encryptedData;
   final String? entryIv;
@@ -34,10 +43,16 @@ class VaultEntry {
     this.password,
     this.website,
     this.content,
+    this.notes,
+    this.isFavorite = false,
+    this.colorValue,
     this.encryptedData,
     this.entryIv,
     this.entryTag,
   });
+
+  // Sentinel for copyWith to distinguish "not passed" from "explicitly null"
+  static const Object _absent = Object();
 
   VaultEntry copyWith({
     String? id,
@@ -50,6 +65,9 @@ class VaultEntry {
     String? password,
     String? website,
     String? content,
+    String? notes,
+    bool? isFavorite,
+    Object? colorValue = _absent,
     String? encryptedData,
     String? entryIv,
     String? entryTag,
@@ -65,6 +83,9 @@ class VaultEntry {
       password: password ?? this.password,
       website: website ?? this.website,
       content: content ?? this.content,
+      notes: notes ?? this.notes,
+      isFavorite: isFavorite ?? this.isFavorite,
+      colorValue: colorValue == _absent ? this.colorValue : colorValue as int?,
       encryptedData: encryptedData ?? this.encryptedData,
       entryIv: entryIv ?? this.entryIv,
       entryTag: entryTag ?? this.entryTag,
@@ -82,10 +103,13 @@ class VaultEntry {
       category: json['category'] as String,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
+      isFavorite: (json['is_favorite'] as bool?) ?? false,
+      colorValue: json['color_value'] as int?,
       username: json['username'] as String?,
       password: json['password'] as String?,
       website: json['website'] as String?,
       content: json['content'] as String?,
+      notes: json['notes'] as String?,
       encryptedData: json['encrypted_data'] as String?,
       entryIv: json['entry_iv'] as String?,
       entryTag: json['entry_tag'] as String?,
@@ -102,6 +126,8 @@ class VaultEntry {
       'category': category,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
+      'is_favorite': isFavorite,
+      if (colorValue != null) 'color_value': colorValue,
       if (encryptedData != null) 'encrypted_data': encryptedData,
       if (entryIv != null) 'entry_iv': entryIv,
       if (entryTag != null) 'entry_tag': entryTag,
@@ -117,6 +143,7 @@ class VaultEntry {
       'category': category,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
+      if (colorValue != null) 'color_value': colorValue,
       if (username != null) 'username': username,
       if (password != null) 'password': password,
       if (website != null) 'website': website,
@@ -131,12 +158,16 @@ class VaultEntry {
     if (password != null) fields['password'] = password;
     if (website != null) fields['website'] = website;
     if (content != null) fields['content'] = content;
+    if (notes != null) fields['notes'] = notes;
     return fields;
   }
 
   /// Check if this entry has per-entry encryption
   bool get isEntryEncrypted =>
       encryptedData != null && entryIv != null && entryTag != null;
+
+  /// The tag color for this entry, or null if none assigned.
+  Color? get color => colorValue != null ? Color(colorValue!) : null;
 
   String get displayTitle => title.isNotEmpty ? title : 'Untitled';
   String get displayCategory => category.isNotEmpty ? category : 'Other';

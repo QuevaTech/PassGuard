@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:passguard_vault_v0/services/vault_service.dart';
 import 'package:passguard_vault_v0/services/clipboard_service.dart';
@@ -8,6 +9,8 @@ import 'package:passguard_vault_v0/models/vault_entry.dart';
 import 'add_entry_screen.dart';
 import '../../utils/app_localizations.dart';
 import '../../utils/app_theme.dart';
+import '../../widgets/note_content_renderer.dart';
+import '../../widgets/glass_card.dart';
 
 class EntryDetailScreen extends ConsumerStatefulWidget {
   final VaultEntry entry;
@@ -25,9 +28,7 @@ class EntryDetailScreen extends ConsumerStatefulWidget {
 
 class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
   bool _obscurePassword = true;
-  bool _isEditing = false;
   late VaultEntry _currentEntry;
-
   @override
   void initState() {
     super.initState();
@@ -38,16 +39,14 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => AddEntryScreen(rawKey: widget.rawKey),
+        builder: (_) => AddEntryScreen(
+          rawKey: widget.rawKey,
+          existingEntry: _currentEntry,
+        ),
       ),
     );
-    
     if (result == true) {
-      // Reload entry
-      // In a real app, you would fetch the updated entry
-      setState(() {
-        _isEditing = false;
-      });
+      if (mounted) Navigator.pop(context, true);
     }
   }
 
@@ -73,6 +72,7 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
     );
 
     if (confirmed == true) {
+      HapticFeedback.mediumImpact();
       try {
         await VaultService.deleteEntry(_currentEntry.id, widget.rawKey);
         
@@ -105,13 +105,28 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
     final localizations = AppLocalizations.of(context);
     final isPassword = _currentEntry.type == VaultEntryType.password;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text(_currentEntry.displayTitle),
         actions: [
-          if (!_isEditing)
-            IconButton(
-              onPressed: () => setState(() => _isEditing = true),
+          IconButton(
+            onPressed: () async {
+              final updated = _currentEntry.copyWith(
+                isFavorite: !_currentEntry.isFavorite,
+                updatedAt: DateTime.now(),
+              );
+              await VaultService.updateEntry(updated, widget.rawKey);
+              setState(() => _currentEntry = updated);
+            },
+            icon: Icon(
+              _currentEntry.isFavorite ? Icons.star : Icons.star_border,
+              color: _currentEntry.isFavorite ? Colors.amber : null,
+            ),
+          ),
+          IconButton(
+              onPressed: _editEntry,
               icon: const Icon(Icons.edit),
             ),
           IconButton(
@@ -120,44 +135,56 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
           ),
         ],
       ),
-      body: Padding(
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: isDark
+                      ? const [Color(0xFF0F172A), Color(0xFF1A2744), Color(0xFF0F172A)]
+                      : const [Color(0xFFEFF6FF), Color(0xFFE0EFFE), Color(0xFFEFF6FF)],
+                  stops: const [0.0, 0.5, 1.0],
+                ),
+              ),
+            ),
+          ),
+          Padding(
         padding: const EdgeInsets.all(24.0),
         child: ListView(
           children: [
             // Entry Type Badge
-            Card(
-              color: isPassword 
-                  ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
-                  : Theme.of(context).colorScheme.secondary.withOpacity(0.1),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    Icon(
-                      isPassword ? Icons.lock : Icons.note,
-                      color: Theme.of(context).colorScheme.primary,
+            GlassCard(
+              padding: const EdgeInsets.all(16),
+              leftAccentColor: _currentEntry.color,
+              child: Row(
+                children: [
+                  Icon(
+                    isPassword ? Icons.lock : Icons.note,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    isPassword ? localizations.password : localizations.note,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(width: 12),
-                    Text(
-                      isPassword ? localizations.password : localizations.note,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  ),
+                  const Spacer(),
+                  Chip(
+                    label: Text(
+                      _currentEntry.displayCategory,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    const Spacer(),
-                    Flexible(
-                      child: Chip(
-                        label: Text(
-                          _currentEntry.displayCategory,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        labelStyle: const TextStyle(color: Colors.white),
-                      ),
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    labelStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 20),
@@ -196,6 +223,15 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
               const SizedBox(height: 16),
             ],
 
+            // Notes (if present)
+            if (_currentEntry.notes != null && _currentEntry.notes!.isNotEmpty) ...[
+              _buildInfoCard(
+                title: localizations.notes,
+                value: _currentEntry.notes!,
+              ),
+              const SizedBox(height: 16),
+            ],
+
             // Metadata
             _buildInfoCard(
               title: localizations.createdAt,
@@ -214,6 +250,8 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
               _buildActionButtons(),
           ],
         ),
+          ),
+        ],
       ),
     );
   }
@@ -223,46 +261,46 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
     required String value,
     bool isLink = false,
   }) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                color: Theme.of(context).colorScheme.secondary,
-              ),
+    return GlassCard(
+      margin: const EdgeInsets.only(bottom: 0),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: AppTheme.textSecondaryColor,
             ),
-            const SizedBox(height: 4),
-            if (isLink)
-              InkWell(
-                onTap: () {
-                  // Handle link tap
-                  ClipboardService.copyWebsite(value);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(AppLocalizations.of(context).websiteCopied),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
-                },
-                child: Text(
-                  value,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                    decoration: TextDecoration.underline,
+          ),
+          const SizedBox(height: 4),
+          if (isLink)
+            InkWell(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                ClipboardService.copyWebsite(value);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('${AppLocalizations.of(context).websiteCopied} · 30s'),
+                    backgroundColor: Colors.green,
+                    duration: const Duration(seconds: 3),
                   ),
-                ),
-              )
-            else
-              Text(
+                );
+              },
+              child: Text(
                 value,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
+                  decoration: TextDecoration.underline,
+                ),
               ),
-          ],
-        ),
+            )
+          else
+            Text(
+              value,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+        ],
       ),
     );
   }
@@ -273,33 +311,33 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
     final strengthText = PasswordGeneratorService.getStrengthLevel(strength);
     final strengthColor = PasswordGeneratorService.getStrengthColor(strength);
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Flexible(
-                  child: Text(
-                    AppLocalizations.of(context).password,
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                    overflow: TextOverflow.ellipsis,
+    return GlassCard(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  AppLocalizations.of(context).password,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: AppTheme.textSecondaryColor,
                   ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const Spacer(),
-                IconButton(
+              ),
+              IconButton(
                   constraints: const BoxConstraints(),
                   padding: const EdgeInsets.all(8),
                   onPressed: () {
+                    HapticFeedback.lightImpact();
                     ClipboardService.copyPassword(password);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(AppLocalizations.of(context).passwordCopied),
+                        content: Text('${AppLocalizations.of(context).passwordCopied} · 30s'),
                         backgroundColor: Colors.green,
+                        duration: const Duration(seconds: 3),
                       ),
                     );
                   },
@@ -352,40 +390,37 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
             ),
           ],
         ),
-      ),
     );
   }
 
   Widget _buildContentCard() {
     final content = _currentEntry.content ?? '';
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              AppLocalizations.of(context).content,
+    return GlassCard(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            AppLocalizations.of(context).content,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                color: Theme.of(context).colorScheme.secondary,
+                color: AppTheme.textSecondaryColor,
               ),
             ),
             const SizedBox(height: 8),
-            Text(
-              content,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
+            NoteContentRenderer(content: content),
             const SizedBox(height: 12),
             Row(
               children: [
                 IconButton(
                   onPressed: () {
-                    ClipboardService.copyContent(content);
+                    HapticFeedback.lightImpact();
+                    ClipboardService.copyContent(stripNoteTags(content));
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(AppLocalizations.of(context).contentCopied),
+                        content: Text('${AppLocalizations.of(context).contentCopied} · 30s'),
                         backgroundColor: Colors.green,
+                        duration: const Duration(seconds: 3),
                       ),
                     );
                   },
@@ -395,17 +430,15 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
             ),
           ],
         ),
-      ),
     );
   }
 
   Widget _buildActionButtons() {
     final localizations = AppLocalizations.of(context);
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Wrap(
+    return GlassCard(
+      padding: const EdgeInsets.all(16),
+      child: Wrap(
           alignment: WrapAlignment.spaceEvenly,
           spacing: 8,
           runSpacing: 8,
@@ -413,11 +446,13 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
             // Copy Content Button
             OutlinedButton.icon(
               onPressed: () {
-                ClipboardService.copyContent(_currentEntry.content ?? '');
+                HapticFeedback.lightImpact();
+                ClipboardService.copyContent(stripNoteTags(_currentEntry.content ?? ''));
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(localizations.contentCopied),
+                    content: Text('${localizations.contentCopied} · 30s'),
                     backgroundColor: Colors.green,
+                    duration: const Duration(seconds: 3),
                   ),
                 );
               },
@@ -425,7 +460,6 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
               label: Text(localizations.copy),
             ),
           ],
-        ),
       ),
     );
   }

@@ -136,6 +136,15 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
         );
       }
     } catch (e) {
+      // Vault created by a newer app version — don't count as failed attempt
+      if (e.toString().contains('vault_version_unsupported')) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = AppLocalizations.of(context).vaultVersionUnsupported;
+        });
+        return;
+      }
+
       // Record failed attempt
       final lockedOut = AuthGuardService.recordFailedAttempt();
 
@@ -157,7 +166,6 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,

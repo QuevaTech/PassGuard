@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:passguard_vault_v0/services/vault_service.dart';
 import 'package:passguard_vault_v0/services/biometric_service.dart';
 import 'package:passguard_vault_v0/services/session_service.dart';
 import 'auth/login_screen.dart';
 import 'auth/verification_screen.dart';
+import 'auth/pin_screen.dart';
+import 'onboarding_screen.dart';
 import '../utils/app_localizations.dart';
+import '../services/pin_service.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -42,17 +46,48 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     if (!mounted) return;
 
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final onboardingDone = prefs.getBool('onboarding_done') ?? false;
+
+      if (!mounted) return;
+
+      if (!onboardingDone) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+        );
+        return;
+      }
+
       final vaultExists = await VaultService.vaultExists();
 
       if (!mounted) return;
 
       if (vaultExists) {
+        // PIN check: if PIN enabled, always route to PIN screen
+        final pinEnabled = await PinService.isPinEnabled();
+        if (!mounted) return;
+
+        if (pinEnabled) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (_) => const PinScreen(mode: PinScreenMode.unlock)),
+          );
+          return;
+        }
+
         final biometricAvailable = await _biometricService.isBiometricAvailable();
         final biometricEnrolled = await _biometricService.isBiometricEnrolled();
 
         if (!mounted) return;
 
-        if (biometricAvailable && biometricEnrolled) {
+        final biometricPref = prefs.getBool('biometric_enabled') ?? true;
+        final biometricEnabled = biometricAvailable && biometricEnrolled && biometricPref;
+
+        if (!mounted) return;
+
+        if (biometricEnabled) {
           SessionService.initialize(biometricEnabled: true);
           Navigator.pushReplacement(
             context,

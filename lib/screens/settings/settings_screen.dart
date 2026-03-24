@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
@@ -9,9 +10,11 @@ import 'package:passguard_vault_v0/services/biometric_service.dart';
 import 'package:passguard_vault_v0/services/session_service.dart';
 import 'package:passguard_vault_v0/services/clipboard_service.dart';
 import 'package:passguard_vault_v0/services/password_generator_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../utils/app_localizations.dart';
-import '../../utils/app_theme.dart';
-import '../../providers/theme_provider.dart';
+import '../../providers/theme_provider.dart' show themeProvider, accentColorProvider, accentColors;
+import '../../services/pin_service.dart';
+import '../auth/pin_screen.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -25,7 +28,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _biometricEnabled = false;
   bool _biometricAvailable = false;
   bool _biometricEnrolled = false;
-  String _language = 'tr';
+  bool _pinEnabled = false;
   bool _autoLockEnabled = true;
   int _autoLockMinutes = 5;
   bool _isExporting = false;
@@ -39,11 +42,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Future<void> _loadSettings() async {
     try {
-      _biometricAvailable = await _biometricService.isBiometricAvailable();
-      _biometricEnrolled = await _biometricService.isBiometricEnrolled();
-      _biometricEnabled = _biometricAvailable && _biometricEnrolled;
+      final available = await _biometricService.isBiometricAvailable();
+      final enrolled = await _biometricService.isBiometricEnrolled();
+      final prefs = await SharedPreferences.getInstance();
+      final saved = prefs.getBool('biometric_enabled') ?? (available && enrolled);
+      final pinEnabled = await PinService.isPinEnabled();
+      if (mounted) {
+        setState(() {
+          _biometricAvailable = available;
+          _biometricEnrolled = enrolled;
+          _biometricEnabled = available && enrolled && saved;
+          _pinEnabled = pinEnabled;
+        });
+      }
     } catch (e) {
-      // Handle error
+      // Biometric not available on this device — keep defaults (false)
     }
   }
 
@@ -60,19 +73,42 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return key;
   }
 
+  /// Returns false (and shows a snackbar) if we're on Linux and neither
+  /// zenity nor kdialog is installed — file_picker requires one of them.
+  Future<bool> _ensureLinuxFilePicker() async {
+    if (!Platform.isLinux) return true;
+    final zenity = await Process.run('which', ['zenity']);
+    if (zenity.exitCode == 0) return true;
+    final kdialog = await Process.run('which', ['kdialog']);
+    if (kdialog.exitCode == 0) return true;
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context).filePickerUnavailable),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 6),
+        ),
+      );
+    }
+    return false;
+  }
+
   Future<void> _exportVault() async {
     final rawKey = _getSessionKey();
     if (rawKey == null) return;
+    if (!await _ensureLinuxFilePicker()) return;
 
+    String? backupPath;
     try {
       setState(() => _isExporting = true);
 
-      final backupPath = await VaultService.createBackup(rawKey);
+      backupPath = await VaultService.createBackup(rawKey);
 
       setState(() => _isExporting = false);
 
       // Desktop: Save As dialog; Mobile: share sheet
       final isDesktop = Platform.isMacOS || Platform.isWindows || Platform.isLinux;
+      bool exported = false;
       if (isDesktop) {
         final fileName = backupPath.split(Platform.pathSeparator).last;
         final savePath = await FilePicker.platform.saveFile(
@@ -83,15 +119,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         );
         if (savePath != null) {
           await File(backupPath).copy(savePath);
+          exported = true;
         }
+        // User cancelled the Save As dialog — no snackbar
       } else {
         await Share.shareXFiles(
           [XFile(backupPath)],
           subject: AppLocalizations.of(context).backupVault,
         );
+        exported = true;
       }
 
-      if (mounted) {
+      if (exported && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppLocalizations.of(context).exportSuccess),
@@ -109,45 +148,80 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
         );
       }
+    } finally {
+      // Remove the intermediate backup file from the vault directory.
+      // The user's chosen copy (or share) is the real export — this temp file
+      // would otherwise accumulate in AppData/.passguard on every export.
+      if (backupPath != null) {
+        try { await File(backupPath).delete(); } catch (_) {}
+      }
     }
   }
 
   Future<void> _importVault() async {
     final rawKey = _getSessionKey();
     if (rawKey == null) return;
+    if (!await _ensureLinuxFilePicker()) return;
 
     // 1. Pick .pgvault file
+    // withData: true on Android so bytes are available when path is null
+    // (content:// URIs from Drive/Downloads do not expose a real file path)
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['pgvault'],
       allowMultiple: false,
+      withData: Platform.isAndroid,
     );
     if (result == null || result.files.isEmpty) return;
 
-    final filePath = result.files.single.path;
-    if (filePath == null) return;
+    final pickedFile = result.files.single;
+    String? filePath = pickedFile.path;
+    File? tempFile;
 
-    // 2. Validate - read manifest
-    final manifest = await VaultService.readBackupManifest(filePath);
-    if (manifest == null) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context).importFailed),
-            backgroundColor: Colors.red,
-          ),
-        );
+    // On Android, path is null for content:// URIs (e.g. Google Drive, Downloads).
+    // Write bytes to a temp file so the rest of the flow stays path-based.
+    if (filePath == null) {
+      final bytes = pickedFile.bytes;
+      if (bytes == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context).importFailed),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return;
       }
-      return;
+      final tmpDir = await getTemporaryDirectory();
+      tempFile = File(
+        '${tmpDir.path}/pg_import_${DateTime.now().millisecondsSinceEpoch}.pgvault',
+      );
+      await tempFile.writeAsBytes(bytes);
+      filePath = tempFile.path;
     }
 
-    // 3. Show import mode dialog
-    if (!mounted) return;
-    final mode = await _showImportModeDialog(manifest);
-    if (mode == null) return;
-
-    // 4. Import
     try {
+      // 2. Validate - read manifest
+      final manifest = await VaultService.readBackupManifest(filePath);
+      if (manifest == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context).importFailed),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return;
+      }
+
+      // 3. Show import mode dialog
+      if (!mounted) return;
+      final mode = await _showImportModeDialog(manifest);
+      if (mode == null) return;
+
+      // 4. Import
       setState(() => _isImporting = true);
 
       final importResult = await VaultService.importBackup(
@@ -180,6 +254,68 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
         );
       }
+    } finally {
+      // Clean up temp file if one was created for the Android content:// case
+      try { await tempFile?.delete(); } catch (_) {}
+    }
+  }
+
+  Future<void> _importCsv() async {
+    final rawKey = _getSessionKey();
+    if (rawKey == null) return;
+    if (!await _ensureLinuxFilePicker()) return;
+
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['csv'],
+      allowMultiple: false,
+      withData: Platform.isAndroid,
+    );
+    if (result == null || result.files.isEmpty) return;
+
+    final pickedFile = result.files.single;
+    String? filePath = pickedFile.path;
+    File? tempFile;
+
+    if (filePath == null) {
+      final bytes = pickedFile.bytes;
+      if (bytes == null) return;
+      final tmpDir = await getTemporaryDirectory();
+      tempFile = File('${tmpDir.path}/pg_csv_${DateTime.now().millisecondsSinceEpoch}.csv');
+      await tempFile.writeAsBytes(bytes);
+      filePath = tempFile.path;
+    }
+
+    try {
+      setState(() => _isImporting = true);
+      final importResult = await VaultService.importCsv(csvPath: filePath, rawKey: rawKey);
+      setState(() => _isImporting = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${AppLocalizations.of(context).importSuccess} '
+              '(${importResult.imported} ${AppLocalizations.of(context).imported}, '
+              '${importResult.skipped} ${AppLocalizations.of(context).skipped})',
+            ),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() => _isImporting = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().contains('csv_format_unsupported')
+                ? AppLocalizations.of(context).csvFormatUnsupported
+                : AppLocalizations.of(context).importFailed),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      try { await tempFile?.delete(); } catch (_) {}
     }
   }
 
@@ -242,6 +378,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final currentController = TextEditingController();
     final newController = TextEditingController();
     final confirmController = TextEditingController();
+    try {
     bool obscureCurrent = true;
     bool obscureNew = true;
     bool obscureConfirm = true;
@@ -372,6 +509,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         );
       }
     }
+    } finally {
+      currentController.dispose();
+      newController.dispose();
+      confirmController.dispose();
+    }
   }
 
   Future<void> _clearClipboard() async {
@@ -498,7 +640,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
@@ -527,19 +668,66 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
                 trailing: Switch(
                   value: _biometricEnabled,
-                  onChanged: (value) {
-                    setState(() {
-                      _biometricEnabled = value;
-                      if (value) {
-                        SessionService.extendSession();
-                      } else {
-                        SessionService.shortenSession();
-                      }
-                    });
+                  onChanged: (value) async {
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.setBool('biometric_enabled', value);
+                    if (mounted) {
+                      setState(() {
+                        _biometricEnabled = value;
+                        if (value) {
+                          SessionService.extendSession();
+                        } else {
+                          SessionService.shortenSession();
+                        }
+                      });
+                    }
                   },
                 ),
               ),
             ),
+          const SizedBox(height: 8),
+
+          // PIN Lock
+          Card(
+            child: ListTile(
+              leading: Icon(
+                Icons.pin_outlined,
+                color: _pinEnabled ? Colors.blue : Colors.grey,
+              ),
+              title: const Text('PIN Lock'),
+              subtitle: Text(_pinEnabled ? 'PIN is enabled' : 'Quick unlock with a 4-digit PIN'),
+              trailing: _pinEnabled
+                  ? IconButton(
+                      icon: const Icon(Icons.delete_outline, color: Colors.red),
+                      tooltip: 'Remove PIN',
+                      onPressed: () async {
+                        await PinService.disablePin();
+                        if (mounted) setState(() => _pinEnabled = false);
+                      },
+                    )
+                  : TextButton(
+                      child: const Text('Set PIN'),
+                      onPressed: () async {
+                        final result = await Navigator.push<bool>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                const PinScreen(mode: PinScreenMode.setup),
+                          ),
+                        );
+                        if (result == true && mounted) {
+                          setState(() => _pinEnabled = true);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('PIN set successfully'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        }
+                      },
+                    ),
+            ),
+          ),
           const SizedBox(height: 8),
 
           // Auto Lock
@@ -588,6 +776,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     selected: {ref.watch(themeProvider)},
                     onSelectionChanged: (modes) => ref.read(themeProvider.notifier).setMode(modes.first),
                   ),
+                  const SizedBox(height: 16),
+                  Text(localizations.accentColor, style: Theme.of(context).textTheme.bodyMedium),
+                  const SizedBox(height: 10),
+                  _AccentColorPicker(
+                    selected: ref.watch(accentColorProvider),
+                    onSelected: (c) => ref.read(accentColorProvider.notifier).setColor(c),
+                  ),
                 ],
               ),
             ),
@@ -620,6 +815,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               title: Text(localizations.importVault),
               subtitle: Text(localizations.importVaultDesc),
               onTap: _isImporting ? null : _importVault,
+            ),
+          ),
+          const SizedBox(height: 8),
+
+          // CSV Import (Bitwarden / Chrome / 1Password)
+          Card(
+            child: ListTile(
+              leading: _isImporting
+                  ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                  : const Icon(Icons.table_chart_outlined),
+              title: Text(localizations.importCsv),
+              subtitle: Text(localizations.importCsvDesc),
+              onTap: _isImporting ? null : _importCsv,
             ),
           ),
           const SizedBox(height: 16),
@@ -702,6 +910,60 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         fontWeight: FontWeight.bold,
         color: Theme.of(context).colorScheme.primary,
       ),
+    );
+  }
+}
+
+/// Round color swatches — YubiKey-style preset accent picker.
+class _AccentColorPicker extends StatelessWidget {
+  const _AccentColorPicker({
+    required this.selected,
+    required this.onSelected,
+  });
+
+  final Color selected;
+  final ValueChanged<Color> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: accentColors.map((color) {
+        final isSelected = selected.toARGB32() == color.toARGB32();
+        return GestureDetector(
+          onTap: () => onSelected(color),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            curve: Curves.easeOut,
+            margin: const EdgeInsets.only(right: 14),
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              // Selected: outer ring in the swatch color with a white gap
+              border: isSelected
+                  ? Border.all(color: color, width: 2.5)
+                  : null,
+            ),
+            padding: EdgeInsets.all(isSelected ? 3.5 : 0),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: color,
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: color.withValues(alpha: 0.5),
+                          blurRadius: 8,
+                          spreadRadius: 1,
+                        )
+                      ]
+                    : null,
+              ),
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 }

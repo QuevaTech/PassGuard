@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:passguard_vault_v0/services/vault_service.dart';
 import 'package:passguard_vault_v0/services/clipboard_service.dart';
@@ -10,8 +11,10 @@ import '../../utils/app_theme.dart';
 
 class AddEntryScreen extends ConsumerStatefulWidget {
   final Uint8List rawKey;
+  // Pass an existing entry to edit it; null = new entry
+  final VaultEntry? existingEntry;
 
-  const AddEntryScreen({super.key, required this.rawKey});
+  const AddEntryScreen({super.key, required this.rawKey, this.existingEntry});
 
   @override
   ConsumerState<AddEntryScreen> createState() => _AddEntryScreenState();
@@ -24,9 +27,12 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
   final _passwordController = TextEditingController();
   final _websiteController = TextEditingController();
   final _contentController = TextEditingController();
-  
+  final _notesController = TextEditingController();
+
   VaultEntryType _entryType = VaultEntryType.password;
   String _selectedCategory = 'Personal';
+  bool _isFavorite = false;
+  int? _selectedColorValue;
   bool _obscurePassword = true;
   String _passwordStrengthText = '';
   Color _passwordStrengthColor = Colors.grey;
@@ -41,6 +47,20 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
   void initState() {
     super.initState();
     _passwordController.addListener(_updatePasswordStrength);
+    // Prefill fields when editing an existing entry
+    final e = widget.existingEntry;
+    if (e != null) {
+      _entryType = e.type;
+      _selectedCategory = e.category;
+      _isFavorite = e.isFavorite;
+      _selectedColorValue = e.colorValue;
+      _titleController.text = e.title;
+      _usernameController.text = e.username ?? '';
+      _passwordController.text = e.password ?? '';
+      _websiteController.text = e.website ?? '';
+      _contentController.text = e.content ?? '';
+      _notesController.text = e.notes ?? '';
+    }
   }
 
   @override
@@ -50,6 +70,7 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
     _passwordController.dispose();
     _websiteController.dispose();
     _contentController.dispose();
+    _notesController.dispose();
     _passwordController.removeListener(_updatePasswordStrength);
     super.dispose();
   }
@@ -77,12 +98,14 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
       includeSymbols: true,
     );
     _passwordController.text = generatedPassword;
+    HapticFeedback.lightImpact();
     await ClipboardService.copyPassword(generatedPassword);
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(AppLocalizations.of(context).passwordCopied),
+        content: Text('${AppLocalizations.of(context).passwordCopied} · 30s'),
         backgroundColor: Colors.green,
+        duration: const Duration(seconds: 3),
       ),
     );
   }
@@ -91,22 +114,34 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     try {
+      final existing = widget.existingEntry;
+      final notesText = _notesController.text.trim().isEmpty ? null : _notesController.text.trim();
       final entry = VaultEntry(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        id: existing?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
         type: _entryType,
         title: _titleController.text,
         category: _selectedCategory,
-        createdAt: DateTime.now(),
+        isFavorite: _isFavorite,
+        colorValue: _selectedColorValue,
+        createdAt: existing?.createdAt ?? DateTime.now(),
         updatedAt: DateTime.now(),
         username: _entryType == VaultEntryType.password ? _usernameController.text : null,
         password: _entryType == VaultEntryType.password ? _passwordController.text : null,
-        website: _entryType == VaultEntryType.password ? _websiteController.text : null,
+        website: _entryType == VaultEntryType.password
+            ? (_websiteController.text.isEmpty ? null : _websiteController.text)
+            : null,
         content: _entryType == VaultEntryType.note ? _contentController.text : null,
+        notes: notesText,
       );
 
-      await VaultService.addEntry(entry, widget.rawKey);
+      if (existing != null) {
+        await VaultService.updateEntry(entry, widget.rawKey);
+      } else {
+        await VaultService.addEntry(entry, widget.rawKey);
+      }
 
       if (!mounted) return;
+      HapticFeedback.mediumImpact();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(_entryType == VaultEntryType.password
@@ -128,21 +163,122 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
     }
   }
 
+  void _wrapSelection(String open, String close) {
+    final controller = _contentController;
+    final selection = controller.selection;
+    if (!selection.isValid) {
+      // No selection — just insert markers at cursor or end
+      final text = controller.text;
+      final offset = selection.isCollapsed && selection.start >= 0
+          ? selection.start
+          : text.length;
+      final newText = text.substring(0, offset) + '$open$close' + text.substring(offset);
+      controller.value = TextEditingValue(
+        text: newText,
+        selection: TextSelection.collapsed(offset: offset + open.length),
+      );
+      return;
+    }
+    final text = controller.text;
+    final selected = selection.textInside(text);
+    final newText = text.replaceRange(selection.start, selection.end, '$open$selected$close');
+    controller.value = TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(
+        offset: selection.start + open.length + selected.length + close.length,
+      ),
+    );
+  }
+
+  Widget _buildColorPicker() {
+    return Row(
+      children: [
+        // "No color" option
+        GestureDetector(
+          onTap: () {
+            HapticFeedback.lightImpact();
+            setState(() => _selectedColorValue = null);
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            width: _selectedColorValue == null ? 36 : 30,
+            height: _selectedColorValue == null ? 36 : 30,
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.transparent,
+              border: Border.all(
+                color: _selectedColorValue == null
+                    ? Theme.of(context).colorScheme.primary
+                    : AppTheme.borderColor,
+                width: _selectedColorValue == null ? 2.5 : 1.5,
+              ),
+            ),
+            child: Icon(
+              Icons.block,
+              size: _selectedColorValue == null ? 18 : 14,
+              color: _selectedColorValue == null
+                  ? Theme.of(context).colorScheme.primary
+                  : AppTheme.textSecondaryColor,
+            ),
+          ),
+        ),
+        ...AppTheme.entryTagColors.map((color) {
+          final val = color.toARGB32();
+          final isSelected = _selectedColorValue == val;
+          return GestureDetector(
+            onTap: () {
+              HapticFeedback.lightImpact();
+              setState(() => _selectedColorValue = val);
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              width: isSelected ? 36 : 28,
+              height: isSelected ? 36 : 28,
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: color,
+                border: isSelected
+                    ? Border.all(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black26,
+                        width: 2.5,
+                      )
+                    : null,
+                boxShadow: isSelected
+                    ? [BoxShadow(color: color.withValues(alpha: 0.55), blurRadius: 8, spreadRadius: 1)]
+                    : [],
+              ),
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
+    final isEdit = widget.existingEntry != null;
     return Scaffold(
       appBar: AppBar(
-        title: Text(_entryType == VaultEntryType.password 
-            ? localizations.addPassword 
-            : localizations.addNote),
+        title: Text(isEdit
+            ? localizations.editEntry
+            : _entryType == VaultEntryType.password
+                ? localizations.addPassword
+                : localizations.addNote),
         actions: [
           IconButton(
-            onPressed: _saveEntry,
-            icon: const Icon(Icons.save),
+            onPressed: () => setState(() => _isFavorite = !_isFavorite),
+            icon: Icon(
+              _isFavorite ? Icons.star : Icons.star_border,
+              color: _isFavorite ? Colors.amber : null,
+            ),
           ),
+          IconButton(onPressed: _saveEntry, icon: const Icon(Icons.save)),
         ],
       ),
       body: Padding(
@@ -260,7 +396,11 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
+
+              // Color Picker
+              _buildColorPicker(),
+              const SizedBox(height: 16),
 
               // Category Field
               DropdownButtonFormField<String>(
@@ -378,13 +518,43 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
+
+                // Notes Field (password type)
+                TextFormField(
+                  controller: _notesController,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    labelText: localizations.notes,
+                    hintText: localizations.notes,
+                    prefixIcon: const Icon(Icons.notes),
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 20),
               ],
 
-              // Content Field (only for note type)
-              if (_entryType == VaultEntryType.note)
+              // Note toolbar + content field (only for note type)
+              if (_entryType == VaultEntryType.note) ...[
+                // Toolbar
+                Row(
+                  children: [
+                    _ToolbarButton(
+                      icon: Icons.code,
+                      label: 'Code',
+                      onPressed: () => _wrapSelection('[code]', '[/code]'),
+                    ),
+                    const SizedBox(width: 8),
+                    _ToolbarButton(
+                      icon: Icons.visibility_off,
+                      label: 'Spoiler',
+                      onPressed: () => _wrapSelection('[spoiler]', '[/spoiler]'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
                 TextFormField(
                   controller: _contentController,
-                  maxLines: 6,
+                  maxLines: 8,
                   decoration: InputDecoration(
                     labelText: localizations.content,
                     hintText: localizations.content,
@@ -398,9 +568,32 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
                     return null;
                   },
                 ),
+              ],
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _ToolbarButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+
+  const _ToolbarButton({required this.icon, required this.label, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 16),
+      label: Text(label, style: const TextStyle(fontSize: 13)),
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        minimumSize: Size.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
     );
   }

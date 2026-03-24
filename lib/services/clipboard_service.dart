@@ -1,140 +1,56 @@
+import 'dart:async';
 import 'package:flutter/services.dart';
 
+/// Singleton clipboard service with auto-clear.
+/// All copy operations share a single timer — copying again cancels the
+/// previous timer so the 30-second countdown always restarts from the last copy.
 class ClipboardService {
-  // Copy text to clipboard
-  static Future<void> copyToClipboard(String text) async {
-    try {
-      await Clipboard.setData(ClipboardData(text: text));
-    } catch (e) {
-      throw Exception('Failed to copy to clipboard: $e');
-    }
+  ClipboardService._();
+  static final ClipboardService _instance = ClipboardService._();
+
+  Timer? _clearTimer;
+  static const _autoClearDuration = Duration(seconds: 30);
+
+  Future<void> _copy(String text) async {
+    _clearTimer?.cancel();
+    await Clipboard.setData(ClipboardData(text: text));
+    _clearTimer = Timer(_autoClearDuration, _clearSync);
   }
 
-  // Get text from clipboard
-  static Future<String> getFromClipboard() async {
-    try {
-      final data = await Clipboard.getData(Clipboard.kTextPlain);
-      return data?.text ?? '';
-    } catch (e) {
-      throw Exception('Failed to get from clipboard: $e');
-    }
+  void _clearSync() {
+    Clipboard.setData(const ClipboardData(text: ''));
+    _clearTimer = null;
   }
 
-  // Clear clipboard
+  // --- Static API (all existing call sites work unchanged) ---
+
+  static Future<void> copyToClipboard(String text) => _instance._copy(text);
+
+  static Future<void> copyPassword(String password, {Duration? autoClearDuration}) =>
+      _instance._copy(password);
+
+  static Future<void> copyUsername(String username, {Duration? autoClearDuration}) =>
+      _instance._copy(username);
+
+  static Future<void> copyWebsite(String website, {Duration? autoClearDuration}) =>
+      _instance._copy(website);
+
+  static Future<void> copyContent(String content, {Duration? autoClearDuration}) =>
+      _instance._copy(content);
+
   static Future<void> clearClipboard() async {
-    try {
-      await Clipboard.setData(ClipboardData(text: ''));
-    } catch (e) {
-      throw Exception('Failed to clear clipboard: $e');
-    }
+    _instance._clearTimer?.cancel();
+    _instance._clearTimer = null;
+    await Clipboard.setData(const ClipboardData(text: ''));
   }
 
-  // Copy password with auto-clear
-  static Future<void> copyPassword(String password, {Duration? autoClearDuration}) async {
-    try {
-      await copyToClipboard(password);
-      
-      // Auto-clear after specified duration (default 10 seconds)
-      final duration = autoClearDuration ?? Duration(seconds: 10);
-      Future.delayed(duration, () async {
-        try {
-          await clearClipboard();
-        } catch (e) {
-          // Ignore auto-clear errors
-        }
-      });
-    } catch (e) {
-      throw Exception('Failed to copy password: $e');
-    }
+  static Future<String> getFromClipboard() async {
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    return data?.text ?? '';
   }
 
-  // Copy username with auto-clear
-  static Future<void> copyUsername(String username, {Duration? autoClearDuration}) async {
-    try {
-      await copyToClipboard(username);
-      
-      // Auto-clear after specified duration (default 10 seconds)
-      final duration = autoClearDuration ?? Duration(seconds: 10);
-      Future.delayed(duration, () async {
-        try {
-          await clearClipboard();
-        } catch (e) {
-          // Ignore auto-clear errors
-        }
-      });
-    } catch (e) {
-      throw Exception('Failed to copy username: $e');
-    }
-  }
-
-  // Copy website with auto-clear
-  static Future<void> copyWebsite(String website, {Duration? autoClearDuration}) async {
-    try {
-      await copyToClipboard(website);
-      
-      // Auto-clear after specified duration (default 10 seconds)
-      final duration = autoClearDuration ?? Duration(seconds: 10);
-      Future.delayed(duration, () async {
-        try {
-          await clearClipboard();
-        } catch (e) {
-          // Ignore auto-clear errors
-        }
-      });
-    } catch (e) {
-      throw Exception('Failed to copy website: $e');
-    }
-  }
-
-  // Copy note content with auto-clear
-  static Future<void> copyContent(String content, {Duration? autoClearDuration}) async {
-    try {
-      await copyToClipboard(content);
-      
-      // Auto-clear after specified duration (default 30 seconds for notes)
-      final duration = autoClearDuration ?? Duration(seconds: 30);
-      Future.delayed(duration, () async {
-        try {
-          await clearClipboard();
-        } catch (e) {
-          // Ignore auto-clear errors
-        }
-      });
-    } catch (e) {
-      throw Exception('Failed to copy content: $e');
-    }
-  }
-
-  // Check if clipboard has text
   static Future<bool> hasText() async {
-    try {
-      final data = await Clipboard.getData(Clipboard.kTextPlain);
-      return data?.text?.isNotEmpty ?? false;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  // Get clipboard text length
-  static Future<int> getTextLength() async {
-    try {
-      final text = await getFromClipboard();
-      return text.length;
-    } catch (e) {
-      return 0;
-    }
-  }
-
-  // Copy multiple items (for debugging/testing)
-  static Future<void> copyMultiple(Map<String, String> items) async {
-    try {
-      for (final entry in items.entries) {
-        await copyToClipboard(entry.value);
-        // Small delay between copies
-        await Future.delayed(Duration(milliseconds: 100));
-      }
-    } catch (e) {
-      throw Exception('Failed to copy multiple items: $e');
-    }
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    return data?.text?.isNotEmpty ?? false;
   }
 }

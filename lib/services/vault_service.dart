@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:archive/archive.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
 import '../models/vault_entry.dart';
 import 'encryption_service.dart';
 import 'session_service.dart';
@@ -73,6 +74,8 @@ class VaultService {
       category: entry.category,
       createdAt: entry.createdAt,
       updatedAt: entry.updatedAt,
+      isFavorite: entry.isFavorite,
+      colorValue: entry.colorValue,
       encryptedData: encrypted['encrypted'],
       entryIv: encrypted['iv'],
       entryTag: encrypted['tag'],
@@ -98,10 +101,13 @@ class VaultService {
       category: entry.category,
       createdAt: entry.createdAt,
       updatedAt: entry.updatedAt,
+      isFavorite: entry.isFavorite,
+      colorValue: entry.colorValue,
       username: fields['username'] as String?,
       password: fields['password'] as String?,
       website: fields['website'] as String?,
       content: fields['content'] as String?,
+      notes: fields['notes'] as String?,
     );
   }
 
@@ -112,7 +118,16 @@ class VaultService {
   static Uint8List deriveSessionKey(String masterPassword, Map<String, dynamic> vault) {
     final header = vault['header'] as Map<String, dynamic>;
     final salt = base64Decode(header['salt'] as String);
-    return EncryptionService.deriveKey(masterPassword, Uint8List.fromList(salt));
+    // Use KDF params stored in the header so that vaults created with different
+    // Argon2 settings (past or future) are always opened with the correct params.
+    // Falls back to current defaults for legacy vaults that predate param storage.
+    return EncryptionService.deriveKey(
+      masterPassword,
+      Uint8List.fromList(salt),
+      iterations: header['kdf_iterations'] as int?,
+      memory: header['kdf_memory'] as int?,
+      parallelism: header['kdf_parallelism'] as int?,
+    );
   }
 
   // --- ZIP helpers (v4 format: key-based, no outer salt) ---
@@ -278,11 +293,21 @@ class VaultService {
           final manifest = jsonDecode(utf8.decode(manifestFile.content as List<int>));
           final version = manifest['version'] as int? ?? 3;
 
+          // Reject vaults created by a newer app version — opening them with
+          // an older app could silently corrupt the format.
+          if (version > _formatVersionV4) {
+            throw Exception('vault_version_unsupported');
+          }
+
           if (version >= _formatVersionV4) {
             // v4: derive key from kdf_salt in manifest
             final kdfSalt = base64Decode(manifest['kdf_salt'] as String);
             final key = EncryptionService.deriveKey(masterPassword, Uint8List.fromList(kdfSalt));
-            return _readZipArchiveWithKey(bytes, key);
+            try {
+              return _readZipArchiveWithKey(bytes, key);
+            } finally {
+              EncryptionService.clearKey(key);
+            }
           }
         }
         // v3 fallback
@@ -460,6 +485,7 @@ class VaultService {
       final entry = VaultEntry.fromJson(json);
       return _decryptEntry(entry, oldKey);
     }).toList();
+    EncryptionService.clearKey(oldKey);
 
     // New vault header with new password
     final newHeader = EncryptionService.createVaultHeader(newPassword);
@@ -474,8 +500,9 @@ class VaultService {
     final newVault = {'header': newHeader, 'entries': reEncryptedEntries};
     await saveVault(newVault, newKey);
 
-    // Update session with new key
+    // Update session with new key (setSessionKey copies the bytes)
     await SessionService.setSessionKey(newKey);
+    EncryptionService.clearKey(newKey);
   }
 
   // --- Backup & Import ---
@@ -503,6 +530,139 @@ class VaultService {
     } catch (e) {
       return null;
     }
+  }
+
+  // --- CSV Import ---
+
+  /// Parse a CSV string into rows, correctly handling quoted fields.
+  static List<List<String>> _parseCsv(String csv) {
+    final rows = <List<String>>[];
+    for (final rawLine in csv.split('\n')) {
+      final line = rawLine.trimRight();
+      if (line.isEmpty) continue;
+      final fields = <String>[];
+      int i = 0;
+      while (i < line.length) {
+        if (line[i] == '"') {
+          final buf = StringBuffer();
+          i++; // skip opening quote
+          while (i < line.length) {
+            if (line[i] == '"' && i + 1 < line.length && line[i + 1] == '"') {
+              buf.write('"');
+              i += 2;
+            } else if (line[i] == '"') {
+              i++; // skip closing quote
+              break;
+            } else {
+              buf.write(line[i++]);
+            }
+          }
+          fields.add(buf.toString());
+          if (i < line.length && line[i] == ',') i++;
+        } else {
+          final end = line.indexOf(',', i);
+          if (end == -1) {
+            fields.add(line.substring(i));
+            break;
+          } else {
+            fields.add(line.substring(i, end));
+            i = end + 1;
+          }
+        }
+      }
+      rows.add(fields);
+    }
+    return rows;
+  }
+
+  /// Import entries from a CSV file.
+  /// Supports Bitwarden, Chrome, and 1Password CSV exports.
+  /// Returns [ImportResult] with counts.
+  static Future<ImportResult> importCsv({
+    required String csvPath,
+    required Uint8List rawKey,
+  }) async {
+    final content = await File(csvPath).readAsString();
+    final rows = _parseCsv(content);
+    if (rows.isEmpty) return ImportResult(imported: 0, skipped: 0, total: 0);
+
+    final header = rows.first.map((h) => h.toLowerCase().trim()).toList();
+    final dataRows = rows.skip(1).toList();
+
+    int Function(String) col = (name) => header.indexOf(name);
+
+    // Detect format by header columns
+    final isBitwarden = header.contains('login_password');
+    final isChrome = header.contains('password') && header.contains('url') && header.contains('name');
+    final is1Password = header.contains('password') && header.contains('username') && header.contains('title');
+
+    if (!isBitwarden && !isChrome && !is1Password) {
+      throw Exception('csv_format_unsupported');
+    }
+
+    final entries = <VaultEntry>[];
+    final uuid = const Uuid();
+
+    for (final row in dataRows) {
+      String get(int idx) => (idx >= 0 && idx < row.length) ? row[idx].trim() : '';
+
+      final String title, username, password, website, notes;
+
+      if (isBitwarden) {
+        title    = get(col('name'));
+        username = get(col('login_username'));
+        password = get(col('login_password'));
+        website  = get(col('login_uri'));
+        notes    = get(col('notes'));
+      } else if (isChrome) {
+        title    = get(col('name'));
+        username = get(col('username'));
+        password = get(col('password'));
+        website  = get(col('url'));
+        notes    = '';
+      } else {
+        // 1Password
+        title    = get(col('title'));
+        username = get(col('username'));
+        password = get(col('password'));
+        website  = get(col('website')) != '' ? get(col('website')) : get(col('url'));
+        notes    = get(col('notes')) != '' ? get(col('notes')) : get(col('memo'));
+      }
+
+      if (password.isEmpty && title.isEmpty) continue;
+
+      final now = DateTime.now();
+      entries.add(VaultEntry(
+        id: uuid.v4(),
+        type: VaultEntryType.password,
+        title: title.isNotEmpty ? title : website,
+        category: 'Other',
+        createdAt: now,
+        updatedAt: now,
+        username: username.isNotEmpty ? username : null,
+        password: password.isNotEmpty ? password : null,
+        website: website.isNotEmpty ? website : null,
+        notes: notes.isNotEmpty ? notes : null,
+      ));
+    }
+
+    final vault = await _loadVaultWithKey(rawKey);
+    final currentEntries = List<Map<String, dynamic>>.from(vault['entries']);
+    final existingIds = currentEntries.map((e) => e['id']).toSet();
+
+    int imported = 0, skipped = 0;
+    for (final entry in entries) {
+      if (existingIds.contains(entry.id)) {
+        skipped++;
+      } else {
+        final encrypted = _encryptEntry(entry, rawKey);
+        currentEntries.add(encrypted.toEncryptedJson());
+        imported++;
+      }
+    }
+    vault['entries'] = currentEntries;
+    await saveVault(vault, rawKey);
+    return ImportResult(imported: imported, skipped: skipped, total: entries.length);
   }
 
   static Future<ImportResult> importBackup({

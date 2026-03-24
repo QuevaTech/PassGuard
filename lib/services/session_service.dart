@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -12,8 +13,10 @@ class SessionService {
   // Keychain key — stores base64-encoded derived key bytes (NOT the password)
   static const _keyCredKey = 'pg_vault_session_key_v2';
 
-  static const FlutterSecureStorage _secureStorage = FlutterSecureStorage(
-    mOptions: MacOsOptions(usesDataProtectionKeychain: false),
+  // kReleaseMode uses the Data Protection Keychain (requires App Sandbox + signing).
+  // Debug/Profile builds fall back to the legacy keychain to avoid -34018.
+  static final FlutterSecureStorage _secureStorage = FlutterSecureStorage(
+    mOptions: MacOsOptions(usesDataProtectionKeychain: kReleaseMode),
   );
 
   static Timer? _sessionTimer;
@@ -37,7 +40,9 @@ class SessionService {
         key: _keyCredKey,
         value: base64Encode(key),
       );
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('SessionService: Keychain write failed: $e');
+    }
   }
 
   /// Returns the current session key, or null if locked.
@@ -51,7 +56,9 @@ class SessionService {
         _sessionKey = base64Decode(encoded);
         return _sessionKey;
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('SessionService: Keychain read failed: $e');
+    }
     return null;
   }
 
@@ -60,7 +67,9 @@ class SessionService {
     _zeroAndClear();
     try {
       await _secureStorage.delete(key: _keyCredKey);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('SessionService: Keychain delete failed: $e');
+    }
   }
 
   static void initialize({
@@ -157,7 +166,9 @@ class SessionService {
     for (final listener in _listeners) {
       try {
         listener();
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('SessionService: listener error: $e');
+      }
     }
   }
 

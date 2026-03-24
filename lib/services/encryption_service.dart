@@ -17,16 +17,24 @@ class EncryptionService {
 
   // --- Key Derivation ---
 
-  // Derive AES-256 key from master password using Argon2id
-  static Uint8List deriveKey(String password, Uint8List salt) {
+  // Derive AES-256 key from master password using Argon2id.
+  // Optional param overrides allow vaults created with different settings to
+  // be reopened correctly (read stored values from vault header).
+  static Uint8List deriveKey(
+    String password,
+    Uint8List salt, {
+    int? iterations,
+    int? memory,
+    int? parallelism,
+  }) {
     final generator = Argon2BytesGenerator();
     final params = Argon2Parameters(
       Argon2Parameters.ARGON2_id,
       salt,
       desiredKeyLength: _keyLength,
-      iterations: argon2Iterations,
-      memory: argon2Memory,
-      lanes: argon2Parallelism,
+      iterations: iterations ?? argon2Iterations,
+      memory: memory ?? argon2Memory,
+      lanes: parallelism ?? argon2Parallelism,
     );
     generator.init(params);
     return generator.process(Uint8List.fromList(utf8.encode(password)));
@@ -176,7 +184,22 @@ class EncryptionService {
     final salt = base64Decode(saltBase64);
     final derived = deriveKey(password, salt);
     final hash = sha256.convert(derived).toString();
-    return hash == storedHash;
+    return _constantTimeEquals(utf8.encode(hash), utf8.encode(storedHash));
+  }
+
+  // Constant-time byte comparison — prevents timing attacks.
+  static bool _constantTimeEquals(List<int> a, List<int> b) {
+    if (a.length != b.length) return false;
+    var diff = 0;
+    for (var i = 0; i < a.length; i++) {
+      diff |= a[i] ^ b[i];
+    }
+    return diff == 0;
+  }
+
+  // Zero out a sensitive byte buffer (best-effort — GC may retain copies).
+  static void clearKey(Uint8List key) {
+    key.fillRange(0, key.length, 0);
   }
 
   // --- Vault Header ---
@@ -184,14 +207,21 @@ class EncryptionService {
   static Map<String, dynamic> createVaultHeader(String masterPassword) {
     final salt = generateSalt();
     final key = deriveKey(masterPassword, salt);
+    final keyHash = sha256.convert(key).toString();
+    clearKey(key);
 
     return {
       'format': 'pgvault',
       'version': _formatVersion,
       'kdf': 'argon2id',
+      // Store KDF params so future versions can re-derive the key correctly
+      // even if the default constants change.
+      'kdf_iterations': argon2Iterations,
+      'kdf_memory': argon2Memory,
+      'kdf_parallelism': argon2Parallelism,
       'salt': base64Encode(salt),
       'created_at': DateTime.now().toIso8601String(),
-      'key_hash': sha256.convert(key).toString(),
+      'key_hash': keyHash,
     };
   }
 }
