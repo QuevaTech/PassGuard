@@ -370,6 +370,19 @@ class AppLocalizations {
         'developer': 'Geliştirici',
         'biometric_first_time': 'Biyometrik doğrulama başarılı. Bir kereliğine ana şifrenizi girin, sonraki girişlerde otomatik açılacak.',
         'code_copied': 'Kod kopyalandı · 30s',
+        'skip': 'Atla',
+        'next': 'İleri',
+        'get_started': 'Başlayalım',
+        'onboarding_title_1': 'Şifreleriniz Güvende',
+        'onboarding_desc_1': 'AES-256-GCM şifreleme ve Argon2id anahtar türetme ile korunuyor. Sadece siz erişebilirsiniz.',
+        'onboarding_title_2': 'Ana Şifreyi Unutmayın',
+        'onboarding_desc_2': 'Ana şifrenizi unutursanız verilerinizi kurtarmanın hiçbir yolu yoktur. Güvenli bir yere not edin.',
+        'onboarding_title_3': 'Biyometrik Kimlik Doğrulama',
+        'onboarding_desc_3': 'Face ID, parmak izi veya PIN ile kasanızı hızlıca açın. Her seferinde ana şifre girmenize gerek yok.',
+        'onboarding_title_4': 'İçe Aktar & Yedekle',
+        'onboarding_desc_4': 'Chrome, Bitwarden veya 1Password\'dan içe aktarın. Şifreli yedeğinizi alın ve istediğiniz cihaza geri yükleyin.',
+        'onboarding_title_5': 'Sıfır Bilgi Mimarisi',
+        'onboarding_desc_5': 'Verileriniz cihazınızdan hiç çıkmaz. Bulut yok, sunucu yok, hesap yok — tamamen gizli.',
       };
     } else if (locale.languageCode == 'de') {
       return {
@@ -2664,6 +2677,19 @@ class AppLocalizations {
   String get developer => _localizedValues['developer'] ?? 'Developer';
   String get biometricFirstTime => _localizedValues['biometric_first_time'] ?? 'Biometric verification successful. Enter your master password once, future logins will be automatic.';
   String get codeCopied => _localizedValues['code_copied'] ?? 'Code copied · 30s';
+  String get skip => _localizedValues['skip'] ?? 'Skip';
+  String get next => _localizedValues['next'] ?? 'Next';
+  String get getStarted => _localizedValues['get_started'] ?? 'Get Started';
+  String get onboardingTitle1 => _localizedValues['onboarding_title_1'] ?? 'Your Passwords, Safe & Encrypted';
+  String get onboardingDesc1 => _localizedValues['onboarding_desc_1'] ?? 'Protected with AES-256-GCM encryption and Argon2id key derivation. Only you can access your data.';
+  String get onboardingTitle2 => _localizedValues['onboarding_title_2'] ?? 'Never Forget Your Master Password';
+  String get onboardingDesc2 => _localizedValues['onboarding_desc_2'] ?? 'If you forget your master password, there is no way to recover your data. Write it down somewhere safe.';
+  String get onboardingTitle3 => _localizedValues['onboarding_title_3'] ?? 'Biometric Authentication';
+  String get onboardingDesc3 => _localizedValues['onboarding_desc_3'] ?? 'Use Face ID, fingerprint or PIN to unlock your vault quickly without typing your master password every time.';
+  String get onboardingTitle4 => _localizedValues['onboarding_title_4'] ?? 'Import & Backup';
+  String get onboardingDesc4 => _localizedValues['onboarding_desc_4'] ?? 'Import from Chrome, Bitwarden or 1Password. Back up your encrypted vault and restore it on any device.';
+  String get onboardingTitle5 => _localizedValues['onboarding_title_5'] ?? 'Zero Knowledge Security';
+  String get onboardingDesc5 => _localizedValues['onboarding_desc_5'] ?? 'Your data never leaves your device. No cloud sync, no servers, no accounts — complete privacy by design.';
 
   List<String> get categoryList => [
     _localizedValues['personal'] ?? 'Personal',

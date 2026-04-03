@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../utils/app_localizations.dart';
 import 'auth/login_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -13,30 +14,41 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _controller = PageController();
   int _currentPage = 0;
 
-  static const _pages = [
-    _OnboardingPage(
+  List<_OnboardingPageData> _buildPages(AppLocalizations l) => [
+    _OnboardingPageData(
       icon: Icons.lock_outline,
-      color: Color(0xFF1565C0),
-      titleKey: 'onboarding_title_1',
-      descKey: 'onboarding_desc_1',
+      color: const Color(0xFF1565C0),
+      title: l.onboardingTitle1,
+      desc: l.onboardingDesc1,
+      isWarning: false,
     ),
-    _OnboardingPage(
+    _OnboardingPageData(
+      icon: Icons.warning_amber_rounded,
+      color: const Color(0xFFE65100),
+      title: l.onboardingTitle2,
+      desc: l.onboardingDesc2,
+      isWarning: true,
+    ),
+    _OnboardingPageData(
       icon: Icons.fingerprint,
-      color: Color(0xFF2E7D32),
-      titleKey: 'onboarding_title_2',
-      descKey: 'onboarding_desc_2',
+      color: const Color(0xFF2E7D32),
+      title: l.onboardingTitle3,
+      desc: l.onboardingDesc3,
+      isWarning: false,
     ),
-    _OnboardingPage(
+    _OnboardingPageData(
       icon: Icons.sync_alt,
-      color: Color(0xFF6A1B9A),
-      titleKey: 'onboarding_title_3',
-      descKey: 'onboarding_desc_3',
+      color: const Color(0xFF6A1B9A),
+      title: l.onboardingTitle4,
+      desc: l.onboardingDesc4,
+      isWarning: false,
     ),
-    _OnboardingPage(
+    _OnboardingPageData(
       icon: Icons.shield_outlined,
-      color: Color(0xFFE65100),
-      titleKey: 'onboarding_title_4',
-      descKey: 'onboarding_desc_4',
+      color: const Color(0xFF00695C),
+      title: l.onboardingTitle5,
+      desc: l.onboardingDesc5,
+      isWarning: false,
     ),
   ];
 
@@ -59,19 +71,32 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final isLast = _currentPage == _pages.length - 1;
+    final isDark = theme.brightness == Brightness.dark;
+    final pages = _buildPages(l);
+    final isLast = _currentPage == pages.length - 1;
 
     return Scaffold(
+      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
       body: SafeArea(
         child: Column(
           children: [
-            // Skip button
-            Align(
-              alignment: Alignment.topRight,
-              child: TextButton(
-                onPressed: _finish,
-                child: const Text('Skip'),
+            // Skip
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Align(
+                alignment: Alignment.topRight,
+                child: TextButton(
+                  onPressed: _finish,
+                  child: Text(
+                    l.skip,
+                    style: TextStyle(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
               ),
             ),
 
@@ -79,19 +104,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Expanded(
               child: PageView.builder(
                 controller: _controller,
-                itemCount: _pages.length,
+                itemCount: pages.length,
                 onPageChanged: (i) => setState(() => _currentPage = i),
-                itemBuilder: (context, index) {
-                  final page = _pages[index];
-                  return _OnboardingPageWidget(page: page);
-                },
+                itemBuilder: (context, index) =>
+                    _OnboardingPageWidget(data: pages[index]),
               ),
             ),
 
             // Dots
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(_pages.length, (i) {
+              children: List.generate(pages.length, (i) {
                 return AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -100,7 +123,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   decoration: BoxDecoration(
                     color: _currentPage == i
                         ? theme.colorScheme.primary
-                        : theme.colorScheme.primary.withOpacity(0.3),
+                        : theme.colorScheme.primary.withOpacity(0.25),
                     borderRadius: BorderRadius.circular(4),
                   ),
                 );
@@ -109,7 +132,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
             const SizedBox(height: 32),
 
-            // Next / Get Started button
+            // Next / Get Started
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
               child: SizedBox(
@@ -126,9 +149,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       );
                     }
                   },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isLast
+                        ? theme.colorScheme.primary
+                        : null,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
                   child: Text(
-                    isLast ? 'Get Started' : 'Next',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    isLast ? l.getStarted : l.next,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -142,80 +176,98 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 }
 
-class _OnboardingPage {
+class _OnboardingPageData {
   final IconData icon;
   final Color color;
-  final String titleKey;
-  final String descKey;
+  final String title;
+  final String desc;
+  final bool isWarning;
 
-  const _OnboardingPage({
+  const _OnboardingPageData({
     required this.icon,
     required this.color,
-    required this.titleKey,
-    required this.descKey,
+    required this.title,
+    required this.desc,
+    required this.isWarning,
   });
 }
 
 class _OnboardingPageWidget extends StatelessWidget {
-  final _OnboardingPage page;
+  final _OnboardingPageData data;
 
-  const _OnboardingPageWidget({required this.page});
-
-  static const _titles = {
-    'onboarding_title_1': 'Your Passwords, Safe & Encrypted',
-    'onboarding_title_2': 'Biometric Authentication',
-    'onboarding_title_3': 'Import & Backup',
-    'onboarding_title_4': 'Zero Knowledge Security',
-  };
-
-  static const _descs = {
-    'onboarding_desc_1': 'All your passwords are protected with AES-256-GCM encryption and Argon2id key derivation. Only you can access your data.',
-    'onboarding_desc_2': 'Use Face ID, fingerprint or PIN to unlock your vault quickly and securely without typing your master password every time.',
-    'onboarding_desc_3': 'Import from Chrome, Bitwarden or 1Password. Back up your encrypted vault and restore it on any device.',
-    'onboarding_desc_4': 'Your data never leaves your device. No cloud sync, no servers, no accounts — complete privacy by design.',
-  };
+  const _OnboardingPageWidget({required this.data});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final title = _titles[page.titleKey] ?? '';
-    final desc = _descs[page.descKey] ?? '';
+    final isDark = theme.brightness == Brightness.dark;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          // Icon circle
           Container(
             width: 120,
             height: 120,
             decoration: BoxDecoration(
-              color: page.color.withOpacity(0.12),
+              color: data.color.withOpacity(0.12),
               shape: BoxShape.circle,
+              border: data.isWarning
+                  ? Border.all(color: data.color.withOpacity(0.4), width: 2)
+                  : null,
             ),
             child: Icon(
-              page.icon,
+              data.icon,
               size: 60,
-              color: page.color,
+              color: data.color,
             ),
           ),
+
           const SizedBox(height: 48),
+
           Text(
-            title,
+            data.title,
             textAlign: TextAlign.center,
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
+              color: data.isWarning ? data.color : null,
             ),
           ),
+
           const SizedBox(height: 20),
-          Text(
-            desc,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.7),
-              height: 1.6,
+
+          // Warning sayfası için özel kutu
+          if (data.isWarning)
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: data.color.withOpacity(isDark ? 0.12 : 0.07),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: data.color.withOpacity(0.3)),
+              ),
+              child: Text(
+                data.desc,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: isDark
+                      ? data.color.withOpacity(0.9)
+                      : data.color.withOpacity(0.85),
+                  height: 1.6,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            )
+          else
+            Text(
+              data.desc,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                height: 1.6,
+              ),
             ),
-          ),
         ],
       ),
     );
