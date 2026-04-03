@@ -10,6 +10,7 @@ import 'auth/pin_screen.dart';
 import 'onboarding_screen.dart';
 import '../utils/app_localizations.dart';
 import '../services/pin_service.dart';
+import '../services/auth_guard_service.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -42,6 +43,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Future<void> _initializeApp() async {
     // Short delay for splash branding
     await Future.delayed(const Duration(milliseconds: 1200));
+
+    if (!mounted) return;
+
+    // Load persisted brute-force lockout state (keychain is ready after app start)
+    await AuthGuardService.initialize();
 
     if (!mounted) return;
 

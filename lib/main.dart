@@ -6,13 +6,8 @@ import 'screens/splash_screen.dart';
 import 'utils/app_theme.dart';
 import 'utils/app_localizations.dart';
 import 'providers/theme_provider.dart' show themeProvider, accentColorProvider;
-import 'services/auth_guard_service.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Load persisted brute-force lockout state before showing any auth screen.
-  await AuthGuardService.initialize();
 
   // Set preferred orientations
   await SystemChrome.setPreferredOrientations([

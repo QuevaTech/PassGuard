@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'encryption_service.dart';
 
+
 /// PIN storage using flutter_secure_storage + Argon2id key derivation.
 /// Replaces the previous SHA-256 + SharedPreferences approach.
 ///
@@ -14,13 +15,18 @@ class PinService {
   static const _keyPinEnabled = 'pg_pin_enabled_v2';
 
   static final FlutterSecureStorage _secureStorage = FlutterSecureStorage(
-    mOptions: MacOsOptions(usesDataProtectionKeychain: kReleaseMode),
+    mOptions: const MacOsOptions(usesDataProtectionKeychain: kReleaseMode),
   );
 
   static Future<bool> isPinEnabled() async {
-    final enabled = await _secureStorage.read(key: _keyPinEnabled);
-    final hash = await _secureStorage.read(key: _keyPinHash);
-    return enabled == 'true' && hash != null;
+    try {
+      final enabled = await _secureStorage.read(key: _keyPinEnabled);
+      final hash = await _secureStorage.read(key: _keyPinHash);
+      return enabled == 'true' && hash != null;
+    } catch (e) {
+      debugPrint('PinService: isPinEnabled failed: $e');
+      return false;
+    }
   }
 
   /// Hash the PIN with Argon2id + random salt and store in the platform keychain.
@@ -33,10 +39,15 @@ class PinService {
 
   /// Verify the PIN using constant-time Argon2id comparison.
   static Future<bool> verifyPin(String pin) async {
-    final storedHash = await _secureStorage.read(key: _keyPinHash);
-    final storedSalt = await _secureStorage.read(key: _keyPinSalt);
-    if (storedHash == null || storedSalt == null) return false;
-    return EncryptionService.verifyPassword(pin, storedHash, storedSalt);
+    try {
+      final storedHash = await _secureStorage.read(key: _keyPinHash);
+      final storedSalt = await _secureStorage.read(key: _keyPinSalt);
+      if (storedHash == null || storedSalt == null) return false;
+      return EncryptionService.verifyPassword(pin, storedHash, storedSalt);
+    } catch (e) {
+      debugPrint('PinService: verifyPin failed: $e');
+      return false;
+    }
   }
 
   static Future<void> disablePin() async {

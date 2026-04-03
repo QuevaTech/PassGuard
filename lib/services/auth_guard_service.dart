@@ -14,7 +14,7 @@ class AuthGuardService {
   static const _keyLockedUntil = 'pg_auth_locked_until';
 
   static final FlutterSecureStorage _secureStorage = FlutterSecureStorage(
-    mOptions: MacOsOptions(usesDataProtectionKeychain: kReleaseMode),
+    mOptions: const MacOsOptions(usesDataProtectionKeychain: kReleaseMode),
   );
 
   static int _failedAttempts = 0;

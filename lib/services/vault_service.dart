@@ -24,6 +24,12 @@ class VaultService {
   static const int _formatVersionV4 = 4;
   static const int _maxImportFileSize = 50 * 1024 * 1024;
 
+  // KDF params that were in use when v4 format was first shipped.
+  // Vaults saved *before* kdf params were added to the manifest fall back here.
+  static const int _legacyKdfIterations = 3;
+  static const int _legacyKdfMemory = 65536;
+  static const int _legacyKdfParallelism = 4;
+
   static Future<Directory> _getVaultDirectory() async {
     final Directory baseDir;
     if (Platform.isAndroid || Platform.isIOS) {
@@ -165,6 +171,11 @@ class VaultService {
       'format': 'pgvault',
       'version': _formatVersionV4,
       'kdf_salt': kdfSalt,
+      // Store KDF params in the unencrypted manifest so loadVault can derive
+      // the correct key without a chicken-and-egg problem.
+      'kdf_iterations': header['kdf_iterations'] as int? ?? EncryptionService.argon2Iterations,
+      'kdf_memory': header['kdf_memory'] as int? ?? EncryptionService.argon2Memory,
+      'kdf_parallelism': header['kdf_parallelism'] as int? ?? EncryptionService.argon2Parallelism,
       'created_at': DateTime.now().toIso8601String(),
       'entry_count': (vault['entries'] as List?)?.length ?? 0,
       'app': 'PassGuard Vault',
@@ -302,9 +313,23 @@ class VaultService {
           }
 
           if (version >= _formatVersionV4) {
-            // v4: derive key from kdf_salt in manifest
+            // v4: derive key from kdf_salt + KDF params in manifest.
+            // Fall back to legacy defaults for vaults saved before params were
+            // written to the manifest (first v4 release).
             final kdfSalt = base64Decode(manifest['kdf_salt'] as String);
-            final key = EncryptionService.deriveKey(masterPassword, Uint8List.fromList(kdfSalt));
+            final kdfIterations =
+                manifest['kdf_iterations'] as int? ?? _legacyKdfIterations;
+            final kdfMemory =
+                manifest['kdf_memory'] as int? ?? _legacyKdfMemory;
+            final kdfParallelism =
+                manifest['kdf_parallelism'] as int? ?? _legacyKdfParallelism;
+            final key = EncryptionService.deriveKey(
+              masterPassword,
+              Uint8List.fromList(kdfSalt),
+              iterations: kdfIterations,
+              memory: kdfMemory,
+              parallelism: kdfParallelism,
+            );
             try {
               return _readZipArchiveWithKey(bytes, key);
             } finally {
