@@ -26,17 +26,13 @@ class ClipboardService {
 
   static Future<void> copyToClipboard(String text) => _instance._copy(text);
 
-  static Future<void> copyPassword(String password, {Duration? autoClearDuration}) =>
-      _instance._copy(password);
+  static Future<void> copyPassword(String password) => _instance._copy(password);
 
-  static Future<void> copyUsername(String username, {Duration? autoClearDuration}) =>
-      _instance._copy(username);
+  static Future<void> copyUsername(String username) => _instance._copy(username);
 
-  static Future<void> copyWebsite(String website, {Duration? autoClearDuration}) =>
-      _instance._copy(website);
+  static Future<void> copyWebsite(String website) => _instance._copy(website);
 
-  static Future<void> copyContent(String content, {Duration? autoClearDuration}) =>
-      _instance._copy(content);
+  static Future<void> copyContent(String content) => _instance._copy(content);
 
   static Future<void> clearClipboard() async {
     _instance._clearTimer?.cancel();

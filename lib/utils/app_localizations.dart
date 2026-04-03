@@ -369,6 +369,7 @@ class AppLocalizations {
         'file_too_large': 'Dosya çok büyük (maksimum 50 MB)',
         'developer': 'Geliştirici',
         'biometric_first_time': 'Biyometrik doğrulama başarılı. Bir kereliğine ana şifrenizi girin, sonraki girişlerde otomatik açılacak.',
+        'code_copied': 'Kod kopyalandı · 30s',
       };
     } else if (locale.languageCode == 'de') {
       return {
@@ -518,6 +519,7 @@ class AppLocalizations {
         'file_too_large': 'Datei zu groß (maximal 50 MB)',
         'developer': 'Entwickler',
         'biometric_first_time': 'Biometrische Authentifizierung erfolgreich. Geben Sie einmalig Ihr Master-Passwort ein.',
+        'code_copied': 'Code kopiert · 30s',
         'note': 'Notiz',
         'ok': 'OK',
         'auto_lock': 'Automatische Sperre',
@@ -714,6 +716,7 @@ class AppLocalizations {
         'file_too_large': 'Fichier trop volumineux (maximum 50 Mo)',
         'developer': 'Développeur',
         'biometric_first_time': 'Authentification biométrique réussie. Saisissez votre mot de passe principal une seule fois.',
+        'code_copied': 'Code copié · 30s',
         'note': 'Note',
         'ok': 'OK',
         'auto_lock': 'Verrouillage automatique',
@@ -910,6 +913,7 @@ class AppLocalizations {
         'file_too_large': 'الملف كبير جدًا (الحد الأقصى 50 ميجابايت)',
         'developer': 'المطور',
         'biometric_first_time': 'تم التحقق البيومتري بنجاح. أدخل كلمة المرور الرئيسية مرة واحدة فقط.',
+        'code_copied': 'تم نسخ الكود · 30s',
         'note': 'ملاحظة',
         'ok': 'موافق',
         'auto_lock': 'القفل التلقائي',
@@ -1121,6 +1125,7 @@ class AppLocalizations {
         'file_too_large': 'Archivo demasiado grande (máximo 50 MB)',
         'developer': 'Desarrollador',
         'biometric_first_time': 'Verificación biométrica exitosa. Ingrese su contraseña maestra una vez, los futuros inicios de sesión serán automáticos.',
+        'code_copied': 'Código copiado · 30s',
         'selected': 'seleccionado(s)',
         'import_csv': 'Importar CSV',
         'import_csv_desc': 'Bitwarden, Chrome o 1Password CSV',
@@ -1290,6 +1295,7 @@ class AppLocalizations {
         'file_too_large': 'File troppo grande (massimo 50 MB)',
         'developer': 'Sviluppatore',
         'biometric_first_time': 'Verifica biometrica riuscita. Inserisci la password principale una volta, i futuri accessi saranno automatici.',
+        'code_copied': 'Codice copiato · 30s',
         'selected': 'selezionato/i',
         'import_csv': 'Importa CSV',
         'import_csv_desc': 'CSV di Bitwarden, Chrome o 1Password',
@@ -1459,6 +1465,7 @@ class AppLocalizations {
         'file_too_large': 'Arquivo muito grande (máximo 50 MB)',
         'developer': 'Desenvolvedor',
         'biometric_first_time': 'Verificação biométrica bem-sucedida. Digite sua senha mestra uma vez, os futuros logins serão automáticos.',
+        'code_copied': 'Código copiado · 30s',
         'selected': 'selecionado(s)',
         'import_csv': 'Importar CSV',
         'import_csv_desc': 'CSV do Bitwarden, Chrome ou 1Password',
@@ -1628,6 +1635,7 @@ class AppLocalizations {
         'file_too_large': 'Файл слишком большой (максимум 50 МБ)',
         'developer': 'Разработчик',
         'biometric_first_time': 'Биометрическая верификация успешна. Введите мастер-пароль один раз, следующие входы будут автоматическими.',
+        'code_copied': 'Код скопирован · 30s',
         'selected': 'выбрано',
         'import_csv': 'Импорт CSV',
         'import_csv_desc': 'CSV из Bitwarden, Chrome или 1Password',
@@ -1797,6 +1805,7 @@ class AppLocalizations {
         'file_too_large': 'ファイルが大きすぎます（最大50 MB）',
         'developer': '開発者',
         'biometric_first_time': '生体認証が成功しました。一度マスターパスワードを入力すると、以降は自動的にログインされます。',
+        'code_copied': 'コードをコピーしました · 30s',
         'selected': '選択済み',
         'import_csv': 'CSVをインポート',
         'import_csv_desc': 'Bitwarden、ChromeまたはPassword CSVをインポート',
@@ -1966,6 +1975,7 @@ class AppLocalizations {
         'file_too_large': '文件过大（最大50 MB）',
         'developer': '开发者',
         'biometric_first_time': '生物识别验证成功。输入一次主密码，之后登录将自动完成。',
+        'code_copied': '代码已复制 · 30s',
         'selected': '已选择',
         'import_csv': '导入CSV',
         'import_csv_desc': 'Bitwarden、Chrome或1Password CSV',
@@ -2135,6 +2145,7 @@ class AppLocalizations {
         'file_too_large': '파일이 너무 큽니다 (최대 50 MB)',
         'developer': '개발자',
         'biometric_first_time': '생체 인증이 성공했습니다. 마스터 비밀번호를 한 번 입력하면 이후 로그인은 자동으로 됩니다.',
+        'code_copied': '코드 복사됨 · 30s',
         'selected': '선택됨',
         'import_csv': 'CSV 가져오기',
         'import_csv_desc': 'Bitwarden, Chrome 또는 1Password CSV',
@@ -2304,6 +2315,7 @@ class AppLocalizations {
         'file_too_large': 'Bestand te groot (maximaal 50 MB)',
         'developer': 'Ontwikkelaar',
         'biometric_first_time': 'Biometrische verificatie geslaagd. Voer eenmalig uw hoofdwachtwoord in, toekomstige aanmeldingen worden automatisch gedaan.',
+        'code_copied': 'Code gekopieerd · 30s',
         'selected': 'geselecteerd',
         'import_csv': 'CSV importeren',
         'import_csv_desc': 'Bitwarden, Chrome of 1Password CSV',
@@ -2459,6 +2471,7 @@ class AppLocalizations {
         'file_too_large': 'File too large (maximum 50 MB)',
         'developer': 'Developer',
         'biometric_first_time': 'Biometric verification successful. Enter your master password once, future logins will be automatic.',
+        'code_copied': 'Code copied · 30s',
         'password_health': 'Password Health',
         'old_passwords': 'Old Passwords',
         'duplicate_passwords': 'Duplicate Passwords',
@@ -2650,6 +2663,7 @@ class AppLocalizations {
   String get fileTooLarge => _localizedValues['file_too_large'] ?? 'File too large (maximum 50 MB)';
   String get developer => _localizedValues['developer'] ?? 'Developer';
   String get biometricFirstTime => _localizedValues['biometric_first_time'] ?? 'Biometric verification successful. Enter your master password once, future logins will be automatic.';
+  String get codeCopied => _localizedValues['code_copied'] ?? 'Code copied · 30s';
 
   List<String> get categoryList => [
     _localizedValues['personal'] ?? 'Personal',

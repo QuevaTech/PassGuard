@@ -34,6 +34,7 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
   bool _isFavorite = false;
   int? _selectedColorValue;
   bool _obscurePassword = true;
+  bool _isSaving = false;
   String _passwordStrengthText = '';
   Color _passwordStrengthColor = Colors.grey;
   int _passwordStrength = 0;
@@ -112,6 +113,7 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
 
   Future<void> _saveEntry() async {
     if (!_formKey.currentState!.validate()) return;
+    setState(() => _isSaving = true);
 
     try {
       final existing = widget.existingEntry;
@@ -154,6 +156,7 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
       Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
+      setState(() => _isSaving = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context).somethingWentWrong),
@@ -278,7 +281,12 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
               color: _isFavorite ? Colors.amber : null,
             ),
           ),
-          IconButton(onPressed: _saveEntry, icon: const Icon(Icons.save)),
+          _isSaving
+              ? const Padding(
+                  padding: EdgeInsets.all(12),
+                  child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+                )
+              : IconButton(onPressed: _saveEntry, icon: const Icon(Icons.save)),
         ],
       ),
       body: Padding(

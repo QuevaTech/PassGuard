@@ -11,6 +11,7 @@ import '../home_screen.dart';
 import '../../utils/app_theme.dart';
 import '../vault/vault_screen.dart';
 import '../../utils/app_localizations.dart';
+import '../../utils/vault_exceptions.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   final bool isCreating;
@@ -150,7 +151,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           }
         } catch (e) {
           // Vault created by a newer app version — don't count as failed attempt
-          if (e.toString().contains('vault_version_unsupported')) {
+          if (e is VaultVersionUnsupportedException) {
             setState(() {
               _errorMessage = AppLocalizations.of(context).vaultVersionUnsupported;
               _isLoading = false;

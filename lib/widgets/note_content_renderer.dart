@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/clipboard_service.dart';
+import '../utils/app_localizations.dart';
 
 /// Renders note content with support for [code]...[/code] and [spoiler]...[/spoiler] tags.
 /// Plain text is rendered as normal Text.
@@ -105,15 +106,15 @@ class _CodeBlock extends StatelessWidget {
                 HapticFeedback.lightImpact();
                 ClipboardService.copyContent(text.trim());
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Code kopyalandı · 30s'),
+                  SnackBar(
+                    content: Text(AppLocalizations.of(context).codeCopied),
                     backgroundColor: Colors.green,
-                    duration: Duration(seconds: 2),
+                    duration: const Duration(seconds: 2),
                   ),
                 );
               },
               icon: const Icon(Icons.copy, size: 16),
-              tooltip: 'Kopyala',
+              tooltip: AppLocalizations.of(context).copy,
             ),
           ),
         ],

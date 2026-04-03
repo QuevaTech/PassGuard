@@ -134,7 +134,10 @@ class VaultEntry {
     };
   }
 
-  /// Serialize to legacy JSON (plaintext sensitive fields — for backward compat only)
+  /// Serialize to legacy JSON — sensitive fields in plaintext.
+  /// @deprecated Use [toEncryptedJson] + per-entry encryption instead.
+  /// Only kept for backward-compatibility with v1/v2 vault migration paths.
+  @Deprecated('Use toEncryptedJson() — this method exposes sensitive fields in plaintext')
   Map<String, dynamic> toJson() {
     return {
       'id': id,

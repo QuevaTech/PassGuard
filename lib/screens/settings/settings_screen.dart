@@ -12,6 +12,7 @@ import 'package:passguard_vault_v0/services/clipboard_service.dart';
 import 'package:passguard_vault_v0/services/password_generator_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../utils/app_localizations.dart';
+import '../../utils/vault_exceptions.dart';
 import '../../providers/theme_provider.dart' show themeProvider, accentColorProvider, accentColors;
 import '../../services/pin_service.dart';
 import '../auth/pin_screen.dart';
@@ -307,7 +308,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(e.toString().contains('csv_format_unsupported')
+            content: Text(e is CsvFormatUnsupportedException
                 ? AppLocalizations.of(context).csvFormatUnsupported
                 : AppLocalizations.of(context).importFailed),
             backgroundColor: Colors.red,

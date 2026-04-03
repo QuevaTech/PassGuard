@@ -165,7 +165,7 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => AddEntryScreen(rawKey: _sessionKey!),
+        builder: (_) => AddEntryScreen(rawKey: _getSessionKey()),
       ),
     );
     
@@ -180,7 +180,7 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
       MaterialPageRoute(
         builder: (_) => EntryDetailScreen(
           entry: entry,
-          rawKey: _sessionKey!,
+          rawKey: _getSessionKey(),
         ),
       ),
     );
@@ -214,7 +214,7 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
     if (confirmed == true) {
       HapticFeedback.mediumImpact();
       try {
-        await VaultService.deleteEntry(entry.id, _sessionKey!);
+        await VaultService.deleteEntry(entry.id, _getSessionKey());
         await _loadEntries();
         
         if (mounted) {
@@ -381,7 +381,7 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
     );
     if (confirmed != true) return;
     for (final id in List.of(_selectedIds)) {
-      await VaultService.deleteEntry(id, _sessionKey!);
+      await VaultService.deleteEntry(id, _getSessionKey());
     }
     setState(() { _isSelectMode = false; _selectedIds.clear(); });
     await _loadEntries();
@@ -392,7 +392,7 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
       final entry = _entries.firstWhere((e) => e.id == id);
       await VaultService.updateEntry(
         entry.copyWith(category: category, updatedAt: DateTime.now()),
-        _sessionKey!,
+        _getSessionKey(),
       );
     }
     setState(() { _isSelectMode = false; _selectedIds.clear(); });
@@ -456,7 +456,7 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => PasswordHealthScreen(rawKey: _sessionKey!),
+                          builder: (_) => PasswordHealthScreen(rawKey: _getSessionKey()),
                         ),
                       );
                     }
@@ -848,7 +848,7 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
                           });
                           _applyFilters();
                         }
-                        await VaultService.updateEntry(updated, _sessionKey!);
+                        await VaultService.updateEntry(updated, _getSessionKey());
                       },
                       icon: Icon(
                         entry.isFavorite ? Icons.star : Icons.star_border,
@@ -910,7 +910,7 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
                 setState(() => _entries[idx] = updated);
                 _applyFilters();
               }
-              await VaultService.updateEntry(updated, _sessionKey!);
+              await VaultService.updateEntry(updated, _getSessionKey());
             },
             backgroundColor: Colors.amber,
             foregroundColor: Colors.white,

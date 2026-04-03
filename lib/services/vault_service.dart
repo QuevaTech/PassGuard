@@ -5,6 +5,7 @@ import 'package:archive/archive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import '../models/vault_entry.dart';
+import '../utils/vault_exceptions.dart';
 import 'encryption_service.dart';
 import 'session_service.dart';
 
@@ -296,7 +297,7 @@ class VaultService {
           // Reject vaults created by a newer app version — opening them with
           // an older app could silently corrupt the format.
           if (version > _formatVersionV4) {
-            throw Exception('vault_version_unsupported');
+            throw const VaultVersionUnsupportedException();
           }
 
           if (version >= _formatVersionV4) {
@@ -387,9 +388,10 @@ class VaultService {
         vault['entries'] = entries;
         await saveVault(vault, rawKey);
       } else {
-        throw Exception('Entry not found');
+        throw const EntryNotFoundException();
       }
     } catch (e) {
+      if (e is VaultException) rethrow;
       throw Exception('Failed to update entry');
     }
   }
@@ -404,9 +406,10 @@ class VaultService {
         vault['entries'] = entries;
         await saveVault(vault, rawKey);
       } else {
-        throw Exception('Entry not found');
+        throw const EntryNotFoundException();
       }
     } catch (e) {
+      if (e is VaultException) rethrow;
       throw Exception('Failed to delete entry');
     }
   }
@@ -597,7 +600,7 @@ class VaultService {
     final is1Password = header.contains('password') && header.contains('username') && header.contains('title');
 
     if (!isBitwarden && !isChrome && !is1Password) {
-      throw Exception('csv_format_unsupported');
+      throw const CsvFormatUnsupportedException();
     }
 
     final entries = <VaultEntry>[];
@@ -671,7 +674,7 @@ class VaultService {
     required ImportMode mode,
   }) async {
     final fileSize = await File(filePath).length();
-    if (fileSize > _maxImportFileSize) throw Exception('Import file too large');
+    if (fileSize > _maxImportFileSize) throw const ImportFileTooLargeException();
 
     final bytes = await File(filePath).readAsBytes();
     if (!_isZipFile(bytes)) throw Exception('Not a valid .pgvault file');
