@@ -5,6 +5,7 @@ import 'package:passguard_vault_v0/services/biometric_service.dart';
 import 'package:passguard_vault_v0/services/vault_service.dart';
 import 'package:passguard_vault_v0/services/session_service.dart';
 import 'package:passguard_vault_v0/services/auth_guard_service.dart';
+import 'package:passguard_vault_v0/services/encryption_service.dart';
 import '../vault/vault_screen.dart';
 import '../../utils/app_localizations.dart';
 
@@ -119,8 +120,19 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
 
     try {
       // Load vault with password, derive session key
-      final vault = await VaultService.loadVault(_passwordController.text);
-      final Uint8List sessionKey = VaultService.deriveSessionKey(_passwordController.text, vault);
+      var vault = await VaultService.loadVault(_passwordController.text);
+      var sessionKey = VaultService.deriveSessionKey(_passwordController.text, vault);
+
+      // Upgrade KDF params if the vault was created with older defaults.
+      final migration = await VaultService.migrateKdfParamsIfNeeded(
+        vault, _passwordController.text, sessionKey,
+      );
+      if (migration != null) {
+        EncryptionService.clearKey(sessionKey);
+        vault = migration.$1;
+        sessionKey = migration.$2;
+      }
+
       await VaultService.saveVault(vault, sessionKey);
 
       // Password authentication successful

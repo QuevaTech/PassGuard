@@ -509,6 +509,59 @@ class VaultService {
     EncryptionService.clearKey(newKey);
   }
 
+  // --- KDF Migration ---
+
+  /// Checks whether the vault's Argon2id parameters are below the current defaults.
+  /// If an upgrade is needed, re-derives a new key with the new params, re-encrypts
+  /// all entries, and returns the updated vault + new key as a record.
+  /// Returns null if no migration is needed (params already meet current defaults).
+  ///
+  /// The caller is responsible for:
+  ///   1. Clearing the old key via EncryptionService.clearKey(oldKey)
+  ///   2. Saving the returned vault via saveVault(newVault, newKey)
+  ///   3. Updating the session via SessionService.setSessionKey(newKey)
+  static Future<(Map<String, dynamic>, Uint8List)?> migrateKdfParamsIfNeeded(
+    Map<String, dynamic> vault,
+    String masterPassword,
+    Uint8List oldKey,
+  ) async {
+    final header = vault['header'] as Map<String, dynamic>;
+
+    final storedIterations =
+        header['kdf_iterations'] as int? ?? EncryptionService.argon2Iterations;
+    final storedMemory =
+        header['kdf_memory'] as int? ?? EncryptionService.argon2Memory;
+    final storedParallelism =
+        header['kdf_parallelism'] as int? ?? EncryptionService.argon2Parallelism;
+
+    final needsUpgrade =
+        storedIterations < EncryptionService.argon2Iterations ||
+        storedMemory < EncryptionService.argon2Memory ||
+        storedParallelism < EncryptionService.argon2Parallelism;
+
+    if (!needsUpgrade) return null;
+
+    // Decrypt all entries with the old key
+    final entriesJson = vault['entries'] as List<dynamic>;
+    final decryptedEntries = entriesJson.map((json) {
+      final entry = VaultEntry.fromJson(json as Map<String, dynamic>);
+      return _decryptEntry(entry, oldKey);
+    }).toList();
+
+    // New header: new salt + updated KDF params
+    final newHeader = EncryptionService.createVaultHeader(masterPassword);
+    final newSalt = base64Decode(newHeader['salt'] as String);
+    final newKey = EncryptionService.deriveKey(masterPassword, Uint8List.fromList(newSalt));
+
+    // Re-encrypt all entries with the new key
+    final reEncryptedEntries = decryptedEntries.map((entry) {
+      return _encryptEntry(entry, newKey).toEncryptedJson();
+    }).toList();
+
+    final newVault = {'header': newHeader, 'entries': reEncryptedEntries};
+    return (newVault, newKey);
+  }
+
   // --- Backup & Import ---
 
   static Future<String> createBackup(Uint8List rawKey) async {

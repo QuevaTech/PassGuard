@@ -128,10 +128,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       } else {
         // Unlock existing vault
         try {
-          final vault = await VaultService.loadVault(password);
+          var vault = await VaultService.loadVault(password);
 
           // Derive session key and upgrade to v4 if needed
-          final Uint8List sessionKey = VaultService.deriveSessionKey(password, vault);
+          var sessionKey = VaultService.deriveSessionKey(password, vault);
+
+          // Upgrade KDF params (Argon2id iterations/memory) if the vault was
+          // created with an older set of defaults.
+          final migration = await VaultService.migrateKdfParamsIfNeeded(
+            vault, password, sessionKey,
+          );
+          if (migration != null) {
+            EncryptionService.clearKey(sessionKey);
+            vault = migration.$1;
+            sessionKey = migration.$2;
+          }
+
           await VaultService.saveVault(vault, sessionKey);
 
           // Success - reset brute-force counter
