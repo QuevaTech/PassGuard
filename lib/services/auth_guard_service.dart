@@ -1,24 +1,77 @@
-/// Brute-force protection service with exponential backoff
+import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+/// Brute-force protection service with exponential backoff.
+///
+/// Failed attempt count and lockout timestamp are persisted to the platform
+/// keychain so closing and reopening the app does NOT reset the lockout counter.
 class AuthGuardService {
   static const int _maxAttempts = 5;
   static const Duration _initialLockout = Duration(seconds: 30);
   static const Duration _maxLockout = Duration(minutes: 15);
 
+  static const _keyFailedAttempts = 'pg_auth_failed_attempts';
+  static const _keyLockedUntil = 'pg_auth_locked_until';
+
+  static final FlutterSecureStorage _secureStorage = FlutterSecureStorage(
+    mOptions: MacOsOptions(usesDataProtectionKeychain: kReleaseMode),
+  );
+
   static int _failedAttempts = 0;
   static DateTime? _lockedUntil;
 
-  /// Check if login is currently locked out
+  /// Load persisted lockout state. Call once at app startup.
+  static Future<void> initialize() async {
+    try {
+      final attemptsStr = await _secureStorage.read(key: _keyFailedAttempts);
+      final lockedUntilStr = await _secureStorage.read(key: _keyLockedUntil);
+
+      if (attemptsStr != null) {
+        _failedAttempts = int.tryParse(attemptsStr) ?? 0;
+      }
+      if (lockedUntilStr != null) {
+        _lockedUntil = DateTime.tryParse(lockedUntilStr);
+      }
+    } catch (e) {
+      debugPrint('AuthGuardService: Failed to load persisted state: $e');
+    }
+  }
+
+  /// Persist current state to keychain (fire-and-forget, non-blocking).
+  static void _persistAsync() {
+    _secureStorage
+        .write(key: _keyFailedAttempts, value: _failedAttempts.toString())
+        .catchError((e) {
+      debugPrint('AuthGuardService: persist failed_attempts error: $e');
+    });
+
+    if (_lockedUntil != null) {
+      _secureStorage
+          .write(
+            key: _keyLockedUntil,
+            value: _lockedUntil!.toIso8601String(),
+          )
+          .catchError((e) {
+        debugPrint('AuthGuardService: persist locked_until error: $e');
+      });
+    } else {
+      _secureStorage.delete(key: _keyLockedUntil).catchError((e) {
+        debugPrint('AuthGuardService: delete locked_until error: $e');
+      });
+    }
+  }
+
+  /// Check if login is currently locked out.
   static bool isLockedOut() {
     if (_lockedUntil == null) return false;
     if (DateTime.now().isAfter(_lockedUntil!)) {
-      // Lockout expired, but keep failed attempt count for escalation
       _lockedUntil = null;
       return false;
     }
     return true;
   }
 
-  /// Get remaining lockout duration
+  /// Get remaining lockout duration.
   static Duration remainingLockout() {
     if (_lockedUntil == null) return Duration.zero;
     final remaining = _lockedUntil!.difference(DateTime.now());
@@ -37,18 +90,21 @@ class AuthGuardService {
         lockoutDuration = _maxLockout;
       }
       _lockedUntil = DateTime.now().add(lockoutDuration);
+      _persistAsync();
       return true;
     }
+    _persistAsync();
     return false;
   }
 
-  /// Reset on successful login
+  /// Reset on successful login.
   static void recordSuccess() {
     _failedAttempts = 0;
     _lockedUntil = null;
+    _persistAsync();
   }
 
-  /// Get number of remaining attempts before lockout
+  /// Get number of remaining attempts before lockout.
   static int remainingAttempts() {
     final remaining = _maxAttempts - _failedAttempts;
     return remaining < 0 ? 0 : remaining;

@@ -7,8 +7,8 @@ import 'package:pointycastle/export.dart';
 
 class EncryptionService {
   // Argon2id parameters
-  static const int argon2Iterations = 3;
-  static const int argon2Memory = 65536; // 64 MB
+  static const int argon2Iterations = 4;
+  static const int argon2Memory = 131072; // 128 MB
   static const int argon2Parallelism = 4;
   static const int _keyLength = 32; // 256 bit
   static const int _saltLength = 32; // 256 bit

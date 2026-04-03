@@ -7,7 +7,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SessionService {
   static const Duration _defaultTimeout = Duration(minutes: 5);
-  static const Duration _biometricTimeout = Duration(minutes: 15);
+  static const Duration _biometricTimeout = Duration(minutes: 10);
   static const Duration _absoluteTimeout = Duration(hours: 4);
 
   // Keychain key — stores base64-encoded derived key bytes (NOT the password)

@@ -1,15 +1,30 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// Singleton clipboard service with auto-clear.
-/// All copy operations share a single timer — copying again cancels the
-/// previous timer so the 30-second countdown always restarts from the last copy.
-class ClipboardService {
-  ClipboardService._();
+/// Singleton clipboard service with auto-clear and lifecycle-aware clearing.
+///
+/// - Copies share a single timer — copying again resets the 30-second countdown.
+/// - Clipboard is cleared immediately when the app enters the background (paused
+///   or hidden), so sensitive values don't linger while the app is not visible.
+class ClipboardService with WidgetsBindingObserver {
+  ClipboardService._() {
+    WidgetsBinding.instance.addObserver(this);
+  }
   static final ClipboardService _instance = ClipboardService._();
 
   Timer? _clearTimer;
   static const _autoClearDuration = Duration(seconds: 30);
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden) {
+      _clearTimer?.cancel();
+      _clearTimer = null;
+      Clipboard.setData(const ClipboardData(text: ''));
+    }
+  }
 
   Future<void> _copy(String text) async {
     _clearTimer?.cancel();

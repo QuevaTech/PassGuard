@@ -23,6 +23,8 @@ class PasswordGeneratorService {
       throw Exception('Password length must be at least 4 characters');
     }
 
+    final random = Random.secure();
+
     String charset = '';
     List<String> requiredChars = [];
 
@@ -36,7 +38,7 @@ class PasswordGeneratorService {
       }
       charset += chars;
       if (chars.isNotEmpty) {
-        requiredChars.add(_getRandomChar(chars));
+        requiredChars.add(_getRandomChar(chars, random));
       }
     }
 
@@ -50,7 +52,7 @@ class PasswordGeneratorService {
       }
       charset += chars;
       if (chars.isNotEmpty) {
-        requiredChars.add(_getRandomChar(chars));
+        requiredChars.add(_getRandomChar(chars, random));
       }
     }
 
@@ -64,7 +66,7 @@ class PasswordGeneratorService {
       }
       charset += chars;
       if (chars.isNotEmpty) {
-        requiredChars.add(_getRandomChar(chars));
+        requiredChars.add(_getRandomChar(chars, random));
       }
     }
 
@@ -78,15 +80,13 @@ class PasswordGeneratorService {
       }
       charset += chars;
       if (chars.isNotEmpty) {
-        requiredChars.add(_getRandomChar(chars));
+        requiredChars.add(_getRandomChar(chars, random));
       }
     }
 
     if (charset.isEmpty) {
       throw Exception('At least one character type must be selected');
     }
-
-    final random = Random.secure();
     final passwordChars = <String>[];
 
     // Add required characters first
@@ -96,7 +96,7 @@ class PasswordGeneratorService {
 
     // Fill remaining length with random characters
     while (passwordChars.length < length) {
-      passwordChars.add(_getRandomChar(charset));
+      passwordChars.add(_getRandomChar(charset, random));
     }
 
     // Shuffle the password characters
@@ -105,9 +105,8 @@ class PasswordGeneratorService {
     return passwordChars.join();
   }
 
-  // Get random character from string
-  static String _getRandomChar(String chars) {
-    final random = Random.secure();
+  // Get random character from string using the provided Random instance.
+  static String _getRandomChar(String chars, Random random) {
     final index = random.nextInt(chars.length);
     return chars[index];
   }

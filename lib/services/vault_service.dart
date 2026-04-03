@@ -62,6 +62,7 @@ class VaultService {
   // --- Per-Entry Encryption ---
 
   static VaultEntry _encryptEntry(VaultEntry entry, Uint8List derivedKey) {
+    entry.validate();
     final sensitiveFields = entry.getSensitiveFields();
     if (sensitiveFields.isEmpty) return entry;
 

@@ -174,4 +174,35 @@ class VaultEntry {
 
   String get displayTitle => title.isNotEmpty ? title : 'Untitled';
   String get displayCategory => category.isNotEmpty ? category : 'Other';
+
+  // Maximum field sizes — prevents memory exhaustion during encryption/ZIP.
+  static const int maxSensitiveFieldLength = 10 * 1024 * 1024; // 10 MB per field
+  static const int maxTitleLength = 512;
+  static const int maxCategoryLength = 256;
+
+  /// Throws [ArgumentError] if any field exceeds the allowed size.
+  /// Call this before saving/encrypting an entry.
+  void validate() {
+    if (title.length > maxTitleLength) {
+      throw ArgumentError('Title exceeds maximum length of $maxTitleLength characters.');
+    }
+    if (category.length > maxCategoryLength) {
+      throw ArgumentError('Category exceeds maximum length of $maxCategoryLength characters.');
+    }
+    if ((password?.length ?? 0) > maxSensitiveFieldLength) {
+      throw ArgumentError('Password field exceeds maximum size of 10 MB.');
+    }
+    if ((notes?.length ?? 0) > maxSensitiveFieldLength) {
+      throw ArgumentError('Notes field exceeds maximum size of 10 MB.');
+    }
+    if ((content?.length ?? 0) > maxSensitiveFieldLength) {
+      throw ArgumentError('Content field exceeds maximum size of 10 MB.');
+    }
+    if ((username?.length ?? 0) > maxSensitiveFieldLength) {
+      throw ArgumentError('Username field exceeds maximum size of 10 MB.');
+    }
+    if ((website?.length ?? 0) > maxSensitiveFieldLength) {
+      throw ArgumentError('Website field exceeds maximum size of 10 MB.');
+    }
+  }
 }
