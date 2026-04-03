@@ -370,6 +370,8 @@ class AppLocalizations {
         'developer': 'Geliştirici',
         'biometric_first_time': 'Biyometrik doğrulama başarılı. Bir kereliğine ana şifrenizi girin, sonraki girişlerde otomatik açılacak.',
         'code_copied': 'Kod kopyalandı · 30s',
+        'report_bug': 'Hata Bildir',
+        'report_bug_desc': 'GitHub Issues\'da sorun bildir',
         'skip': 'Atla',
         'next': 'İleri',
         'get_started': 'Başlayalım',
@@ -2485,6 +2487,8 @@ class AppLocalizations {
         'developer': 'Developer',
         'biometric_first_time': 'Biometric verification successful. Enter your master password once, future logins will be automatic.',
         'code_copied': 'Code copied · 30s',
+        'report_bug': 'Report a Bug',
+        'report_bug_desc': 'Open an issue on GitHub',
         'password_health': 'Password Health',
         'old_passwords': 'Old Passwords',
         'duplicate_passwords': 'Duplicate Passwords',
@@ -2677,6 +2681,8 @@ class AppLocalizations {
   String get developer => _localizedValues['developer'] ?? 'Developer';
   String get biometricFirstTime => _localizedValues['biometric_first_time'] ?? 'Biometric verification successful. Enter your master password once, future logins will be automatic.';
   String get codeCopied => _localizedValues['code_copied'] ?? 'Code copied · 30s';
+  String get reportBug => _localizedValues['report_bug'] ?? 'Report a Bug';
+  String get reportBugDesc => _localizedValues['report_bug_desc'] ?? 'Open an issue on GitHub';
   String get skip => _localizedValues['skip'] ?? 'Skip';
   String get next => _localizedValues['next'] ?? 'Next';
   String get getStarted => _localizedValues['get_started'] ?? 'Get Started';

@@ -11,6 +11,7 @@ import 'package:passguard_vault_v0/services/session_service.dart';
 import 'package:passguard_vault_v0/services/clipboard_service.dart';
 import 'package:passguard_vault_v0/services/password_generator_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../utils/app_localizations.dart';
 import '../../utils/vault_exceptions.dart';
 import '../../providers/theme_provider.dart' show themeProvider, accentColorProvider, accentColors;
@@ -897,6 +898,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               leading: const Icon(Icons.code),
               title: const Text('quevatech | queva.tech'),
               subtitle: Text(localizations.developer),
+            ),
+          ),
+          const SizedBox(height: 8),
+
+          // Report Bug
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.bug_report_outlined),
+              title: Text(localizations.reportBug),
+              subtitle: Text(localizations.reportBugDesc),
+              trailing: const Icon(Icons.open_in_new, size: 18),
+              onTap: () async {
+                final uri = Uri.parse('https://github.com/QuevaTech/PassGuard/issues/new');
+                if (await canLaunchUrl(uri)) {
+                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+                }
+              },
             ),
           ),
         ],
