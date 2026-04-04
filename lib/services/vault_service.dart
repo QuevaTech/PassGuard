@@ -30,6 +30,54 @@ class VaultService {
   static const int _legacyKdfMemory = 65536;
   static const int _legacyKdfParallelism = 4;
 
+  static Future<void> _migrateWindowsVaultIfNeeded(Directory targetDir) async {
+    if (!Platform.isWindows) return;
+
+    final targetFile = File('${targetDir.path}${Platform.pathSeparator}$_vaultFileName');
+    if (await targetFile.exists()) return;
+
+    final candidates = <String>[];
+
+    final userProfile = Platform.environment['USERPROFILE'];
+    if (userProfile != null && userProfile.isNotEmpty) {
+      candidates.add('$userProfile${Platform.pathSeparator}$_vaultDirName');
+      candidates.add(
+        '$userProfile${Platform.pathSeparator}Documents${Platform.pathSeparator}$_vaultDirName',
+      );
+    }
+
+    final appData = Platform.environment['APPDATA'];
+    if (appData != null && appData.isNotEmpty) {
+      candidates.add(
+        '$appData${Platform.pathSeparator}PassGuard Vault${Platform.pathSeparator}$_vaultDirName',
+      );
+      candidates.add(
+        '$appData${Platform.pathSeparator}passguard_vault${Platform.pathSeparator}$_vaultDirName',
+      );
+    }
+
+    final localAppData = Platform.environment['LOCALAPPDATA'];
+    if (localAppData != null && localAppData.isNotEmpty) {
+      candidates.add(
+        '$localAppData${Platform.pathSeparator}PassGuard Vault${Platform.pathSeparator}$_vaultDirName',
+      );
+      candidates.add(
+        '$localAppData${Platform.pathSeparator}passguard_vault${Platform.pathSeparator}$_vaultDirName',
+      );
+    }
+
+    for (final candidatePath in candidates) {
+      if (candidatePath == targetDir.path) continue;
+      final sourceFile =
+          File('$candidatePath${Platform.pathSeparator}$_vaultFileName');
+      if (!await sourceFile.exists()) continue;
+
+      await targetDir.create(recursive: true);
+      await sourceFile.copy(targetFile.path);
+      return;
+    }
+  }
+
   static Future<Directory> _getVaultDirectory() async {
     final Directory baseDir;
     if (Platform.isAndroid || Platform.isIOS) {
@@ -51,6 +99,9 @@ class VaultService {
         await Process.run('chmod', ['700', dir.path]);
       }
     }
+
+    await _migrateWindowsVaultIfNeeded(dir);
+
     return dir;
   }
 
@@ -93,30 +144,35 @@ class VaultService {
   static VaultEntry _decryptEntry(VaultEntry entry, Uint8List derivedKey) {
     if (!entry.isEntryEncrypted) return entry;
 
-    final decryptedJson = EncryptionService.decryptWithKey(
-      encryptedContent: entry.encryptedData!,
-      ivBase64: entry.entryIv!,
-      tagBase64: entry.entryTag!,
-      rawKey: derivedKey,
-    );
+    try {
+      final decryptedJson = EncryptionService.decryptWithKey(
+        encryptedContent: entry.encryptedData!,
+        ivBase64: entry.entryIv!,
+        tagBase64: entry.entryTag!,
+        rawKey: derivedKey,
+      );
 
-    final fields = jsonDecode(decryptedJson) as Map<String, dynamic>;
+      final fields = jsonDecode(decryptedJson) as Map<String, dynamic>;
 
-    return VaultEntry(
-      id: entry.id,
-      type: entry.type,
-      title: entry.title,
-      category: entry.category,
-      createdAt: entry.createdAt,
-      updatedAt: entry.updatedAt,
-      isFavorite: entry.isFavorite,
-      colorValue: entry.colorValue,
-      username: fields['username'] as String?,
-      password: fields['password'] as String?,
-      website: fields['website'] as String?,
-      content: fields['content'] as String?,
-      notes: fields['notes'] as String?,
-    );
+      return VaultEntry(
+        id: entry.id,
+        type: entry.type,
+        title: entry.title,
+        category: entry.category,
+        createdAt: entry.createdAt,
+        updatedAt: entry.updatedAt,
+        isFavorite: entry.isFavorite,
+        colorValue: entry.colorValue,
+        username: fields['username'] as String?,
+        password: fields['password'] as String?,
+        website: fields['website'] as String?,
+        content: fields['content'] as String?,
+        notes: fields['notes'] as String?,
+      );
+    } catch (e) {
+      // Keep metadata visible even if one record's encrypted payload is invalid.
+      return entry;
+    }
   }
 
   // --- Key Derivation ---
@@ -448,10 +504,20 @@ class VaultService {
     try {
       final vault = await _loadVaultWithKey(rawKey);
       final entriesJson = vault['entries'] as List<dynamic>;
-      return entriesJson.map((json) {
-        final entry = VaultEntry.fromJson(json);
-        return _decryptEntry(entry, rawKey);
-      }).toList();
+      final entries = <VaultEntry>[];
+
+      for (final item in entriesJson) {
+        try {
+          if (item is! Map<String, dynamic>) continue;
+          final entry = VaultEntry.fromJson(item);
+          entries.add(_decryptEntry(entry, rawKey));
+        } catch (_) {
+          // Ignore malformed records so one bad item doesn't block the vault.
+          continue;
+        }
+      }
+
+      return entries;
     } catch (e) {
       throw Exception('Failed to get entries');
     }
