@@ -110,8 +110,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         }
 
         // Create vault
-        final vault = VaultService.createNewVault(password);
-        final Uint8List sessionKey = VaultService.deriveSessionKey(password, vault);
+        final vault = await VaultService.createNewVault(password);
+        final Uint8List sessionKey = await VaultService.deriveSessionKey(password, vault);
         await VaultService.saveVault(vault, sessionKey);
 
         // Initialize session with derived key (setSessionKey copies bytes)
@@ -132,7 +132,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           var vault = await VaultService.loadVault(password);
 
           // Derive session key and upgrade to v4 if needed
-          var sessionKey = VaultService.deriveSessionKey(password, vault);
+          var sessionKey = await VaultService.deriveSessionKey(password, vault);
 
           // Upgrade KDF params (Argon2id iterations/memory) if the vault was
           // created with an older set of defaults. Failure here is non-fatal —

@@ -122,14 +122,18 @@ class VaultService {
   // --- Key Derivation ---
 
   /// Derive the session key from master password + vault header salt.
+  /// Runs Argon2id in a background isolate — UI stays responsive.
   /// Call this once at login, then store the result in SessionService.
-  static Uint8List deriveSessionKey(String masterPassword, Map<String, dynamic> vault) {
+  static Future<Uint8List> deriveSessionKey(
+    String masterPassword,
+    Map<String, dynamic> vault,
+  ) async {
     final header = vault['header'] as Map<String, dynamic>;
     final salt = base64Decode(header['salt'] as String);
     // Use KDF params stored in the header so that vaults created with different
     // Argon2 settings (past or future) are always opened with the correct params.
     // Falls back to current defaults for legacy vaults that predate param storage.
-    return EncryptionService.deriveKey(
+    return EncryptionService.deriveKeyAsync(
       masterPassword,
       Uint8List.fromList(salt),
       iterations: header['kdf_iterations'] as int?,
@@ -268,8 +272,8 @@ class VaultService {
   // --- Core Vault Operations ---
 
   /// Create a new vault. Call deriveSessionKey() afterwards to get the session key.
-  static Map<String, dynamic> createNewVault(String masterPassword) {
-    final header = EncryptionService.createVaultHeader(masterPassword);
+  static Future<Map<String, dynamic>> createNewVault(String masterPassword) async {
+    final header = await EncryptionService.createVaultHeaderAsync(masterPassword);
     return {
       'header': header,
       'entries': <Map<String, dynamic>>[],
@@ -323,7 +327,7 @@ class VaultService {
                 manifest['kdf_memory'] as int? ?? _legacyKdfMemory;
             final kdfParallelism =
                 manifest['kdf_parallelism'] as int? ?? _legacyKdfParallelism;
-            final key = EncryptionService.deriveKey(
+            final key = await EncryptionService.deriveKeyAsync(
               masterPassword,
               Uint8List.fromList(kdfSalt),
               iterations: kdfIterations,
@@ -506,7 +510,7 @@ class VaultService {
   }) async {
     // Load with current password (handles v3 and v4)
     final vault = await loadVault(currentPassword);
-    final oldKey = deriveSessionKey(currentPassword, vault);
+    final oldKey = await deriveSessionKey(currentPassword, vault);
 
     // Decrypt all entries with old key
     final entriesJson = vault['entries'] as List<dynamic>;
@@ -517,9 +521,9 @@ class VaultService {
     EncryptionService.clearKey(oldKey);
 
     // New vault header with new password
-    final newHeader = EncryptionService.createVaultHeader(newPassword);
+    final newHeader = await EncryptionService.createVaultHeaderAsync(newPassword);
     final newSalt = base64Decode(newHeader['salt'] as String);
-    final newKey = EncryptionService.deriveKey(newPassword, Uint8List.fromList(newSalt));
+    final newKey = await EncryptionService.deriveKeyAsync(newPassword, Uint8List.fromList(newSalt));
 
     // Re-encrypt all entries
     final reEncryptedEntries = decryptedEntries.map((entry) {
@@ -574,9 +578,9 @@ class VaultService {
     }).toList();
 
     // New header: new salt + updated KDF params
-    final newHeader = EncryptionService.createVaultHeader(masterPassword);
+    final newHeader = await EncryptionService.createVaultHeaderAsync(masterPassword);
     final newSalt = base64Decode(newHeader['salt'] as String);
-    final newKey = EncryptionService.deriveKey(masterPassword, Uint8List.fromList(newSalt));
+    final newKey = await EncryptionService.deriveKeyAsync(masterPassword, Uint8List.fromList(newSalt));
 
     // Re-encrypt all entries with the new key
     final reEncryptedEntries = decryptedEntries.map((entry) {

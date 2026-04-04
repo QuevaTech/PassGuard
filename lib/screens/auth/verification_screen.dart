@@ -121,7 +121,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
     try {
       // Load vault with password, derive session key
       var vault = await VaultService.loadVault(_passwordController.text);
-      var sessionKey = VaultService.deriveSessionKey(_passwordController.text, vault);
+      var sessionKey = await VaultService.deriveSessionKey(_passwordController.text, vault);
 
       // Upgrade KDF params if the vault was created with older defaults.
       // Failure here is non-fatal — fall back to original vault/key.

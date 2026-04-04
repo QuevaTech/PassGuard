@@ -49,7 +49,7 @@ app.*.map.json
 
 # Built releases (binary artifacts)
 /releases/
-
+/dist/
 # Claude memory (local dev tool)
 /.claude/
 

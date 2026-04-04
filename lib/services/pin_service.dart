@@ -39,7 +39,7 @@ class PinService {
 
   /// Hash the PIN with Argon2id + random salt and store in the platform keychain.
   static Future<void> setPin(String pin) async {
-    final result = EncryptionService.hashPasswordWithSalt(
+    final result = await EncryptionService.hashPasswordWithSaltAsync(
       pin,
       iterations: _kdfIterations,
       memory: _kdfMemory,
@@ -56,7 +56,7 @@ class PinService {
       final storedHash = await _secureStorage.read(key: _keyPinHash);
       final storedSalt = await _secureStorage.read(key: _keyPinSalt);
       if (storedHash == null || storedSalt == null) return false;
-      return EncryptionService.verifyPassword(
+      return EncryptionService.verifyPasswordAsync(
         pin, storedHash, storedSalt,
         iterations: _kdfIterations,
         memory: _kdfMemory,

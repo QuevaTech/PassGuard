@@ -3,7 +3,25 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart' show compute;
 import 'package:pointycastle/export.dart';
+
+// Top-level function — required by compute() (isolate entry point).
+Uint8List _deriveKeyIsolate(Map<String, dynamic> args) {
+  final generator = Argon2BytesGenerator();
+  final params = Argon2Parameters(
+    Argon2Parameters.ARGON2_id,
+    Uint8List.fromList(List<int>.from(args['salt'] as List)),
+    desiredKeyLength: args['keyLength'] as int,
+    iterations: args['iterations'] as int,
+    memory: args['memory'] as int,
+    lanes: args['parallelism'] as int,
+  );
+  generator.init(params);
+  return generator.process(
+    Uint8List.fromList(utf8.encode(args['password'] as String)),
+  );
+}
 
 class EncryptionService {
   // Argon2id parameters
@@ -38,6 +56,25 @@ class EncryptionService {
     );
     generator.init(params);
     return generator.process(Uint8List.fromList(utf8.encode(password)));
+  }
+
+  /// Async version of [deriveKey] — runs Argon2id in a background isolate so
+  /// the UI thread stays responsive during the expensive key-derivation step.
+  static Future<Uint8List> deriveKeyAsync(
+    String password,
+    Uint8List salt, {
+    int? iterations,
+    int? memory,
+    int? parallelism,
+  }) {
+    return compute(_deriveKeyIsolate, {
+      'password': password,
+      'salt': List<int>.from(salt),
+      'keyLength': _keyLength,
+      'iterations': iterations ?? argon2Iterations,
+      'memory': memory ?? argon2Memory,
+      'parallelism': parallelism ?? argon2Parallelism,
+    });
   }
 
   // --- Random Generation ---
@@ -211,6 +248,47 @@ class EncryptionService {
     return _constantTimeEquals(utf8.encode(hash), utf8.encode(storedHash));
   }
 
+  static Future<Map<String, String>> hashPasswordWithSaltAsync(
+    String password, {
+    int? iterations,
+    int? memory,
+    int? parallelism,
+  }) async {
+    final salt = generateSalt();
+    final derived = await deriveKeyAsync(
+      password, salt,
+      iterations: iterations,
+      memory: memory,
+      parallelism: parallelism,
+    );
+    final hash = sha256.convert(derived).toString();
+    clearKey(derived);
+    return {
+      'hash': hash,
+      'salt': base64Encode(salt),
+    };
+  }
+
+  static Future<bool> verifyPasswordAsync(
+    String password,
+    String storedHash,
+    String saltBase64, {
+    int? iterations,
+    int? memory,
+    int? parallelism,
+  }) async {
+    final salt = base64Decode(saltBase64);
+    final derived = await deriveKeyAsync(
+      password, Uint8List.fromList(salt),
+      iterations: iterations,
+      memory: memory,
+      parallelism: parallelism,
+    );
+    final hash = sha256.convert(derived).toString();
+    clearKey(derived);
+    return _constantTimeEquals(utf8.encode(hash), utf8.encode(storedHash));
+  }
+
   // Constant-time byte comparison — prevents timing attacks.
   static bool _constantTimeEquals(List<int> a, List<int> b) {
     if (a.length != b.length) return false;
@@ -238,8 +316,28 @@ class EncryptionService {
       'format': 'pgvault',
       'version': _formatVersion,
       'kdf': 'argon2id',
-      // Store KDF params so future versions can re-derive the key correctly
-      // even if the default constants change.
+      'kdf_iterations': argon2Iterations,
+      'kdf_memory': argon2Memory,
+      'kdf_parallelism': argon2Parallelism,
+      'salt': base64Encode(salt),
+      'created_at': DateTime.now().toIso8601String(),
+      'key_hash': keyHash,
+    };
+  }
+
+  /// Async version — Argon2id runs in a background isolate.
+  static Future<Map<String, dynamic>> createVaultHeaderAsync(
+    String masterPassword,
+  ) async {
+    final salt = generateSalt();
+    final key = await deriveKeyAsync(masterPassword, salt);
+    final keyHash = sha256.convert(key).toString();
+    clearKey(key);
+
+    return {
+      'format': 'pgvault',
+      'version': _formatVersion,
+      'kdf': 'argon2id',
       'kdf_iterations': argon2Iterations,
       'kdf_memory': argon2Memory,
       'kdf_parallelism': argon2Parallelism,
