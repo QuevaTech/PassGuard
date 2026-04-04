@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:passguard_vault_v0/services/vault_service.dart';
-import 'package:passguard_vault_v0/services/biometric_service.dart';
-import 'package:passguard_vault_v0/services/session_service.dart';
+import 'package:passguard_vault/services/vault_service.dart';
+import 'package:passguard_vault/services/biometric_service.dart';
+import 'package:passguard_vault/services/session_service.dart';
 import 'auth/login_screen.dart';
 import 'auth/verification_screen.dart';
 import 'auth/pin_screen.dart';

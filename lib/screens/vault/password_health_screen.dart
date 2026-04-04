@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:passguard_vault_v0/models/vault_entry.dart';
-import 'package:passguard_vault_v0/services/vault_service.dart';
-import 'package:passguard_vault_v0/services/password_generator_service.dart';
+import 'package:passguard_vault/models/vault_entry.dart';
+import 'package:passguard_vault/services/vault_service.dart';
+import 'package:passguard_vault/services/password_generator_service.dart';
 import '../../utils/app_localizations.dart';
 import 'entry_detail_screen.dart';
 

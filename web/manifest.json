@@ -1,6 +1,6 @@
 {
-    "name": "passguard_vault_v0",
-    "short_name": "passguard_vault_v0",
+    "name": "passguard_vault",
+    "short_name": "passguard_vault",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

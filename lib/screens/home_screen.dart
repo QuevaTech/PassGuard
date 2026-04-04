@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:passguard_vault_v0/services/session_service.dart';
-import 'package:passguard_vault_v0/services/biometric_service.dart';
-import 'package:passguard_vault_v0/services/clipboard_service.dart';
-import 'package:passguard_vault_v0/services/password_generator_service.dart';
+import 'package:passguard_vault/services/session_service.dart';
+import 'package:passguard_vault/services/biometric_service.dart';
+import 'package:passguard_vault/services/clipboard_service.dart';
+import 'package:passguard_vault/services/password_generator_service.dart';
 import 'vault/vault_screen.dart';
 import 'settings/settings_screen.dart';
 import '../../utils/app_localizations.dart';

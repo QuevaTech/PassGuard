@@ -8,7 +8,7 @@
 PRODUCT_NAME = PassGuard Vault
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.quevatech.passguardVaultV0
+PRODUCT_BUNDLE_IDENTIFIER = com.quevatech.passguardVault
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2026 quevatech. All rights reserved. | queva.tech

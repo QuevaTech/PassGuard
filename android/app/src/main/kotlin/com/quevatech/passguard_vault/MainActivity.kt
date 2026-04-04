@@ -1,4 +1,4 @@
-package com.quevatech.passguard_vault_v0
+package com.quevatech.passguard_vault
 
 import android.os.Bundle
 import android.view.WindowManager

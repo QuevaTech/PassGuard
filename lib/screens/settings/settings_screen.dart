@@ -1,15 +1,16 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:passguard_vault_v0/services/vault_service.dart';
-import 'package:passguard_vault_v0/services/biometric_service.dart';
-import 'package:passguard_vault_v0/services/session_service.dart';
-import 'package:passguard_vault_v0/services/clipboard_service.dart';
-import 'package:passguard_vault_v0/services/password_generator_service.dart';
+import 'package:passguard_vault/services/vault_service.dart';
+import 'package:passguard_vault/services/biometric_service.dart';
+import 'package:passguard_vault/services/session_service.dart';
+import 'package:passguard_vault/services/clipboard_service.dart';
+import 'package:passguard_vault/services/password_generator_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../utils/app_localizations.dart';
@@ -35,6 +36,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   int _autoLockMinutes = 5;
   bool _isExporting = false;
   bool _isImporting = false;
+  String _appVersion = '';
 
   @override
   void initState() {
@@ -49,12 +51,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       final prefs = await SharedPreferences.getInstance();
       final saved = prefs.getBool('biometric_enabled') ?? (available && enrolled);
       final pinEnabled = await PinService.isPinEnabled();
+      final packageInfo = await PackageInfo.fromPlatform();
       if (mounted) {
         setState(() {
           _biometricAvailable = available;
           _biometricEnrolled = enrolled;
           _biometricEnabled = available && enrolled && saved;
           _pinEnabled = pinEnabled;
+          _appVersion = packageInfo.version;
         });
       }
     } catch (e) {
@@ -886,7 +890,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           Card(
             child: ListTile(
               leading: const Icon(Icons.info),
-              title: Text('${localizations.version}: 1.0.0'),
+              title: Text('${localizations.version}: $_appVersion'),
               subtitle: Text(localizations.app_name),
             ),
           ),

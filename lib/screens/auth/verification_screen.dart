@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:passguard_vault_v0/services/biometric_service.dart';
-import 'package:passguard_vault_v0/services/vault_service.dart';
-import 'package:passguard_vault_v0/services/session_service.dart';
-import 'package:passguard_vault_v0/services/auth_guard_service.dart';
-import 'package:passguard_vault_v0/services/encryption_service.dart';
+import 'package:passguard_vault/services/biometric_service.dart';
+import 'package:passguard_vault/services/vault_service.dart';
+import 'package:passguard_vault/services/session_service.dart';
+import 'package:passguard_vault/services/auth_guard_service.dart';
+import 'package:passguard_vault/services/encryption_service.dart';
 import '../vault/vault_screen.dart';
 import '../../utils/app_localizations.dart';
 
