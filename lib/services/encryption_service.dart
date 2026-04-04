@@ -170,20 +170,44 @@ class EncryptionService {
 
   // --- Password Hashing ---
 
-  static Map<String, String> hashPasswordWithSalt(String password) {
+  static Map<String, String> hashPasswordWithSalt(
+    String password, {
+    int? iterations,
+    int? memory,
+    int? parallelism,
+  }) {
     final salt = generateSalt();
-    final derived = deriveKey(password, salt);
+    final derived = deriveKey(
+      password, salt,
+      iterations: iterations,
+      memory: memory,
+      parallelism: parallelism,
+    );
     final hash = sha256.convert(derived).toString();
+    clearKey(derived);
     return {
       'hash': hash,
       'salt': base64Encode(salt),
     };
   }
 
-  static bool verifyPassword(String password, String storedHash, String saltBase64) {
+  static bool verifyPassword(
+    String password,
+    String storedHash,
+    String saltBase64, {
+    int? iterations,
+    int? memory,
+    int? parallelism,
+  }) {
     final salt = base64Decode(saltBase64);
-    final derived = deriveKey(password, salt);
+    final derived = deriveKey(
+      password, Uint8List.fromList(salt),
+      iterations: iterations,
+      memory: memory,
+      parallelism: parallelism,
+    );
     final hash = sha256.convert(derived).toString();
+    clearKey(derived);
     return _constantTimeEquals(utf8.encode(hash), utf8.encode(storedHash));
   }
 

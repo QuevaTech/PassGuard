@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:passguard_vault_v0/services/biometric_service.dart';
@@ -123,13 +124,18 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
       var sessionKey = VaultService.deriveSessionKey(_passwordController.text, vault);
 
       // Upgrade KDF params if the vault was created with older defaults.
-      final migration = await VaultService.migrateKdfParamsIfNeeded(
-        vault, _passwordController.text, sessionKey,
-      );
-      if (migration != null) {
-        EncryptionService.clearKey(sessionKey);
-        vault = migration.$1;
-        sessionKey = migration.$2;
+      // Failure here is non-fatal — fall back to original vault/key.
+      try {
+        final migration = await VaultService.migrateKdfParamsIfNeeded(
+          vault, _passwordController.text, sessionKey,
+        );
+        if (migration != null) {
+          EncryptionService.clearKey(sessionKey);
+          vault = migration.$1;
+          sessionKey = migration.$2;
+        }
+      } catch (e) {
+        debugPrint('VerificationScreen: KDF migration failed (non-fatal): $e');
       }
 
       await VaultService.saveVault(vault, sessionKey);

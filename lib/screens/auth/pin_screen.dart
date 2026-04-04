@@ -23,12 +23,13 @@ class _PinScreenState extends ConsumerState<PinScreen> {
   String _pin = '';
   String _confirmPin = '';
   bool _isConfirming = false;
+  bool _isLoading = false;
   String _errorMessage = '';
 
   String get _currentPin => _isConfirming ? _confirmPin : _pin;
 
   void _onDigit(String digit) {
-    if (_currentPin.length >= _pinLength) return;
+    if (_isLoading || _currentPin.length >= _pinLength) return;
     setState(() {
       _errorMessage = '';
       if (_isConfirming) {
@@ -53,15 +54,20 @@ class _PinScreenState extends ConsumerState<PinScreen> {
   }
 
   Future<void> _onPinComplete() async {
+    if (_isLoading) return;
+
     if (widget.mode == PinScreenMode.setup) {
       if (!_isConfirming) {
         setState(() => _isConfirming = true);
       } else {
         if (_pin == _confirmPin) {
-          await PinService.setPin(_pin);
-          if (mounted) {
-            Navigator.pop(context, true);
+          setState(() => _isLoading = true);
+          try {
+            await PinService.setPin(_pin);
+          } finally {
+            if (mounted) setState(() => _isLoading = false);
           }
+          if (mounted) Navigator.pop(context, true);
         } else {
           setState(() {
             _errorMessage = 'PINs do not match. Try again.';
@@ -85,7 +91,9 @@ class _PinScreenState extends ConsumerState<PinScreen> {
       return;
     }
 
+    setState(() => _isLoading = true);
     final valid = await PinService.verifyPin(_pin);
+    if (mounted) setState(() => _isLoading = false);
     if (!mounted) return;
 
     if (valid) {
@@ -190,7 +198,13 @@ class _PinScreenState extends ConsumerState<PinScreen> {
 
             const SizedBox(height: 16),
 
-            if (_errorMessage.isNotEmpty)
+            if (_isLoading)
+              const SizedBox(
+                height: 24,
+                width: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            else if (_errorMessage.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 32),
                 child: Text(
@@ -198,7 +212,9 @@ class _PinScreenState extends ConsumerState<PinScreen> {
                   textAlign: TextAlign.center,
                   style: const TextStyle(color: Colors.red, fontSize: 14),
                 ),
-              ),
+              )
+            else
+              const SizedBox(height: 24),
 
             const SizedBox(height: 24),
 

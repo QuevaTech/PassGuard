@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:passguard_vault_v0/services/vault_service.dart';
@@ -134,14 +135,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           var sessionKey = VaultService.deriveSessionKey(password, vault);
 
           // Upgrade KDF params (Argon2id iterations/memory) if the vault was
-          // created with an older set of defaults.
-          final migration = await VaultService.migrateKdfParamsIfNeeded(
-            vault, password, sessionKey,
-          );
-          if (migration != null) {
-            EncryptionService.clearKey(sessionKey);
-            vault = migration.$1;
-            sessionKey = migration.$2;
+          // created with an older set of defaults. Failure here is non-fatal —
+          // we fall back to the original vault/key so the user can still log in.
+          try {
+            final migration = await VaultService.migrateKdfParamsIfNeeded(
+              vault, password, sessionKey,
+            );
+            if (migration != null) {
+              EncryptionService.clearKey(sessionKey);
+              vault = migration.$1;
+              sessionKey = migration.$2;
+            }
+          } catch (e) {
+            debugPrint('LoginScreen: KDF migration failed (non-fatal): $e');
           }
 
           await VaultService.saveVault(vault, sessionKey);
