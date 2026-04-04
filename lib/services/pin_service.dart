@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'encryption_service.dart';
+import '../utils/secure_storage_factory.dart';
 
 
 /// PIN storage using flutter_secure_storage + Argon2id key derivation.
@@ -24,9 +24,7 @@ class PinService {
   static const int _kdfMemory = 32768; // 32 MB
   static const int _kdfParallelism = 2;
 
-  static final FlutterSecureStorage _secureStorage = FlutterSecureStorage(
-    mOptions: const MacOsOptions(usesDataProtectionKeychain: kReleaseMode),
-  );
+  static final _secureStorage = SecureStorageFactory.create();
 
   static Future<bool> isPinEnabled() async {
     try {

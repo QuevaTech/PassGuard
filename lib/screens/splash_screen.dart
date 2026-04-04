@@ -11,6 +11,7 @@ import 'onboarding_screen.dart';
 import '../utils/app_localizations.dart';
 import '../services/pin_service.dart';
 import '../services/auth_guard_service.dart';
+import '../services/storage_availability_service.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -46,7 +47,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     if (!mounted) return;
 
-    // Load persisted brute-force lockout state (keychain is ready after app start)
+    // Check whether secure storage (keychain/libsecret/DPAPI) is available.
+    await StorageAvailabilityService.initialize();
+
+    // Load persisted brute-force lockout state (only if storage is available).
     await AuthGuardService.initialize();
 
     if (!mounted) return;

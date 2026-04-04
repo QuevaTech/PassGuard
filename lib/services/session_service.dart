@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../utils/secure_storage_factory.dart';
 
 class SessionService {
   static const Duration _defaultTimeout = Duration(minutes: 5);
@@ -13,11 +13,7 @@ class SessionService {
   // Keychain key — stores base64-encoded derived key bytes (NOT the password)
   static const _keyCredKey = 'pg_vault_session_key_v2';
 
-  // kReleaseMode uses the Data Protection Keychain (requires App Sandbox + signing).
-  // Debug/Profile builds fall back to the legacy keychain to avoid -34018.
-  static final FlutterSecureStorage _secureStorage = FlutterSecureStorage(
-    mOptions: MacOsOptions(usesDataProtectionKeychain: kReleaseMode),
-  );
+  static final _secureStorage = SecureStorageFactory.create();
 
   static Timer? _sessionTimer;
   static DateTime? _lastActivity;

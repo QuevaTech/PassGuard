@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../utils/secure_storage_factory.dart';
 
 /// Brute-force protection service with exponential backoff.
 ///
@@ -13,9 +13,7 @@ class AuthGuardService {
   static const _keyFailedAttempts = 'pg_auth_failed_attempts';
   static const _keyLockedUntil = 'pg_auth_locked_until';
 
-  static final FlutterSecureStorage _secureStorage = FlutterSecureStorage(
-    mOptions: const MacOsOptions(usesDataProtectionKeychain: kReleaseMode),
-  );
+  static final _secureStorage = SecureStorageFactory.create();
 
   static int _failedAttempts = 0;
   static DateTime? _lockedUntil;
