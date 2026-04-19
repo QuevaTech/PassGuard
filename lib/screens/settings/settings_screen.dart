@@ -129,9 +129,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         }
         // User cancelled the Save As dialog — no snackbar
       } else {
+        final size = MediaQuery.of(context).size;
         await Share.shareXFiles(
           [XFile(backupPath)],
           subject: AppLocalizations.of(context).backupVault,
+          sharePositionOrigin: Rect.fromCenter(
+            center: Offset(size.width / 2, size.height / 2),
+            width: 1,
+            height: 1,
+          ),
         );
         exported = true;
       }
