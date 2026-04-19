@@ -99,6 +99,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return false;
   }
 
+  Future<String> _fallbackExportPath(String fileName) async {
+    final normalizedName = fileName.toLowerCase().endsWith('.pgvault')
+        ? fileName
+        : '$fileName.pgvault';
+
+    Directory? targetDir;
+    try {
+      targetDir = await getDownloadsDirectory();
+    } catch (_) {
+      targetDir = null;
+    }
+
+    targetDir ??= await getApplicationDocumentsDirectory();
+    return '${targetDir.path}${Platform.pathSeparator}$normalizedName';
+  }
+
   Future<void> _exportVault() async {
     final rawKey = _getSessionKey();
     if (rawKey == null) return;
@@ -115,8 +131,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       // Desktop: Save As dialog; Mobile: share sheet
       final isDesktop = Platform.isMacOS || Platform.isWindows || Platform.isLinux;
       bool exported = false;
+      final fileName = backupPath.split(Platform.pathSeparator).last;
       if (isDesktop) {
-        final fileName = backupPath.split(Platform.pathSeparator).last;
         String? savePath;
         try {
           savePath = await FilePicker.platform.saveFile(
@@ -129,11 +145,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           // On some Windows setups Save As can fail; we'll fall back below.
         }
 
-        if ((savePath == null || savePath.trim().isEmpty) && Platform.isWindows) {
-          final downloadsDir = await getDownloadsDirectory();
-          if (downloadsDir != null) {
-            savePath = '${downloadsDir.path}${Platform.pathSeparator}$fileName';
-          }
+        if (savePath == null || savePath.trim().isEmpty) {
+          savePath = await _fallbackExportPath(fileName);
         }
 
         if (savePath != null && savePath.trim().isNotEmpty) {
@@ -145,17 +158,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         }
         // User cancelled the Save As dialog — no snackbar
       } else {
-        final size = MediaQuery.of(context).size;
-        await Share.shareXFiles(
-          [XFile(backupPath)],
-          subject: AppLocalizations.of(context).backupVault,
-          sharePositionOrigin: Rect.fromCenter(
-            center: Offset(size.width / 2, size.height / 2),
-            width: 1,
-            height: 1,
-          ),
-        );
-        exported = true;
+        try {
+          final size = MediaQuery.of(context).size;
+          await Share.shareXFiles(
+            [XFile(backupPath)],
+            subject: AppLocalizations.of(context).backupVault,
+            sharePositionOrigin: Rect.fromCenter(
+              center: Offset(size.width / 2, size.height / 2),
+              width: 1,
+              height: 1,
+            ),
+          );
+          exported = true;
+        } catch (_) {
+          final fallbackPath = await _fallbackExportPath(fileName);
+          await File(backupPath).copy(fallbackPath);
+          exported = true;
+        }
       }
 
       if (exported && mounted) {
