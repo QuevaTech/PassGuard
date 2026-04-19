@@ -25,7 +25,6 @@ rm -f "$RELEASE_DIR/$DMG_NAME.dmg"
 
 create-dmg \
   --volname "$APP_NAME" \
-  --volicon "$RELEASE_DIR/$APP_NAME.app/Contents/Resources/AppIcon.icns" \
   --window-pos 200 120 \
   --window-size 600 400 \
   --icon-size 100 \
