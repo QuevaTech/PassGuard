@@ -45,9 +45,13 @@ class PinService {
       memory: _kdfMemory,
       parallelism: _kdfParallelism,
     );
-    await _secureStorage.write(key: _keyPinHash, value: result['hash']);
-    await _secureStorage.write(key: _keyPinSalt, value: result['salt']);
-    await _secureStorage.write(key: _keyPinEnabled, value: 'true');
+    try {
+      await _secureStorage.write(key: _keyPinHash, value: result['hash']);
+      await _secureStorage.write(key: _keyPinSalt, value: result['salt']);
+      await _secureStorage.write(key: _keyPinEnabled, value: 'true');
+    } catch (e) {
+      debugPrint('PinService: setPin keychain write failed: $e');
+    }
   }
 
   /// Verify the PIN using constant-time Argon2id comparison.
@@ -69,8 +73,12 @@ class PinService {
   }
 
   static Future<void> disablePin() async {
-    await _secureStorage.delete(key: _keyPinHash);
-    await _secureStorage.delete(key: _keyPinSalt);
-    await _secureStorage.write(key: _keyPinEnabled, value: 'false');
+    try {
+      await _secureStorage.delete(key: _keyPinHash);
+      await _secureStorage.delete(key: _keyPinSalt);
+      await _secureStorage.write(key: _keyPinEnabled, value: 'false');
+    } catch (e) {
+      debugPrint('PinService: disablePin keychain write failed: $e');
+    }
   }
 }
