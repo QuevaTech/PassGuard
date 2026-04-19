@@ -52,27 +52,57 @@ Your `.pgvault` file is just a file — encrypted, portable, and entirely under 
 
 ## How We Compare
 
-| Feature | PassGuard Vault | LastPass | 1Password | Bitwarden | KeePass | Dashlane |
-| --- | :---: | :---: | :---: | :---: | :---: | :---: |
-| Fully offline (no cloud) | ✅ | ❌ | ❌ | ⚠️ | ✅ | ❌ |
-| No account required | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ |
-| No subscription fee | ✅ | ❌ | ❌ | ⚠️ | ✅ | ❌ |
-| AES-256-**GCM** (authenticated) | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ |
-| Argon2id KDF (always-on, non-downgradable) | ✅ | ❌ | ❌ | ⚠️ | ✅ | ⚠️ |
-| Native biometric unlock | ✅ | ✅ | ✅ | ✅ | ⚠️ | ✅ |
-| Native mobile app | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ |
-| Modern native UI (Material Design 3) | ✅ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ |
-| Auto-lock & session timeout | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Encrypted backup | ✅ | ⚠️ | ⚠️ | ✅ | ✅ | ⚠️ |
-| Open source | ✅ | ❌ | ❌ | ✅ | ✅ | ❌ |
-| Zero data sent to any server | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ |
-| Memory-safe key handling | ✅ | — | — | — | ❌ | — |
-| Documented CVEs | **None** | **Multiple** | None | None | **CVE-2023-32784** | None |
-| Proven breach / incident history | **None** | **2022 breach** | None | None | **2023 exploit** | None |
+### Security
 
-> ✅ Full support &nbsp;·&nbsp; ⚠️ Partial / optional / plugin required &nbsp;·&nbsp; ❌ Not supported &nbsp;·&nbsp; — Not applicable
+| | PassGuard Vault | Bitwarden | 1Password | LastPass | KeePass | Dashlane | Proton Pass |
+| --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| AES-256-**GCM** (authenticated) | ✅ | ✅ | ✅ | ✅ | ❌ CBC | ✅ | ✅ |
+| Argon2id KDF (mandatory) | ✅ | ⚠️¹ | ❌ | ❌ | ✅ | ⚠️² | ✅ |
+| Per-entry unique IV | ✅ | ✅ | ✅ | — | ❌ | ✅ | ✅ |
+| Memory-safe key handling | ✅ | — | — | — | ❌³ | — | — |
+| Auto-lock & session timeout | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Documented CVEs | **None** | None | None | **Multiple** | **CVE-2023-32784**³ | None | None |
+| Proven breach history | **None** | None | None | **2022 breach** | **2023 exploit** | None | None |
+
+### Privacy & Architecture
+
+| | PassGuard Vault | Bitwarden | 1Password | LastPass | KeePass | Dashlane | Proton Pass |
+| --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| Fully offline (no cloud) | ✅ | ⚠️ | ❌ | ❌ | ✅ | ❌ | ❌ |
+| Zero data sent to any server | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
+| No account required | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
+| Open source | ✅ AGPL | ✅ GPL | ❌ | ❌ | ✅ GPL | ❌ | ✅ GPL |
+| Self-hostable | N/A⁴ | ✅ | ❌ | ❌ | N/A⁴ | ❌ | ❌ |
+
+### Usability & Platform
+
+| | PassGuard Vault | Bitwarden | 1Password | LastPass | KeePass | Dashlane | Proton Pass |
+| --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| iOS / Android | ✅ | ✅ | ✅ | ✅ | ❌⁵ | ✅ | ✅ |
+| macOS / Windows / Linux | ✅ | ✅ | ✅ | ⚠️ | ✅⁶ | ⚠️ | ❌ |
+| Native biometric unlock | ✅ | ✅ | ✅ | ✅ | ⚠️ | ✅ | ✅ |
+| Modern UI (Material 3) | ✅ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ✅ |
+| Encrypted backup export | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ |
+| CSV import (multi-format) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Multi-language (13+) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+
+### Cost
+
+| | PassGuard Vault | Bitwarden | 1Password | LastPass | KeePass | Dashlane | Proton Pass |
+| --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| Free tier | **Unlimited** | Limited | ❌ | Limited | **Unlimited** | Limited | Limited |
+| Subscription required | **Never** | Optional | **Always** | **Always** | **Never** | **Always** | Optional |
+| Price | **$0** | $0–$10/yr | $36/yr | $36/yr | **$0** | $60/yr | $0–$48/yr |
+
+> ✅ Full support &nbsp;·&nbsp; ⚠️ Partial / optional / plugin &nbsp;·&nbsp; ❌ Not supported &nbsp;·&nbsp; — Not applicable
 >
-> Bitwarden Argon2id: optional, not default — PBKDF2 remains default and is vulnerable to server-side iteration downgrade attacks. Dashlane: uses Argon2**d**, not Argon2**id** — lacks side-channel resistance.
+> **Notes:**
+> 1. Bitwarden: Argon2id is optional, not default. PBKDF2 remains the default KDF and is vulnerable to server-side iteration downgrade attacks.
+> 2. Dashlane: uses Argon2**d**, not Argon2**id** — an older variant that lacks side-channel resistance.
+> 3. KeePass CVE-2023-32784: master password reconstructable from heap memory dumps. Proof-of-concept exploit publicly released.
+> 4. PassGuard Vault and KeePass are local-only by design — self-hosting is not applicable because there is no server component.
+> 5. KeePass has no official mobile app. Third-party clients (KeePassDX, Strongbox) are maintained independently with varying security postures.
+> 6. KeePass desktop is Windows-native only. macOS/Linux support relies on Mono runtime or unofficial ports.
 
 ---
 
