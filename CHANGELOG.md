@@ -4,6 +4,22 @@ All notable changes to PassGuard Vault are documented here.
 
 ## [1.0.0] - 2026-04-04
 
+## [1.0.1] - 2026-04-19
+
+### Fixed
+- iOS: Vault dışa aktarma (export) işlemi sırasında sharePositionOrigin hatası düzeltildi (iPad/iOS 17 share sheet uyumluluğu)
+- macOS: Keychain erişim hatası (-34018) için PinService try-catch ile güvenli hale getirildi
+- Debug print'leri temizlendi, gereksiz loglar kaldırıldı
+
+### Added
+- 13 dilde yasal uyarı/disclaimer (onboarding, login, README)
+- Onboarding'da zorunlu disclaimer onayı
+- Login ekranında master password uyarı banner'ı
+
+### Improved
+- README'de karşılaştırma tablosu ve konumlandırma metni güncellendi
+- Platformlar arası testler ve hata analizleri tamamlandı
+
 ### Security
 - **Argon2id KDF** — upgraded parameters to 4 iterations / 128 MB memory for master password derivation
 - **KDF migration** — existing vault files are automatically re-encrypted with updated parameters on next login
