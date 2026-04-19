@@ -117,14 +117,30 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       bool exported = false;
       if (isDesktop) {
         final fileName = backupPath.split(Platform.pathSeparator).last;
-        final savePath = await FilePicker.platform.saveFile(
-          dialogTitle: AppLocalizations.of(context).backupVault,
-          fileName: fileName,
-          allowedExtensions: ['pgvault'],
-          type: FileType.custom,
-        );
-        if (savePath != null) {
-          await File(backupPath).copy(savePath);
+        String? savePath;
+        try {
+          savePath = await FilePicker.platform.saveFile(
+            dialogTitle: AppLocalizations.of(context).backupVault,
+            fileName: fileName,
+            allowedExtensions: ['pgvault'],
+            type: FileType.custom,
+          );
+        } catch (_) {
+          // On some Windows setups Save As can fail; we'll fall back below.
+        }
+
+        if ((savePath == null || savePath.trim().isEmpty) && Platform.isWindows) {
+          final downloadsDir = await getDownloadsDirectory();
+          if (downloadsDir != null) {
+            savePath = '${downloadsDir.path}${Platform.pathSeparator}$fileName';
+          }
+        }
+
+        if (savePath != null && savePath.trim().isNotEmpty) {
+          final normalizedPath = savePath.toLowerCase().endsWith('.pgvault')
+              ? savePath
+              : '$savePath.pgvault';
+          await File(backupPath).copy(normalizedPath);
           exported = true;
         }
         // User cancelled the Save As dialog — no snackbar

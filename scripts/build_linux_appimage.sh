@@ -5,8 +5,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR/.."
 
-APP_NAME="passguard_vault_v0"
-VERSION="1.0.0"
+APP_NAME="passguard_vault"
+VERSION="1.0.1"
 BUNDLE="build/linux/x64/release/bundle"
 APPDIR="build/linux/AppDir"
 OUTDIR="build/linux/appimage"
@@ -44,7 +44,7 @@ cat > "$APPDIR/AppRun" <<'EOF'
 #!/bin/sh
 HERE="$(dirname "$(readlink -f "$0")")"
 export LD_LIBRARY_PATH="$HERE/usr/lib:${LD_LIBRARY_PATH:-}"
-exec "$HERE/usr/bin/passguard_vault_v0" "$@"
+exec "$HERE/usr/bin/passguard_vault" "$@"
 EOF
 
 chmod +x "$APPDIR/AppRun" "$APPDIR/usr/bin/$APP_NAME"
