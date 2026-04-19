@@ -13,6 +13,7 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _controller = PageController();
   int _currentPage = 0;
+  bool _disclaimerAccepted = false;
 
   List<_OnboardingPageData> _buildPages(AppLocalizations l) => [
     _OnboardingPageData(
@@ -21,6 +22,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       title: l.onboardingTitle1,
       desc: l.onboardingDesc1,
       isWarning: false,
+      isDisclaimer: false,
     ),
     _OnboardingPageData(
       icon: Icons.warning_amber_rounded,
@@ -28,6 +30,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       title: l.onboardingTitle2,
       desc: l.onboardingDesc2,
       isWarning: true,
+      isDisclaimer: false,
     ),
     _OnboardingPageData(
       icon: Icons.fingerprint,
@@ -35,6 +38,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       title: l.onboardingTitle3,
       desc: l.onboardingDesc3,
       isWarning: false,
+      isDisclaimer: false,
     ),
     _OnboardingPageData(
       icon: Icons.sync_alt,
@@ -42,6 +46,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       title: l.onboardingTitle4,
       desc: l.onboardingDesc4,
       isWarning: false,
+      isDisclaimer: false,
     ),
     _OnboardingPageData(
       icon: Icons.shield_outlined,
@@ -49,10 +54,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       title: l.onboardingTitle5,
       desc: l.onboardingDesc5,
       isWarning: false,
+      isDisclaimer: false,
+    ),
+    _OnboardingPageData(
+      icon: Icons.gavel_rounded,
+      color: const Color(0xFFB71C1C),
+      title: l.disclaimerTitle,
+      desc: l.disclaimerText,
+      isWarning: false,
+      isDisclaimer: true,
     ),
   ];
 
   Future<void> _finish() async {
+    if (!_disclaimerAccepted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context).disclaimerMustAccept),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('onboarding_done', true);
     if (mounted) {
@@ -82,17 +105,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Skip
+            // Skip — jumps to disclaimer page, never bypasses it
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Align(
                 alignment: Alignment.topRight,
                 child: TextButton(
-                  onPressed: _finish,
+                  onPressed: isLast
+                      ? null
+                      : () {
+                          _controller.animateToPage(
+                            pages.length - 1,
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        },
                   child: Text(
                     l.skip,
                     style: TextStyle(
-                      color: theme.colorScheme.primary,
+                      color: isLast
+                          ? theme.colorScheme.primary.withOpacity(0.3)
+                          : theme.colorScheme.primary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -106,8 +139,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 controller: _controller,
                 itemCount: pages.length,
                 onPageChanged: (i) => setState(() => _currentPage = i),
-                itemBuilder: (context, index) =>
-                    _OnboardingPageWidget(data: pages[index]),
+                itemBuilder: (context, index) {
+                  final page = pages[index];
+                  if (page.isDisclaimer) {
+                    return _DisclaimerPageWidget(
+                      data: page,
+                      accepted: _disclaimerAccepted,
+                      acceptLabel: l.disclaimerAccept,
+                      onAcceptChanged: (v) =>
+                          setState(() => _disclaimerAccepted = v ?? false),
+                    );
+                  }
+                  return _OnboardingPageWidget(data: page);
+                },
               ),
             ),
 
@@ -139,19 +183,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
-                  onPressed: () {
-                    if (isLast) {
-                      _finish();
-                    } else {
-                      _controller.nextPage(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                      );
-                    }
-                  },
+                  onPressed: (isLast && !_disclaimerAccepted)
+                      ? null
+                      : () {
+                          if (isLast) {
+                            _finish();
+                          } else {
+                            _controller.nextPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          }
+                        },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isLast
-                        ? theme.colorScheme.primary
+                        ? (_disclaimerAccepted
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.onSurface.withOpacity(0.12))
                         : null,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -182,6 +230,7 @@ class _OnboardingPageData {
   final String title;
   final String desc;
   final bool isWarning;
+  final bool isDisclaimer;
 
   const _OnboardingPageData({
     required this.icon,
@@ -189,6 +238,7 @@ class _OnboardingPageData {
     required this.title,
     required this.desc,
     required this.isWarning,
+    this.isDisclaimer = false,
   });
 }
 
@@ -268,6 +318,105 @@ class _OnboardingPageWidget extends StatelessWidget {
                 height: 1.6,
               ),
             ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DisclaimerPageWidget extends StatelessWidget {
+  final _OnboardingPageData data;
+  final bool accepted;
+  final String acceptLabel;
+  final ValueChanged<bool?> onAcceptChanged;
+
+  const _DisclaimerPageWidget({
+    required this.data,
+    required this.accepted,
+    required this.acceptLabel,
+    required this.onAcceptChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        children: [
+          const SizedBox(height: 16),
+          // Icon
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: data.color.withOpacity(0.12),
+              shape: BoxShape.circle,
+              border: Border.all(color: data.color.withOpacity(0.4), width: 2),
+            ),
+            child: Icon(data.icon, size: 40, color: data.color),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            data.title,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: data.color,
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Scrollable disclaimer text
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: data.color.withOpacity(isDark ? 0.08 : 0.04),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: data.color.withOpacity(0.25)),
+              ),
+              child: SingleChildScrollView(
+                child: Text(
+                  data.desc,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: isDark
+                        ? theme.colorScheme.onSurface.withOpacity(0.85)
+                        : theme.colorScheme.onSurface.withOpacity(0.8),
+                    height: 1.7,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Checkbox
+          InkWell(
+            borderRadius: BorderRadius.circular(8),
+            onTap: () => onAcceptChanged(!accepted),
+            child: Row(
+              children: [
+                Checkbox(
+                  value: accepted,
+                  onChanged: onAcceptChanged,
+                  activeColor: data.color,
+                ),
+                Expanded(
+                  child: Text(
+                    acceptLabel,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: accepted
+                          ? data.color
+                          : theme.colorScheme.onSurface.withOpacity(0.7),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
         ],
       ),
     );

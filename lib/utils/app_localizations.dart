@@ -385,6 +385,11 @@ class AppLocalizations {
         'onboarding_desc_4': 'Chrome, Bitwarden veya 1Password\'dan içe aktarın. Şifreli yedeğinizi alın ve istediğiniz cihaza geri yükleyin.',
         'onboarding_title_5': 'Sıfır Bilgi Mimarisi',
         'onboarding_desc_5': 'Verileriniz cihazınızdan hiç çıkmaz. Bulut yok, sunucu yok, hesap yok — tamamen gizli.',
+        'disclaimer_title': 'Sorumluluk Reddi',
+        'disclaimer_text': 'Bu yazılım "olduğu gibi" sunulmaktadır; açık veya zımni hiçbir garanti verilmemektedir.\n\nTüm verileriniz yalnızca cihazınızda saklanır. Ana şifreniz hiçbir yerde depolanmaz, iletilemez ve kurtarılamaz.\n\nAna şifrenizi kaybetmeniz halinde verilerinize erişim mümkün değildir. Sıfırlama mekanizması, kurtarma anahtarı veya arka kapı bulunmamaktadır.\n\nGeliştirici(ler), şifre kaybı, veri kaybı, erişim kaybı veya bu yazılımın kullanımından kaynaklanan doğrudan ya da dolaylı hiçbir zarardan sorumlu tutulamaz.\n\nKasanızı (.pgvault) düzenli olarak yedeklemeniz şiddetle tavsiye edilir.',
+        'disclaimer_accept': 'Okudum, anladım ve kabul ediyorum',
+        'disclaimer_must_accept': 'Devam etmek için sorumluluk reddini kabul etmelisiniz',
+        'master_password_unrecoverable': 'Bu şifre kurtarılamaz. Güvenli bir yere not edin ve düzenli yedek alın.',
       };
     } else if (locale.languageCode == 'de') {
       return {
@@ -582,6 +587,11 @@ class AppLocalizations {
         'createdAt': 'Erstellt am',
         'updatedAt': 'Aktualisiert am',
         'minutes': 'Minuten',
+        'disclaimer_title': 'Haftungsausschluss',
+        'disclaimer_text': 'Diese Software wird "wie besehen" ohne jegliche ausdrückliche oder stillschweigende Gewährleistung bereitgestellt.\n\nAlle Daten werden ausschließlich lokal auf Ihrem Gerät gespeichert. Ihr Master-Passwort wird nirgendwo gespeichert, übertragen oder kann wiederhergestellt werden.\n\nWenn Sie Ihr Master-Passwort verlieren, ist der Zugriff auf Ihre Daten nicht möglich. Es gibt keinen Rücksetzungsmechanismus, keinen Wiederherstellungsschlüssel und keine Hintertür.\n\nDer/die Entwickler haften nicht für Passwortverlust, Datenverlust, Zugriffsverlust oder direkte/indirekte Schäden aus der Nutzung dieser Software.\n\nEs wird dringend empfohlen, Ihren Tresor (.pgvault) regelmäßig zu sichern.',
+        'disclaimer_accept': 'Ich habe gelesen, verstanden und akzeptiere',
+        'disclaimer_must_accept': 'Sie müssen den Haftungsausschluss akzeptieren, um fortzufahren',
+        'master_password_unrecoverable': 'Dieses Passwort kann nicht wiederhergestellt werden. Notieren Sie es an einem sicheren Ort und erstellen Sie regelmäßig Backups.',
       };
     } else if (locale.languageCode == 'fr') {
       return {
@@ -779,6 +789,11 @@ class AppLocalizations {
         'createdAt': 'Créé le',
         'updatedAt': 'Mis à jour le',
         'minutes': 'minutes',
+        'disclaimer_title': 'Clause de non-responsabilité',
+        'disclaimer_text': 'Ce logiciel est fourni "tel quel", sans aucune garantie expresse ou implicite.\n\nToutes vos données sont stockées uniquement sur votre appareil. Votre mot de passe maître n\'est jamais stocké, transmis ou récupérable.\n\nSi vous perdez votre mot de passe maître, l\'accès à vos données est impossible. Il n\'existe aucun mécanisme de réinitialisation, clé de récupération ou porte dérobée.\n\nLe(s) développeur(s) ne peuvent être tenus responsables de la perte de mots de passe, de données, d\'accès ou de tout dommage direct ou indirect lié à l\'utilisation de ce logiciel.\n\nIl est fortement recommandé de sauvegarder régulièrement votre coffre (.pgvault).',
+        'disclaimer_accept': 'J\'ai lu, compris et j\'accepte',
+        'disclaimer_must_accept': 'Vous devez accepter la clause de non-responsabilité pour continuer',
+        'master_password_unrecoverable': 'Ce mot de passe ne peut pas être récupéré. Notez-le dans un endroit sûr et effectuez des sauvegardes régulières.',
       };
     } else if (locale.languageCode == 'ar') {
       return {
@@ -976,6 +991,11 @@ class AppLocalizations {
         'createdAt': 'تاريخ الإنشاء',
         'updatedAt': 'تاريخ التحديث',
         'minutes': 'دقائق',
+        'disclaimer_title': 'إخلاء المسؤولية',
+        'disclaimer_text': 'يُقدَّم هذا البرنامج "كما هو" دون أي ضمانات صريحة أو ضمنية.\n\nجميع بياناتك مخزَّنة فقط على جهازك. كلمة المرور الرئيسية لا تُخزَّن ولا تُنقَل ولا يمكن استردادها.\n\nإذا فقدتَ كلمة المرور الرئيسية، فلن يكون بالإمكان الوصول إلى بياناتك.\n\nالمطوّر(ون) غير مسؤولين عن فقدان كلمات المرور أو البيانات أو أي أضرار ناتجة عن استخدام هذا البرنامج.\n\nيُوصى بشدة بالنسخ الاحتياطي المنتظم لخزنتك (.pgvault).',
+        'disclaimer_accept': 'لقد قرأت وفهمت وأوافق',
+        'disclaimer_must_accept': 'يجب قبول إخلاء المسؤولية للمتابعة',
+        'master_password_unrecoverable': 'لا يمكن استرداد كلمة المرور هذه. دوّنها في مكان آمن واحرص على النسخ الاحتياطي بانتظام.',
       };
     } else if (locale.languageCode == 'es') {
       return {
@@ -1146,6 +1166,11 @@ class AppLocalizations {
         'import_csv_desc': 'Bitwarden, Chrome o 1Password CSV',
         'csv_format_unsupported': 'Formato CSV no compatible',
         'edit_entry': 'Editar entrada',
+        'disclaimer_title': 'Exención de responsabilidad',
+        'disclaimer_text': 'Este software se proporciona "tal cual", sin garantías de ningún tipo, expresas o implícitas.\n\nTodos sus datos se almacenan únicamente en su dispositivo. Su contraseña maestra nunca se almacena, transmite ni puede recuperarse.\n\nSi pierde su contraseña maestra, no será posible acceder a sus datos. No existe mecanismo de restablecimiento, clave de recuperación ni puerta trasera.\n\nEl/los desarrollador(es) no se hacen responsables de la pérdida de contraseñas, datos, acceso o cualquier daño directo o indirecto derivado del uso de este software.\n\nSe recomienda encarecidamente realizar copias de seguridad periódicas de su bóveda (.pgvault).',
+        'disclaimer_accept': 'He leído, entendido y acepto',
+        'disclaimer_must_accept': 'Debe aceptar la exención de responsabilidad para continuar',
+        'master_password_unrecoverable': 'Esta contraseña no se puede recuperar. Anótela en un lugar seguro y realice copias de seguridad periódicas.',
       };
     } else if (locale.languageCode == 'it') {
       return {
@@ -1316,6 +1341,11 @@ class AppLocalizations {
         'import_csv_desc': 'CSV di Bitwarden, Chrome o 1Password',
         'csv_format_unsupported': 'Formato CSV non supportato',
         'edit_entry': 'Modifica voce',
+        'disclaimer_title': 'Esclusione di responsabilità',
+        'disclaimer_text': 'Questo software è fornito "così com\'è" senza alcuna garanzia espressa o implicita.\n\nTutti i dati sono archiviati esclusivamente sul dispositivo. La password principale non viene mai memorizzata, trasmessa o può essere recuperata.\n\nSe si perde la password principale, l\'accesso ai dati non sarà possibile. Non esistono meccanismi di ripristino, chiavi di recupero o backdoor.\n\nLo/gli sviluppatore/i non sono responsabili per la perdita di password, dati, accesso o qualsiasi danno diretto o indiretto derivante dall\'uso di questo software.\n\nSi consiglia vivamente di eseguire backup regolari del proprio vault (.pgvault).',
+        'disclaimer_accept': 'Ho letto, compreso e accetto',
+        'disclaimer_must_accept': 'Devi accettare l\'esclusione di responsabilità per continuare',
+        'master_password_unrecoverable': 'Questa password non può essere recuperata. Annotala in un luogo sicuro e fai backup regolari.',
       };
     } else if (locale.languageCode == 'pt') {
       return {
@@ -1486,6 +1516,11 @@ class AppLocalizations {
         'import_csv_desc': 'CSV do Bitwarden, Chrome ou 1Password',
         'csv_format_unsupported': 'Formato CSV não suportado',
         'edit_entry': 'Editar entrada',
+        'disclaimer_title': 'Isenção de responsabilidade',
+        'disclaimer_text': 'Este software é fornecido "como está", sem qualquer garantia expressa ou implícita.\n\nTodos os seus dados são armazenados apenas no seu dispositivo. Sua senha mestra nunca é armazenada, transmitida ou pode ser recuperada.\n\nSe você perder sua senha mestra, o acesso aos seus dados não será possível. Não há mecanismo de redefinição, chave de recuperação ou porta dos fundos.\n\nO(s) desenvolvedor(es) não se responsabilizam pela perda de senhas, dados, acesso ou quaisquer danos diretos ou indiretos decorrentes do uso deste software.\n\nÉ altamente recomendável fazer backups regulares do seu cofre (.pgvault).',
+        'disclaimer_accept': 'Li, entendi e aceito',
+        'disclaimer_must_accept': 'Você deve aceitar a isenção de responsabilidade para continuar',
+        'master_password_unrecoverable': 'Esta senha não pode ser recuperada. Anote-a em local seguro e faça backups regulares.',
       };
     } else if (locale.languageCode == 'ru') {
       return {
@@ -1656,6 +1691,11 @@ class AppLocalizations {
         'import_csv_desc': 'CSV из Bitwarden, Chrome или 1Password',
         'csv_format_unsupported': 'Неподдерживаемый формат CSV',
         'edit_entry': 'Изменить запись',
+        'disclaimer_title': 'Отказ от ответственности',
+        'disclaimer_text': 'Это программное обеспечение предоставляется "как есть" без каких-либо явных или подразумеваемых гарантий.\n\nВсе данные хранятся только на вашем устройстве. Мастер-пароль нигде не сохраняется, не передаётся и не может быть восстановлен.\n\nЕсли вы потеряете мастер-пароль, доступ к данным будет невозможен.\n\nРазработчик(и) не несут ответственности за потерю паролей, данных, доступа или любой ущерб, вызванный использованием этого ПО.\n\nНастоятельно рекомендуется регулярно создавать резервные копии хранилища (.pgvault).',
+        'disclaimer_accept': 'Я прочитал(а), понял(а) и принимаю',
+        'disclaimer_must_accept': 'Вы должны принять отказ от ответственности для продолжения',
+        'master_password_unrecoverable': 'Этот пароль невозможно восстановить. Запишите его в надёжном месте и регулярно создавайте резервные копии.',
       };
     } else if (locale.languageCode == 'ja') {
       return {
@@ -1826,6 +1866,11 @@ class AppLocalizations {
         'import_csv_desc': 'Bitwarden、ChromeまたはPassword CSVをインポート',
         'csv_format_unsupported': 'サポートされていないCSV形式',
         'edit_entry': '項目を編集',
+        'disclaimer_title': '免責事項',
+        'disclaimer_text': '本ソフトウェアは「現状のまま」提供され、明示・黙示を問わず一切の保証はありません。\n\nすべてのデータはお使いのデバイスにのみ保存されます。マスターパスワードは保存・送信・復元されません。\n\nマスターパスワードを失うとデータへのアクセスは不可能になります。\n\n開発者はパスワードの喪失、データの損失、アクセスの喪失、または本ソフトウェアの使用によるいかなる損害についても責任を負いません。\n\n保管庫(.pgvault)の定期的なバックアップを強くお勧めします。',
+        'disclaimer_accept': '読みました、理解し、同意します',
+        'disclaimer_must_accept': '続行するには免責事項に同意する必要があります',
+        'master_password_unrecoverable': 'このパスワードは復元できません。安全な場所に記録し、定期的にバックアップを取ってください。',
       };
     } else if (locale.languageCode == 'zh') {
       return {
@@ -1996,6 +2041,11 @@ class AppLocalizations {
         'import_csv_desc': 'Bitwarden、Chrome或1Password CSV',
         'csv_format_unsupported': '不支持的CSV格式',
         'edit_entry': '编辑条目',
+        'disclaimer_title': '免责声明',
+        'disclaimer_text': '本软件按“原样”提供，不提供任何明示或暗示的保证。\n\n您的所有数据仅存储在您的设备上。主密码不会被存储、传输或可以恢复。\n\n如果您丢失主密码，将无法访问您的数据。\n\n开发者不对密码丢失、数据丢失、访问丢失或因使用本软件而造成的任何损害承担责任。\n\n强烈建议定期备份您的保管库(.pgvault)。',
+        'disclaimer_accept': '我已阅读、理解并接受',
+        'disclaimer_must_accept': '您必须接受免责声明才能继续',
+        'master_password_unrecoverable': '此密码无法恢复。请将其记录在安全的地方并定期备份。',
       };
     } else if (locale.languageCode == 'ko') {
       return {
@@ -2166,6 +2216,11 @@ class AppLocalizations {
         'import_csv_desc': 'Bitwarden, Chrome 또는 1Password CSV',
         'csv_format_unsupported': '지원되지 않는 CSV 형식',
         'edit_entry': '항목 편집',
+        'disclaimer_title': '면책 조항',
+        'disclaimer_text': '이 소프트웨어는 "있는 그대로" 제공되며, 명시적 또는 묵시적 어떤 보증도 제공되지 않습니다.\n\n모든 데이터는 기기에만 저장됩니다. 마스터 비밀번호는 저장, 전송 또는 복구되지 않습니다.\n\n마스터 비밀번호를 잃으면 데이터에 접근할 수 없습니다.\n\n개발자는 비밀번호 손실, 데이터 손실, 접근 손실 또는 이 소프트웨어 사용으로 인한 어떤 손해에 대해서도 책임을 지지 않습니다.\n\n보관함(.pgvault)의 정기적인 백업을 강력히 권장합니다.',
+        'disclaimer_accept': '읽었으며 이해하고 동의합니다',
+        'disclaimer_must_accept': '계속하려면 면책 조항에 동의해야 합니다',
+        'master_password_unrecoverable': '이 비밀번호는 복구할 수 없습니다. 안전한 곳에 적어두고 정기적으로 백업하세요.',
       };
     } else if (locale.languageCode == 'nl') {
       return {
@@ -2336,6 +2391,11 @@ class AppLocalizations {
         'import_csv_desc': 'Bitwarden, Chrome of 1Password CSV',
         'csv_format_unsupported': 'Niet-ondersteund CSV-formaat',
         'edit_entry': 'Vermelding bewerken',
+        'disclaimer_title': 'Aansprakelijkheidsbeperking',
+        'disclaimer_text': 'Deze software wordt "zoals het is" aangeboden, zonder enige uitdrukkelijke of impliciete garantie.\n\nAl uw gegevens worden alleen op uw apparaat opgeslagen. Uw hoofdwachtwoord wordt nooit opgeslagen, verzonden of kan worden hersteld.\n\nAls u uw hoofdwachtwoord verliest, is toegang tot uw gegevens niet mogelijk. Er is geen resetmechanisme, herstelsleutel of achterdeur.\n\nDe ontwikkelaar(s) zijn niet aansprakelijk voor verlies van wachtwoorden, gegevens, toegang of enige directe of indirecte schade door het gebruik van deze software.\n\nHet wordt sterk aanbevolen om regelmatig back-ups te maken van uw kluis (.pgvault).',
+        'disclaimer_accept': 'Ik heb gelezen, begrepen en accepteer',
+        'disclaimer_must_accept': 'U moet de aansprakelijkheidsbeperking accepteren om door te gaan',
+        'master_password_unrecoverable': 'Dit wachtwoord kan niet worden hersteld. Noteer het op een veilige plaats en maak regelmatig back-ups.',
       };
     } else {
       // Default to English
@@ -2500,6 +2560,11 @@ class AppLocalizations {
         'score_good': 'Good',
         'score_fair': 'Fair',
         'score_poor': 'Poor',
+        'disclaimer_title': 'Disclaimer & Liability',
+        'disclaimer_text': 'This software is provided "as is" without any express or implied warranty.\n\nAll your data is stored only on your device. Your master password is never stored, transmitted, or recoverable by anyone — including the developer.\n\nIf you lose your master password, access to your data will not be possible. There is no reset mechanism, recovery key, or backdoor.\n\nThe developer(s) shall not be held liable for loss of passwords, data, access, or any direct or indirect damages arising from the use of this software.\n\nIt is strongly recommended to regularly back up your vault (.pgvault) file.',
+        'disclaimer_accept': 'I have read, understood, and accept',
+        'disclaimer_must_accept': 'You must accept the disclaimer to continue',
+        'master_password_unrecoverable': 'This password cannot be recovered. Write it down in a safe place and back up regularly.',
       };
     }
   }
@@ -2732,6 +2797,13 @@ class AppLocalizations {
   String get scoreGood => _localizedValues['score_good'] ?? 'Good';
   String get scoreFair => _localizedValues['score_fair'] ?? 'Fair';
   String get scorePoor => _localizedValues['score_poor'] ?? 'Poor';
+
+  // Disclaimer
+  String get disclaimerTitle => _localizedValues['disclaimer_title'] ?? 'Disclaimer & Liability';
+  String get disclaimerText => _localizedValues['disclaimer_text'] ?? 'This software is provided "as is" without any express or implied warranty.\n\nAll your data is stored only on your device. Your master password is never stored, transmitted, or recoverable.\n\nIf you lose your master password, access to your data will not be possible.\n\nThe developer(s) shall not be held liable for loss of passwords, data, access, or any damages arising from the use of this software.\n\nIt is strongly recommended to regularly back up your vault (.pgvault) file.';
+  String get disclaimerAccept => _localizedValues['disclaimer_accept'] ?? 'I have read, understood, and accept';
+  String get disclaimerMustAccept => _localizedValues['disclaimer_must_accept'] ?? 'You must accept the disclaimer to continue';
+  String get masterPasswordUnrecoverable => _localizedValues['master_password_unrecoverable'] ?? 'This password cannot be recovered. Write it down in a safe place and back up regularly.';
 }
 
 

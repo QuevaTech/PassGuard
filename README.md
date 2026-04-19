@@ -217,6 +217,44 @@ All contributors must sign the **Contributor License Agreement (CLA)** — handl
 
 ---
 
+## Disclaimer / Liability
+
+> **THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.**
+
+PassGuard Vault is a **zero-knowledge, offline password manager**. By design:
+
+- All data is stored **locally on your device only**.
+- Your master password is **never stored, transmitted, or recoverable** by anyone — including the developer.
+- **If you lose your master password, your data cannot be recovered.** There is no reset mechanism, no recovery key, and no backdoor.
+
+### No Liability for Data Loss
+
+The developer(s) and contributor(s) of PassGuard Vault shall **not be held liable** for any direct, indirect, incidental, special, or consequential damages arising from the use or inability to use this software, including but not limited to:
+
+- Loss of passwords, credentials, or any stored data
+- Loss of access to accounts due to forgotten master passwords
+- Data corruption, accidental deletion, or failed import/export operations
+- Any security incident resulting from misuse, misconfiguration, or use on compromised devices
+
+### User Responsibility
+
+By using PassGuard Vault, you acknowledge and accept that:
+
+1. **You are solely responsible** for remembering your master password.
+2. **You are solely responsible** for maintaining backups of your `.pgvault` vault file.
+3. **No one can recover your data** if you forget your master password or lose your vault file.
+4. The software is provided for personal use and you assume all risks associated with its use.
+
+### Recommendation
+
+We **strongly recommend** that you:
+
+- Write down your master password and store it in a physically secure location.
+- Regularly export encrypted backups of your vault (`.pgvault` format).
+- Keep backups in multiple secure locations.
+
+---
+
 ## License
 
 Licensed under **AGPL-3.0 with Commons Clause**.
