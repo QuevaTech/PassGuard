@@ -4,6 +4,9 @@ import 'package:passguard_vault/models/vault_entry.dart';
 import 'package:passguard_vault/services/vault_service.dart';
 import 'package:passguard_vault/services/password_generator_service.dart';
 import '../../utils/app_localizations.dart';
+import '../../theme/app_theme_extension.dart';
+import '../../widgets/app_scaffold.dart';
+import '../../widgets/glass_card.dart';
 import 'entry_detail_screen.dart';
 
 class PasswordHealthScreen extends StatefulWidget {
@@ -31,7 +34,8 @@ class _PasswordHealthScreenState extends State<PasswordHealthScreen> {
   Future<void> _analyze() async {
     setState(() => _isLoading = true);
     final entries = await VaultService.getAllEntries(widget.rawKey);
-    final passwords = entries.where((e) => e.type == VaultEntryType.password).toList();
+    final passwords =
+        entries.where((e) => e.type == VaultEntryType.password).toList();
 
     final weak = <VaultEntry>[];
     final old = <VaultEntry>[];
@@ -52,11 +56,8 @@ class _PasswordHealthScreenState extends State<PasswordHealthScreen> {
         .expand((e) => e.value)
         .toList();
 
-    // Score: start 100, deduct per issue
     int score = 100;
-    if (passwords.isEmpty) {
-      score = 100;
-    } else {
+    if (passwords.isNotEmpty) {
       score -= (weak.length * 15).clamp(0, 40);
       score -= (old.length * 5).clamp(0, 30);
       score -= (duplicate.length * 10).clamp(0, 30);
@@ -72,154 +73,174 @@ class _PasswordHealthScreenState extends State<PasswordHealthScreen> {
     });
   }
 
-  Color _scoreColor(int score) {
-    if (score >= 80) return Colors.green;
-    if (score >= 50) return Colors.orange;
-    return Colors.red;
+  Color _scoreColor(int s) {
+    if (s >= 80) return const Color(0xFF22C55E);
+    if (s >= 50) return const Color(0xFFF97316);
+    return const Color(0xFFEF4444);
   }
 
-  String _scoreLabel(int score, AppLocalizations l) {
-    if (score >= 80) return l.scoreGood;
-    if (score >= 50) return l.scoreFair;
+  String _scoreLabel(int s, AppLocalizations l) {
+    if (s >= 80) return l.scoreGood;
+    if (s >= 50) return l.scoreFair;
     return l.scorePoor;
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l = AppLocalizations.of(context);
+    final ext = Theme.of(context).extension<AppThemeExtension>();
+    final accent = ext?.primaryAccent ?? Theme.of(context).colorScheme.primary;
+    final textPrimary =
+        ext?.textPrimary ?? Theme.of(context).colorScheme.onSurface;
+    final textSecondary = ext?.textSecondary ??
+        Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6);
 
-    return Scaffold(
+    return AppScaffold(
       appBar: AppBar(
         title: Text(l.passwordHealth),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _analyze,
-          ),
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _analyze),
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(
+              child: CircularProgressIndicator(color: accent),
+            )
           : RefreshIndicator(
               onRefresh: _analyze,
+              color: accent,
               child: ListView(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
                 children: [
-                  // Score card
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Column(
-                        children: [
-                          Text(l.securityScore,
-                              style: theme.textTheme.titleMedium),
-                          const SizedBox(height: 16),
-                          SizedBox(
-                            width: 120,
-                            height: 120,
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                CircularProgressIndicator(
+                  // ── Score card ───────────────────────────────────────────
+                  GlassCard(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      children: [
+                        Text(
+                          l.securityScore,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: textSecondary,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          width: 130,
+                          height: 130,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              SizedBox.expand(
+                                child: CircularProgressIndicator(
                                   value: _score / 100,
-                                  strokeWidth: 10,
+                                  strokeWidth: 9,
+                                  strokeCap: StrokeCap.round,
                                   backgroundColor:
-                                      theme.colorScheme.surfaceContainerHighest,
+                                      textPrimary.withValues(alpha: 0.08),
                                   valueColor: AlwaysStoppedAnimation(
                                       _scoreColor(_score)),
                                 ),
-                                Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      '$_score',
-                                      style: theme.textTheme.headlineMedium
-                                          ?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: _scoreColor(_score),
-                                      ),
+                              ),
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    '$_score',
+                                    style: TextStyle(
+                                      fontSize: 38,
+                                      fontWeight: FontWeight.w800,
+                                      color: _scoreColor(_score),
+                                      height: 1,
                                     ),
-                                    Text(
-                                      _scoreLabel(_score, l),
-                                      style: TextStyle(
-                                          color: _scoreColor(_score),
-                                          fontSize: 12),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    _scoreLabel(_score, l),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: _scoreColor(_score)
+                                          .withValues(alpha: 0.8),
                                     ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              _StatChip(
-                                  label: l.weak,
-                                  count: _weak.length,
-                                  color: Colors.red),
-                              _StatChip(
-                                  label: l.oldPasswords,
-                                  count: _old.length,
-                                  color: Colors.orange),
-                              _StatChip(
-                                  label: l.duplicatePasswords,
-                                  count: _duplicate.length,
-                                  color: Colors.deepOrange),
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 24),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _statChip(
+                                context, l.weak, _weak.length, const Color(0xFFEF4444)),
+                            _divider(context),
+                            _statChip(context, l.oldPasswords, _old.length,
+                                const Color(0xFFF97316)),
+                            _divider(context),
+                            _statChip(context, l.duplicatePasswords,
+                                _duplicate.length, const Color(0xFFFF6B35)),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 16),
 
+                  // ── All good ─────────────────────────────────────────────
                   if (_weak.isEmpty && _old.isEmpty && _duplicate.isEmpty)
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          children: [
-                            const Icon(Icons.check_circle_outline,
-                                size: 48, color: Colors.green),
-                            const SizedBox(height: 12),
-                            Text(l.allPasswordsGood,
-                                style: theme.textTheme.titleMedium),
-                          ],
-                        ),
+                    GlassCard(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 28),
+                      child: Column(
+                        children: [
+                          Icon(Icons.verified_rounded,
+                              size: 52,
+                              color: const Color(0xFF22C55E)
+                                  .withValues(alpha: 0.9)),
+                          const SizedBox(height: 12),
+                          Text(
+                            l.allPasswordsGood,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              color: textPrimary,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
                     ),
 
+                  // ── Weak ─────────────────────────────────────────────────
                   if (_weak.isNotEmpty) ...[
-                    _SectionHeader(
-                        icon: Icons.warning_amber_rounded,
-                        color: Colors.red,
-                        title: '${l.weakPasswords} (${_weak.length})'),
+                    const SizedBox(height: 4),
+                    _sectionHeader(context, Icons.warning_amber_rounded,
+                        const Color(0xFFEF4444),
+                        '${l.weakPasswords} (${_weak.length})'),
                     ..._weak.map((e) => _EntryTile(
-                        entry: e,
-                        rawKey: widget.rawKey,
-                        subtitle: l.strengthTooLow)),
+                        entry: e, rawKey: widget.rawKey, subtitle: l.strengthTooLow)),
                     const SizedBox(height: 8),
                   ],
 
+                  // ── Old ──────────────────────────────────────────────────
                   if (_old.isNotEmpty) ...[
-                    _SectionHeader(
-                        icon: Icons.schedule,
-                        color: Colors.orange,
-                        title: '${l.oldPasswords} (${_old.length})'),
+                    _sectionHeader(context, Icons.schedule,
+                        const Color(0xFFF97316),
+                        '${l.oldPasswords} (${_old.length})'),
                     ..._old.map((e) => _EntryTile(
-                        entry: e,
-                        rawKey: widget.rawKey,
-                        subtitle: l.notUpdated90)),
+                        entry: e, rawKey: widget.rawKey, subtitle: l.notUpdated90)),
                     const SizedBox(height: 8),
                   ],
 
+                  // ── Duplicate ────────────────────────────────────────────
                   if (_duplicate.isNotEmpty) ...[
-                    _SectionHeader(
-                        icon: Icons.content_copy,
-                        color: Colors.deepOrange,
-                        title: '${l.duplicatePasswords} (${_duplicate.length})'),
+                    _sectionHeader(context, Icons.content_copy,
+                        const Color(0xFFFF6B35),
+                        '${l.duplicatePasswords} (${_duplicate.length})'),
                     ..._duplicate.map((e) => _EntryTile(
                         entry: e,
                         rawKey: widget.rawKey,
@@ -230,59 +251,73 @@ class _PasswordHealthScreenState extends State<PasswordHealthScreen> {
             ),
     );
   }
-}
 
-class _StatChip extends StatelessWidget {
-  final String label;
-  final int count;
-  final Color color;
-
-  const _StatChip(
-      {required this.label, required this.count, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _statChip(
+      BuildContext context, String label, int count, Color color) {
     return Column(
       children: [
-        Text('$count',
-            style: TextStyle(
-                fontSize: 22, fontWeight: FontWeight.bold, color: color)),
-        Text(label,
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.copyWith(color: color)),
+        Text(
+          '$count',
+          style: TextStyle(
+              fontSize: 24, fontWeight: FontWeight.w800, color: color),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: color.withValues(alpha: 0.8)),
+          textAlign: TextAlign.center,
+        ),
       ],
     );
   }
-}
 
-class _SectionHeader extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final String title;
+  Widget _divider(BuildContext context) {
+    final ext = Theme.of(context).extension<AppThemeExtension>();
+    return Container(
+      width: 1,
+      height: 36,
+      color: (ext?.textTertiary ??
+              Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3))
+          .withValues(alpha: 0.3),
+    );
+  }
 
-  const _SectionHeader(
-      {required this.icon, required this.color, required this.title});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _sectionHeader(
+      BuildContext context, IconData icon, Color color, String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 10, top: 4),
       child: Row(
         children: [
-          Icon(icon, color: color, size: 20),
-          const SizedBox(width: 8),
-          Text(title,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleSmall
-                  ?.copyWith(color: color, fontWeight: FontWeight.bold)),
+          Container(
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: color, size: 16),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: color,
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 }
+
+// ── Entry tile ───────────────────────────────────────────────────────────────
 
 class _EntryTile extends StatelessWidget {
   final VaultEntry entry;
@@ -294,19 +329,65 @@ class _EntryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    final ext = Theme.of(context).extension<AppThemeExtension>();
+    final textPrimary =
+        ext?.textPrimary ?? Theme.of(context).colorScheme.onSurface;
+    final textSecondary = ext?.textSecondary ??
+        Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6);
+    final accent = ext?.primaryAccent ?? Theme.of(context).colorScheme.primary;
+
+    return GlassCard(
       margin: const EdgeInsets.only(bottom: 6),
-      child: ListTile(
-        leading: const Icon(Icons.lock),
-        title: Text(entry.displayTitle, overflow: TextOverflow.ellipsis),
-        subtitle: Text(subtitle,
-            style: const TextStyle(fontSize: 12)),
-        trailing: const Icon(Icons.chevron_right),
+      child: InkWell(
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) =>
-                EntryDetailScreen(entry: entry, rawKey: rawKey),
+            builder: (_) => EntryDetailScreen(entry: entry, rawKey: rawKey),
+          ),
+        ),
+        borderRadius: BorderRadius.circular(ext?.cardRadius ?? 12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: accent.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(Icons.lock_outline, size: 18, color: accent),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      entry.displayTitle,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: textPrimary,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                          fontSize: 11,
+                          color: textSecondary),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(Icons.chevron_right,
+                  size: 18,
+                  color: textSecondary.withValues(alpha: 0.6)),
+            ],
           ),
         ),
       ),

@@ -10,6 +10,7 @@ import 'auth/pin_screen.dart';
 import 'onboarding_screen.dart';
 import '../utils/app_localizations.dart';
 import '../services/pin_service.dart';
+import '../widgets/app_scaffold.dart';
 import '../services/auth_guard_service.dart';
 import '../services/storage_availability_service.dart';
 
@@ -129,8 +130,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+    return AppScaffold(
       body: Center(
         child: FadeTransition(
           opacity: _fadeAnimation,

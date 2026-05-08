@@ -8,9 +8,11 @@ import 'package:passguard_vault/services/password_generator_service.dart';
 import 'package:passguard_vault/models/vault_entry.dart';
 import 'add_entry_screen.dart';
 import '../../utils/app_localizations.dart';
-import '../../utils/app_theme.dart';
+import '../../theme/app_theme_extension.dart';
 import '../../widgets/note_content_renderer.dart';
 import '../../widgets/glass_card.dart';
+import '../../widgets/app_scaffold.dart';
+import '../../widgets/category_badge.dart';
 
 class EntryDetailScreen extends ConsumerStatefulWidget {
   final VaultEntry entry;
@@ -105,9 +107,7 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
     final localizations = AppLocalizations.of(context);
     final isPassword = _currentEntry.type == VaultEntryType.password;
 
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Scaffold(
-      backgroundColor: Colors.transparent,
+    return AppScaffold(
       appBar: AppBar(
         title: Text(_currentEntry.displayTitle),
         actions: [
@@ -135,23 +135,7 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: isDark
-                      ? const [Color(0xFF0F172A), Color(0xFF1A2744), Color(0xFF0F172A)]
-                      : const [Color(0xFFEFF6FF), Color(0xFFE0EFFE), Color(0xFFEFF6FF)],
-                  stops: const [0.0, 0.5, 1.0],
-                ),
-              ),
-            ),
-          ),
-          Padding(
+      body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: ListView(
           children: [
@@ -174,15 +158,9 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
                     ),
                   ),
                   const Spacer(),
-                  Chip(
-                    label: Text(
-                      _currentEntry.displayCategory,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    labelStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimary,
-                    ),
+                  CategoryBadge(
+                    category: _currentEntry.displayCategory,
+                    compact: false,
                   ),
                 ],
               ),
@@ -250,8 +228,6 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
               _buildActionButtons(),
           ],
         ),
-          ),
-        ],
       ),
     );
   }
@@ -270,7 +246,7 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
           Text(
             title,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: AppTheme.textSecondaryColor,
+              color: Theme.of(context).extension<AppThemeExtension>()?.textSecondary ?? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
           const SizedBox(height: 4),
@@ -322,7 +298,7 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
                 child: Text(
                   AppLocalizations.of(context).password,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: AppTheme.textSecondaryColor,
+                    color: Theme.of(context).extension<AppThemeExtension>()?.textSecondary ?? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -404,7 +380,7 @@ class _EntryDetailScreenState extends ConsumerState<EntryDetailScreen> {
           Text(
             AppLocalizations.of(context).content,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                color: AppTheme.textSecondaryColor,
+                color: Theme.of(context).extension<AppThemeExtension>()?.textSecondary ?? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
             const SizedBox(height: 8),

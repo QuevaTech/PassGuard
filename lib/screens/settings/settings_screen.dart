@@ -15,7 +15,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../utils/app_localizations.dart';
 import '../../utils/vault_exceptions.dart';
-import '../../providers/theme_provider.dart' show themeProvider, accentColorProvider, accentColors;
+import '../../providers/theme_provider.dart'
+    show themeProvider, appThemeStyleProvider, accentColorProvider, accentColors;
+import '../../theme/app_theme_style.dart';
+import '../../widgets/app_scaffold.dart';
 import '../../services/pin_service.dart';
 import '../auth/pin_screen.dart';
 
@@ -653,7 +656,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
 
-    return Scaffold(
+    return AppScaffold(
       appBar: AppBar(
         title: Text(localizations.settings),
       ),
@@ -793,7 +796,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   const SizedBox(height: 10),
                   _AccentColorPicker(
                     selected: ref.watch(accentColorProvider),
-                    onSelected: (c) => ref.read(accentColorProvider.notifier).setColor(c),
+                    onSelected: (c) =>
+                        ref.read(accentColorProvider.notifier).setColor(c),
+                  ),
+                  const SizedBox(height: 16),
+                  Text('${localizations.theme} Style', style: Theme.of(context).textTheme.bodyMedium),
+                  const SizedBox(height: 10),
+                  _ThemeStylePicker(
+                    selected: ref.watch(appThemeStyleProvider),
+                    onSelected: (s) =>
+                        ref.read(appThemeStyleProvider.notifier).setStyle(s),
                   ),
                 ],
               ),
@@ -943,7 +955,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 }
 
-/// Round color swatches — YubiKey-style preset accent picker.
+// ---------------------------------------------------------------------------
+// Accent colour picker — round swatches (Vault & Stratum only; Cipher ignores)
+// ---------------------------------------------------------------------------
+
 class _AccentColorPicker extends StatelessWidget {
   const _AccentColorPicker({
     required this.selected,
@@ -969,10 +984,7 @@ class _AccentColorPicker extends StatelessWidget {
             height: 32,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              // Selected: outer ring in the swatch color with a white gap
-              border: isSelected
-                  ? Border.all(color: color, width: 2.5)
-                  : null,
+              border: isSelected ? Border.all(color: color, width: 2.5) : null,
             ),
             padding: EdgeInsets.all(isSelected ? 3.5 : 0),
             child: DecoratedBox(
@@ -980,19 +992,260 @@ class _AccentColorPicker extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: color,
                 boxShadow: isSelected
-                    ? [
-                        BoxShadow(
-                          color: color.withValues(alpha: 0.5),
-                          blurRadius: 8,
-                          spreadRadius: 1,
-                        )
-                      ]
+                    ? [BoxShadow(color: color.withValues(alpha: 0.5), blurRadius: 8, spreadRadius: 1)]
                     : null,
               ),
             ),
           ),
         );
       }).toList(),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Theme Style Picker — 3 visual cards (Vault, Stratum, Cipher)
+// ---------------------------------------------------------------------------
+
+class _ThemeStylePicker extends StatelessWidget {
+  const _ThemeStylePicker({
+    required this.selected,
+    required this.onSelected,
+  });
+
+  final AppThemeStyle selected;
+  final ValueChanged<AppThemeStyle> onSelected;
+
+  static const _styles = AppThemeStyle.values;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: _styles.map((style) {
+        final isLast = style == _styles.last;
+        return Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(right: isLast ? 0 : 10),
+            child: _ThemeStyleCard(
+              style: style,
+              isSelected: selected == style,
+              onTap: () => onSelected(style),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+}
+
+class _ThemeStyleCard extends StatelessWidget {
+  final AppThemeStyle style;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _ThemeStyleCard({
+    required this.style,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  // Static preview gradients — theme-independent, always shown in dark palette
+  Gradient get _previewGradient {
+    switch (style) {
+      case AppThemeStyle.vault:
+        return const RadialGradient(
+          center: Alignment.topCenter,
+          radius: 1.2,
+          colors: [Color(0xFF2a2f54), Color(0xFF1b1f3b), Color(0xFF11142b)],
+          stops: [0.0, 0.38, 1.0],
+        );
+      case AppThemeStyle.stratum:
+        return const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF14172e), Color(0xFF1b1f3b)],
+        );
+      case AppThemeStyle.cipher:
+        return const RadialGradient(
+          center: Alignment(-0.4, -1.0),
+          radius: 1.2,
+          colors: [Color(0xFF1a1f4a), Color(0xFF0a0e27), Color(0xFF050714)],
+          stops: [0.0, 0.50, 1.0],
+        );
+    }
+  }
+
+  Color get _previewCardColor {
+    switch (style) {
+      case AppThemeStyle.vault:
+        return const Color(0x8C23284B);
+      case AppThemeStyle.stratum:
+        return const Color(0xFF1e2240);
+      case AppThemeStyle.cipher:
+        return const Color(0x1A8B9BBF);
+    }
+  }
+
+  Color get _previewAccent {
+    switch (style) {
+      case AppThemeStyle.vault:
+        return const Color(0xFFD4B038);
+      case AppThemeStyle.stratum:
+        return const Color(0xFFD4B038);
+      case AppThemeStyle.cipher:
+        return const Color(0xFF00E5FF);
+    }
+  }
+
+  String get _label {
+    switch (style) {
+      case AppThemeStyle.vault:
+        return 'VAULT';
+      case AppThemeStyle.stratum:
+        return 'STRATUM';
+      case AppThemeStyle.cipher:
+        return 'CIPHER';
+    }
+  }
+
+  String get _subtitle {
+    switch (style) {
+      case AppThemeStyle.vault:
+        return 'Glass';
+      case AppThemeStyle.stratum:
+        return 'Editorial';
+      case AppThemeStyle.cipher:
+        return 'Cyberpunk';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = _previewAccent;
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected
+                ? accent
+                : Colors.transparent,
+            width: 2,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: accent.withValues(alpha: 0.35),
+                    blurRadius: 10,
+                    spreadRadius: 0,
+                  )
+                ]
+              : null,
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: AspectRatio(
+            aspectRatio: 0.72,
+            child: Stack(
+              children: [
+                // Background preview
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(gradient: _previewGradient),
+                  ),
+                ),
+                // Mini card bar
+                Positioned(
+                  top: 22,
+                  left: 8,
+                  right: 8,
+                  child: Container(
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: _previewCardColor,
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(
+                          color: accent.withValues(alpha: 0.35),
+                          width: 0.5),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 50,
+                  left: 8,
+                  right: 20,
+                  child: Container(
+                    height: 10,
+                    decoration: BoxDecoration(
+                      color: _previewCardColor,
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 66,
+                  left: 8,
+                  right: 30,
+                  child: Container(
+                    height: 10,
+                    decoration: BoxDecoration(
+                      color: _previewCardColor,
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                  ),
+                ),
+                // Label footer
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 6, vertical: 6),
+                    decoration: const BoxDecoration(
+                      color: Color(0xCC000000),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                _label,
+                                style: TextStyle(
+                                  color: accent,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 0.8,
+                                ),
+                              ),
+                            ),
+                            if (isSelected)
+                              Icon(Icons.check_circle,
+                                  size: 11, color: accent),
+                          ],
+                        ),
+                        Text(
+                          _subtitle,
+                          style: const TextStyle(
+                            color: Color(0xFF9CA3AF),
+                            fontSize: 8,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -8,6 +8,8 @@ import 'package:passguard_vault/services/password_generator_service.dart';
 import 'package:passguard_vault/models/vault_entry.dart';
 import '../../utils/app_localizations.dart';
 import '../../utils/app_theme.dart';
+import '../../theme/app_theme_extension.dart';
+import '../../widgets/app_scaffold.dart';
 
 class AddEntryScreen extends ConsumerStatefulWidget {
   final Uint8List rawKey;
@@ -213,7 +215,7 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
               border: Border.all(
                 color: _selectedColorValue == null
                     ? Theme.of(context).colorScheme.primary
-                    : AppTheme.borderColor,
+                    : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.25),
                 width: _selectedColorValue == null ? 2.5 : 1.5,
               ),
             ),
@@ -222,11 +224,12 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
               size: _selectedColorValue == null ? 18 : 14,
               color: _selectedColorValue == null
                   ? Theme.of(context).colorScheme.primary
-                  : AppTheme.textSecondaryColor,
+                  : Theme.of(context).extension<AppThemeExtension>()?.textSecondary
+                        ?? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
         ),
-        ...AppTheme.entryTagColors.map((color) {
+        ...(_tagColors(context)).map((color) {
           final val = color.toARGB32();
           final isSelected = _selectedColorValue == val;
           return GestureDetector(
@@ -261,12 +264,20 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
     );
   }
 
+  /// Returns tag colours from the current theme's categoryColors,
+  /// falling back to the legacy static list when the extension is absent.
+  List<Color> _tagColors(BuildContext context) {
+    final ext = Theme.of(context).extension<AppThemeExtension>();
+    if (ext != null) return ext.categoryColors.values.toList();
+    return AppTheme.entryTagColors;
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
 
     final isEdit = widget.existingEntry != null;
-    return Scaffold(
+    return AppScaffold(
       appBar: AppBar(
         title: Text(isEdit
             ? localizations.editEntry

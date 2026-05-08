@@ -32,7 +32,7 @@ migrate_working_dir/
 .pub/
 /build/
 /coverage/
-
+/passquard/
 # Symbolication related
 app.*.symbols
 

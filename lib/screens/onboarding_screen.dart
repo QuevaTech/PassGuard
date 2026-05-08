@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/app_localizations.dart';
 import 'auth/login_screen.dart';
+import '../widgets/app_scaffold.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -96,12 +97,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final pages = _buildPages(l);
     final isLast = _currentPage == pages.length - 1;
 
-    return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+    return AppScaffold(
       body: SafeArea(
         child: Column(
           children: [
@@ -124,7 +123,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     l.skip,
                     style: TextStyle(
                       color: isLast
-                          ? theme.colorScheme.primary.withOpacity(0.3)
+                          ? theme.colorScheme.primary.withValues(alpha: 0.3)
                           : theme.colorScheme.primary,
                       fontWeight: FontWeight.w600,
                     ),
@@ -167,7 +166,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   decoration: BoxDecoration(
                     color: _currentPage == i
                         ? theme.colorScheme.primary
-                        : theme.colorScheme.primary.withOpacity(0.25),
+                        : theme.colorScheme.primary.withValues(alpha: 0.25),
                     borderRadius: BorderRadius.circular(4),
                   ),
                 );
@@ -199,7 +198,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     backgroundColor: isLast
                         ? (_disclaimerAccepted
                             ? theme.colorScheme.primary
-                            : theme.colorScheme.onSurface.withOpacity(0.12))
+                            : theme.colorScheme.onSurface.withValues(alpha: 0.12))
                         : null,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -262,10 +261,10 @@ class _OnboardingPageWidget extends StatelessWidget {
             width: 120,
             height: 120,
             decoration: BoxDecoration(
-              color: data.color.withOpacity(0.12),
+              color: data.color.withValues(alpha: 0.12),
               shape: BoxShape.circle,
               border: data.isWarning
-                  ? Border.all(color: data.color.withOpacity(0.4), width: 2)
+                  ? Border.all(color: data.color.withValues(alpha: 0.4), width: 2)
                   : null,
             ),
             child: Icon(
@@ -293,17 +292,17 @@ class _OnboardingPageWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: data.color.withOpacity(isDark ? 0.12 : 0.07),
+                color: data.color.withValues(alpha: isDark ? 0.12 : 0.07),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: data.color.withOpacity(0.3)),
+                border: Border.all(color: data.color.withValues(alpha: 0.3)),
               ),
               child: Text(
                 data.desc,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: isDark
-                      ? data.color.withOpacity(0.9)
-                      : data.color.withOpacity(0.85),
+                      ? data.color.withValues(alpha: 0.9)
+                      : data.color.withValues(alpha: 0.85),
                   height: 1.6,
                   fontWeight: FontWeight.w500,
                 ),
@@ -314,7 +313,7 @@ class _OnboardingPageWidget extends StatelessWidget {
               data.desc,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                 height: 1.6,
               ),
             ),
@@ -352,9 +351,9 @@ class _DisclaimerPageWidget extends StatelessWidget {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: data.color.withOpacity(0.12),
+              color: data.color.withValues(alpha: 0.12),
               shape: BoxShape.circle,
-              border: Border.all(color: data.color.withOpacity(0.4), width: 2),
+              border: Border.all(color: data.color.withValues(alpha: 0.4), width: 2),
             ),
             child: Icon(data.icon, size: 40, color: data.color),
           ),
@@ -373,17 +372,17 @@ class _DisclaimerPageWidget extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: data.color.withOpacity(isDark ? 0.08 : 0.04),
+                color: data.color.withValues(alpha: isDark ? 0.08 : 0.04),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: data.color.withOpacity(0.25)),
+                border: Border.all(color: data.color.withValues(alpha: 0.25)),
               ),
               child: SingleChildScrollView(
                 child: Text(
                   data.desc,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: isDark
-                        ? theme.colorScheme.onSurface.withOpacity(0.85)
-                        : theme.colorScheme.onSurface.withOpacity(0.8),
+                        ? theme.colorScheme.onSurface.withValues(alpha: 0.85)
+                        : theme.colorScheme.onSurface.withValues(alpha: 0.8),
                     height: 1.7,
                   ),
                 ),
@@ -409,7 +408,7 @@ class _DisclaimerPageWidget extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                       color: accepted
                           ? data.color
-                          : theme.colorScheme.onSurface.withOpacity(0.7),
+                          : theme.colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ),
                 ),

@@ -16,6 +16,10 @@ import 'password_health_screen.dart';
 import '../settings/settings_screen.dart';
 import '../../utils/app_localizations.dart';
 import '../../widgets/glass_card.dart';
+import '../../theme/app_theme_extension.dart';
+import '../../widgets/app_scaffold.dart';
+import '../../widgets/themed_fab.dart';
+import '../../widgets/category_badge.dart';
 
 class VaultScreen extends ConsumerStatefulWidget {
   const VaultScreen({super.key});
@@ -35,6 +39,11 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
   bool _sortAscending = true;
   Uint8List? _sessionKey;
   Timer? _searchDebounce;
+
+  // Search overlay state
+  bool _isSearchActive = false;
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
 
   // Multi-select state
   bool _isSelectMode = false;
@@ -56,6 +65,8 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
     WidgetsBinding.instance.removeObserver(this);
     _searchDebounce?.cancel();
     _favoritesTimer?.cancel();
+    _searchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -419,10 +430,7 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
 
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      extendBodyBehindAppBar: false,
+    return AppScaffold(
       appBar: _isSelectMode
           ? AppBar(
               leading: IconButton(
@@ -446,8 +454,7 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
           : AppBar(
               title: Text(localizations.passwords),
               actions: [
-                IconButton(onPressed: _addEntry, icon: const Icon(Icons.add)),
-                IconButton(onPressed: _showFilterDialog, icon: const Icon(Icons.filter_list)),
+                IconButton(onPressed: _showFilterDialog, icon: const Icon(Icons.sort)),
                 IconButton(
                   icon: const Icon(Icons.health_and_safety_outlined),
                   tooltip: 'Password Health',
@@ -474,22 +481,19 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
       body: Stack(
         children: [
           Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: isDark
-                      ? const [Color(0xFF0F172A), Color(0xFF1A2744), Color(0xFF0F172A)]
-                      : const [Color(0xFFEFF6FF), Color(0xFFE0EFFE), Color(0xFFEFF6FF)],
-                  stops: const [0.0, 0.5, 1.0],
-                ),
-              ),
-            ),
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _buildVaultContent(),
           ),
-          _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : _buildVaultContent(),
+          if (!_isSelectMode)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: _isSearchActive
+                  ? _buildSearchOverlay(localizations)
+                  : _buildBottomBar(localizations),
+            ),
         ],
       ),
     );
@@ -532,30 +536,6 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
         if (hasFavorites)
           SliverToBoxAdapter(child: _buildFavoritesStrip()),
 
-        // Search Bar
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              decoration: InputDecoration(
-                labelText: localizations.search,
-                hintText: localizations.searchPlaceholder,
-                prefixIcon: const Icon(Icons.search),
-                border: const OutlineInputBorder(),
-              ),
-              onChanged: (value) {
-                _searchDebounce?.cancel();
-                _searchDebounce = Timer(const Duration(milliseconds: 300), () {
-                  setState(() {
-                    _searchQuery = value;
-                  });
-                  _applyFilters();
-                });
-              },
-            ),
-          ),
-        ),
-
         // Stats
         SliverToBoxAdapter(child: _buildStatsCard()),
 
@@ -569,6 +549,9 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
             childCount: _filteredEntries.length,
           ),
         ),
+
+        // Bottom padding so last item isn't hidden behind the bottom bar
+        const SliverPadding(padding: EdgeInsets.only(bottom: 110)),
       ],
     );
   }
@@ -814,11 +797,8 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
                           ),
                       ],
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      entry.displayCategory,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
+                    const SizedBox(height: 5),
+                    CategoryBadge(category: entry.displayCategory),
                     if (isPassword) ...[
                       const SizedBox(height: 4),
                       _buildPasswordStrengthIndicator(context, entry.password ?? ''),
@@ -971,76 +951,391 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
     );
   }
 
+  void _openSearch() {
+    setState(() => _isSearchActive = true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _searchFocusNode.requestFocus();
+    });
+  }
+
+  void _closeSearch() {
+    _searchFocusNode.unfocus();
+    _searchController.clear();
+    setState(() {
+      _isSearchActive = false;
+      _searchQuery = '';
+    });
+    _applyFilters();
+  }
+
+  Widget _buildBottomBar(AppLocalizations l) {
+    final ext = Theme.of(context).extension<AppThemeExtension>();
+    final hintColor = ext?.textTertiary ??
+        Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4);
+    final iconColor = ext?.textSecondary ??
+        Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.55);
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
+        child: Row(
+          children: [
+            // Search pill
+            Expanded(
+              child: GestureDetector(
+                onTap: _openSearch,
+                child: GlassCard(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  child: Row(
+                    children: [
+                      Icon(Icons.search_rounded, size: 18, color: iconColor),
+                      const SizedBox(width: 8),
+                      Text(
+                        l.searchPlaceholder,
+                        style: TextStyle(fontSize: 14, color: hintColor),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            // FAB
+            ThemedFab(onPressed: _addEntry, tooltip: l.addPassword),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchOverlay(AppLocalizations l) {
+    final ext = Theme.of(context).extension<AppThemeExtension>();
+    final accent = ext?.primaryAccent ?? Theme.of(context).colorScheme.primary;
+    final textColor = ext?.textPrimary ?? Theme.of(context).colorScheme.onSurface;
+    final hintColor = ext?.textTertiary ??
+        Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4);
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: keyboardHeight),
+      child: SafeArea(
+        bottom: keyboardHeight == 0,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            // FAB above the search field
+            Padding(
+              padding: const EdgeInsets.only(right: 16, bottom: 8),
+              child: ThemedFab(onPressed: _addEntry, tooltip: l.addPassword),
+            ),
+            // Search field
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+              child: GlassCard(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                child: Row(
+                  children: [
+                    Icon(Icons.search_rounded, size: 20, color: accent),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: TextField(
+                        controller: _searchController,
+                        focusNode: _searchFocusNode,
+                        style: TextStyle(fontSize: 15, color: textColor),
+                        decoration: InputDecoration(
+                          hintText: l.searchPlaceholder,
+                          hintStyle: TextStyle(color: hintColor),
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          filled: false,
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                        ),
+                        onChanged: (v) {
+                          setState(() => _searchQuery = v);
+                          _applyFilters();
+                        },
+                      ),
+                    ),
+                    if (_searchQuery.isNotEmpty)
+                      GestureDetector(
+                        onTap: () {
+                          _searchController.clear();
+                          setState(() => _searchQuery = '');
+                          _applyFilters();
+                        },
+                        child: Icon(Icons.cancel_rounded,
+                            size: 18,
+                            color: hintColor),
+                      ),
+                    const SizedBox(width: 4),
+                    GestureDetector(
+                      onTap: _closeSearch,
+                      child: Icon(Icons.keyboard_hide_rounded,
+                          size: 22,
+                          color: hintColor),
+                    ),
+                    const SizedBox(width: 4),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _showFilterDialog() async {
     final localizations = AppLocalizations.of(context);
-    
-    await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(localizations.filter),
-        content: StatefulBuilder(
-          builder: (context, setState) => Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Sort Options
-              Text(localizations.sortBy, style: Theme.of(context).textTheme.titleSmall),
-              const SizedBox(height: 8),
-              DropdownButton<String>(
-                value: _sortBy,
-                items: [
-                  DropdownMenuItem(
-                    value: 'name',
-                    child: Text(localizations.name),
-                  ),
-                  DropdownMenuItem(
-                    value: 'date',
-                    child: Text(localizations.date),
-                  ),
-                  DropdownMenuItem(
-                    value: 'category',
-                    child: Text(localizations.category),
-                  ),
-                  if (_sortBy == 'strength')
-                    DropdownMenuItem(
-                      value: 'strength',
-                      child: Text(localizations.strength),
-                    ),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    _sortBy = value!;
-                  });
-                  _applyFilters();
-                },
-              ),
-              const SizedBox(height: 16),
 
-              // Sort Order
-              Row(
-                children: [
-                  Text(localizations.sort, style: Theme.of(context).textTheme.titleSmall),
-                  const Spacer(),
-                  Switch(
-                    value: _sortAscending,
-                    onChanged: (value) {
-                      setState(() {
-                        _sortAscending = value;
-                      });
-                      _applyFilters();
-                    },
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => _SortBottomSheet(
+        sortBy: _sortBy,
+        sortAscending: _sortAscending,
+        onChanged: (sortBy, ascending) {
+          setState(() {
+            _sortBy = sortBy;
+            _sortAscending = ascending;
+          });
+          _applyFilters();
+        },
+      ),
+    );
+  }
+}
+
+// ── Sort bottom sheet ────────────────────────────────────────────────────────
+
+class _SortBottomSheet extends StatefulWidget {
+  final String sortBy;
+  final bool sortAscending;
+  final void Function(String sortBy, bool ascending) onChanged;
+
+  const _SortBottomSheet({
+    required this.sortBy,
+    required this.sortAscending,
+    required this.onChanged,
+  });
+
+  @override
+  State<_SortBottomSheet> createState() => _SortBottomSheetState();
+}
+
+class _SortBottomSheetState extends State<_SortBottomSheet> {
+  late String _sortBy;
+  late bool _sortAscending;
+
+  @override
+  void initState() {
+    super.initState();
+    _sortBy = widget.sortBy;
+    _sortAscending = widget.sortAscending;
+  }
+
+  void _update(String sortBy, bool ascending) {
+    setState(() {
+      _sortBy = sortBy;
+      _sortAscending = ascending;
+    });
+    widget.onChanged(sortBy, ascending);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final surface = isDark
+        ? theme.colorScheme.surfaceContainerHighest
+        : theme.colorScheme.surface;
+    final onSurface = theme.colorScheme.onSurface;
+    final accent = theme.colorScheme.primary;
+
+    final sortOptions = [
+      (value: 'name',     label: l.name,     icon: Icons.sort_by_alpha),
+      (value: 'date',     label: l.date,     icon: Icons.calendar_today_outlined),
+      (value: 'category', label: l.category, icon: Icons.label_outline),
+      (value: 'strength', label: l.strength, icon: Icons.shield_outlined),
+    ];
+
+    return Container(
+      decoration: BoxDecoration(
+        color: surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      padding: EdgeInsets.only(
+        left: 20,
+        right: 20,
+        top: 16,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 32,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Handle
+          Center(
+            child: Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: onSurface.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // Title
+          Text(
+            l.sortBy,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: onSurface,
+            ),
+          ),
+          const SizedBox(height: 14),
+
+          // Sort options grid
+          GridView.count(
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            childAspectRatio: 3.2,
+            children: sortOptions.map((opt) {
+              final isSelected = _sortBy == opt.value;
+              return GestureDetector(
+                onTap: () => _update(opt.value, _sortAscending),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 160),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? accent.withValues(alpha: 0.15)
+                        : onSurface.withValues(alpha: 0.06),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isSelected ? accent : Colors.transparent,
+                      width: 1.5,
+                    ),
                   ),
-                  Text(_sortAscending ? localizations.ascending : localizations.descending),
-                ],
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        opt.icon,
+                        size: 16,
+                        color: isSelected ? accent : onSurface.withValues(alpha: 0.6),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        opt.label,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                          color: isSelected ? accent : onSurface.withValues(alpha: 0.8),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+
+          const SizedBox(height: 20),
+
+          // Sort direction
+          Text(
+            l.sort,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: onSurface,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              _directionButton(
+                context,
+                label: l.ascending,
+                icon: Icons.arrow_upward_rounded,
+                selected: _sortAscending,
+                accent: accent,
+                onSurface: onSurface,
+                onTap: () => _update(_sortBy, true),
+              ),
+              const SizedBox(width: 10),
+              _directionButton(
+                context,
+                label: l.descending,
+                icon: Icons.arrow_downward_rounded,
+                selected: !_sortAscending,
+                accent: accent,
+                onSurface: onSurface,
+                onTap: () => _update(_sortBy, false),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+
+  Widget _directionButton(
+    BuildContext context, {
+    required String label,
+    required IconData icon,
+    required bool selected,
+    required Color accent,
+    required Color onSurface,
+    required VoidCallback onTap,
+  }) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 160),
+          height: 48,
+          decoration: BoxDecoration(
+            color: selected
+                ? accent.withValues(alpha: 0.15)
+                : onSurface.withValues(alpha: 0.06),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: selected ? accent : Colors.transparent,
+              width: 1.5,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon,
+                  size: 16,
+                  color: selected ? accent : onSurface.withValues(alpha: 0.6)),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                  color:
+                      selected ? accent : onSurface.withValues(alpha: 0.8),
+                ),
               ),
             ],
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(localizations.cancel),
-          ),
-        ],
       ),
     );
   }

@@ -5,21 +5,18 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'screens/splash_screen.dart';
 import 'utils/app_theme.dart';
 import 'utils/app_localizations.dart';
-import 'providers/theme_provider.dart' show themeProvider, accentColorProvider;
+import 'providers/theme_provider.dart'
+    show themeProvider, appThemeStyleProvider, accentColorProvider;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Set preferred orientations
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  
-  runApp(
-    const ProviderScope(
-      child: PassGuardVaultApp(),
-    ),
-  );
+
+  runApp(const ProviderScope(child: PassGuardVaultApp()));
 }
 
 class PassGuardVaultApp extends ConsumerWidget {
@@ -27,16 +24,17 @@ class PassGuardVaultApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final style  = ref.watch(appThemeStyleProvider);
+    final accent = ref.watch(accentColorProvider);
+
     return MaterialApp(
       title: 'PassGuard Vault',
       debugShowCheckedModeBanner: false,
-      
-      // Theme — rebuilt whenever accent color or mode changes
-      theme: AppTheme.buildLightTheme(ref.watch(accentColorProvider)),
-      darkTheme: AppTheme.buildDarkTheme(ref.watch(accentColorProvider)),
+
+      theme:     AppTheme.buildTheme(style, Brightness.light, accent: accent),
+      darkTheme: AppTheme.buildTheme(style, Brightness.dark,  accent: accent),
       themeMode: ref.watch(themeProvider),
-      
-      // Localization
+
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -44,21 +42,21 @@ class PassGuardVaultApp extends ConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [
-        Locale('tr', 'TR'), // Turkish
-        Locale('en', 'US'), // English
-        Locale('de', 'DE'), // German
-        Locale('fr', 'FR'), // French
-        Locale('ar', 'SA'), // Arabic
-        Locale('es', 'ES'), // Spanish
-        Locale('it', 'IT'), // Italian
-        Locale('pt', 'BR'), // Portuguese
-        Locale('ru', 'RU'), // Russian
-        Locale('ja', 'JP'), // Japanese
-        Locale('zh', 'CN'), // Chinese Simplified
-        Locale('ko', 'KR'), // Korean
-        Locale('nl', 'NL'), // Dutch
+        Locale('tr', 'TR'),
+        Locale('en', 'US'),
+        Locale('de', 'DE'),
+        Locale('fr', 'FR'),
+        Locale('ar', 'SA'),
+        Locale('es', 'ES'),
+        Locale('it', 'IT'),
+        Locale('pt', 'BR'),
+        Locale('ru', 'RU'),
+        Locale('ja', 'JP'),
+        Locale('zh', 'CN'),
+        Locale('ko', 'KR'),
+        Locale('nl', 'NL'),
       ],
-      
+
       home: const SplashScreen(),
     );
   }

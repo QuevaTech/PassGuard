@@ -8,6 +8,7 @@ import 'package:passguard_vault/services/auth_guard_service.dart';
 import 'package:passguard_vault/services/encryption_service.dart';
 import '../vault/vault_screen.dart';
 import '../../utils/app_localizations.dart';
+import '../../widgets/app_scaffold.dart';
 
 class VerificationScreen extends ConsumerStatefulWidget {
   const VerificationScreen({super.key});
@@ -184,8 +185,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+    return AppScaffold(
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),

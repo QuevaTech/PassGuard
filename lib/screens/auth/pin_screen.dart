@@ -5,6 +5,7 @@ import 'package:passguard_vault/services/session_service.dart';
 import 'package:passguard_vault/services/auth_guard_service.dart';
 import '../vault/vault_screen.dart';
 import '../auth/login_screen.dart';
+import '../../widgets/app_scaffold.dart';
 
 enum PinScreenMode { setup, unlock }
 
@@ -150,8 +151,7 @@ class _PinScreenState extends ConsumerState<PinScreen> {
       title = 'Enter PIN';
     }
 
-    return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
+    return AppScaffold(
       appBar: isSetup
           ? AppBar(title: const Text('Set PIN Lock'))
           : null,
