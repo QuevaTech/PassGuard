@@ -3,7 +3,7 @@ set -euo pipefail
 
 cd /mnt/c/Users/Hasan/projects/PassGuard
 
-APP_NAME="passguard_vault_v0"
+APP_NAME="passguard_vault"
 VERSION="1.0.0"
 BUNDLE="build/linux/x64/release/bundle"
 APPDIR="build/linux/AppDir"
@@ -42,7 +42,7 @@ cat > "$APPDIR/AppRun" <<'EOF'
 #!/bin/sh
 HERE="$(dirname "$(readlink -f "$0")")"
 export LD_LIBRARY_PATH="$HERE/usr/lib:${LD_LIBRARY_PATH:-}"
-exec "$HERE/usr/bin/passguard_vault_v0" "$@"
+exec "$HERE/usr/bin/passguard_vault" "$@"
 EOF
 
 chmod +x "$APPDIR/AppRun" "$APPDIR/usr/bin/$APP_NAME"
