@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:passguard_vault/services/vault_service.dart';
@@ -157,7 +156,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
               sessionKey = migration.$2;
             }
           } catch (e) {
-            debugPrint('LoginScreen: KDF migration failed (non-fatal): $e');
+            // KDF migration failed (non-fatal) — continue with original key
           }
           await VaultService.saveVault(vault, sessionKey);
           AuthGuardService.recordSuccess();
@@ -300,6 +299,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                         controller: _passwordController,
                         focusNode: _passwordFocus,
                         obscureText: _obscurePassword,
+                        enableSuggestions: false,
+                        autocorrect: false,
                         style: TextStyle(fontSize: 15, color: textPrimary),
                         decoration: InputDecoration(
                           hintText: l.masterPassword,

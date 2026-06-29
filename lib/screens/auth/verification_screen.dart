@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:passguard_vault/services/biometric_service.dart';
@@ -136,7 +135,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
           sessionKey = migration.$2;
         }
       } catch (e) {
-        debugPrint('VerificationScreen: KDF migration failed (non-fatal): $e');
+        // KDF migration failed (non-fatal) — continue with original key
       }
 
       await VaultService.saveVault(vault, sessionKey);
@@ -253,6 +252,8 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
                     TextFormField(
                       controller: _passwordController,
                       obscureText: _obscurePassword,
+                      enableSuggestions: false,
+                      autocorrect: false,
                       decoration: InputDecoration(
                         labelText: localizations.masterPassword,
                         hintText: localizations.enterMasterPassword,

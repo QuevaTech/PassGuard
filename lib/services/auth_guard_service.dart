@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'dart:math' show pow;
 import '../utils/secure_storage_factory.dart';
 
 /// Brute-force protection service with exponential backoff.
@@ -31,7 +31,7 @@ class AuthGuardService {
         _lockedUntil = DateTime.tryParse(lockedUntilStr);
       }
     } catch (e) {
-      debugPrint('AuthGuardService: Failed to load persisted state: $e');
+      // Ignored: failed to load persisted state
     }
   }
 
@@ -39,9 +39,7 @@ class AuthGuardService {
   static void _persistAsync() {
     _secureStorage
         .write(key: _keyFailedAttempts, value: _failedAttempts.toString())
-        .catchError((e) {
-      debugPrint('AuthGuardService: persist failed_attempts error: $e');
-    });
+        .catchError((_) {});
 
     if (_lockedUntil != null) {
       _secureStorage
@@ -49,13 +47,9 @@ class AuthGuardService {
             key: _keyLockedUntil,
             value: _lockedUntil!.toIso8601String(),
           )
-          .catchError((e) {
-        debugPrint('AuthGuardService: persist locked_until error: $e');
-      });
+          .catchError((_) {});
     } else {
-      _secureStorage.delete(key: _keyLockedUntil).catchError((e) {
-        debugPrint('AuthGuardService: delete locked_until error: $e');
-      });
+      _secureStorage.delete(key: _keyLockedUntil).catchError((_) {});
     }
   }
 
@@ -81,8 +75,9 @@ class AuthGuardService {
     _failedAttempts++;
 
     if (_failedAttempts >= _maxAttempts) {
-      // Exponential backoff: 30s, 60s, 120s, ... up to 15 min
-      final multiplier = (_failedAttempts - _maxAttempts + 1);
+      // True exponential backoff: 30s, 60s, 120s, 240s, ... up to 15 min
+      final exponent = _failedAttempts - _maxAttempts;
+      final multiplier = pow(2, exponent).toInt();
       var lockoutDuration = _initialLockout * multiplier;
       if (lockoutDuration > _maxLockout) {
         lockoutDuration = _maxLockout;

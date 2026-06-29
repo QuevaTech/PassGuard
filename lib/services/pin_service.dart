@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'encryption_service.dart';
 import '../utils/secure_storage_factory.dart';
 
@@ -20,8 +19,8 @@ class PinService {
   static const _keyPinEnabled = 'pg_pin_enabled_v2';
 
   // Lighter Argon2id params dedicated to PIN hashing.
-  static const int _kdfIterations = 2;
-  static const int _kdfMemory = 32768; // 32 MB
+  static const int _kdfIterations = 4;
+  static const int _kdfMemory = 65536; // 64 MB
   static const int _kdfParallelism = 2;
 
   static final _secureStorage = SecureStorageFactory.create();
@@ -32,7 +31,7 @@ class PinService {
       final hash = await _secureStorage.read(key: _keyPinHash);
       return enabled == 'true' && hash != null;
     } catch (e) {
-      debugPrint('PinService: isPinEnabled failed: $e');
+      // Ignored: isPinEnabled check failed
       return false;
     }
   }
@@ -50,7 +49,7 @@ class PinService {
       await _secureStorage.write(key: _keyPinSalt, value: result['salt']);
       await _secureStorage.write(key: _keyPinEnabled, value: 'true');
     } catch (e) {
-      debugPrint('PinService: setPin keychain write failed: $e');
+      // Ignored: keychain write failed
     }
   }
 
@@ -67,7 +66,7 @@ class PinService {
         parallelism: _kdfParallelism,
       );
     } catch (e) {
-      debugPrint('PinService: verifyPin failed: $e');
+      // Ignored: verifyPin failed
       return false;
     }
   }
@@ -78,7 +77,7 @@ class PinService {
       await _secureStorage.delete(key: _keyPinSalt);
       await _secureStorage.write(key: _keyPinEnabled, value: 'false');
     } catch (e) {
-      debugPrint('PinService: disablePin keychain write failed: $e');
+      // Ignored: keychain write failed
     }
   }
 }
