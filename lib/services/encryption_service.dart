@@ -25,8 +25,8 @@ Uint8List _deriveKeyIsolate(Map<String, dynamic> args) {
 
 class EncryptionService {
   // Argon2id parameters
-  static const int argon2Iterations = 4;
-  static const int argon2Memory = 131072; // 128 MB
+  static const int argon2Iterations = 10;
+  static const int argon2Memory = 262144; // 256 MB
   static const int argon2Parallelism = 4;
   static const int _keyLength = 32; // 256 bit
   static const int _saltLength = 32; // 256 bit
@@ -81,9 +81,11 @@ class EncryptionService {
 
   static Uint8List generateSecureRandomBytes(int length) {
     final random = Random.secure();
-    return Uint8List.fromList(
-      List<int>.generate(length, (_) => random.nextInt(256)),
-    );
+    final bytes = Uint8List(length);
+    for (var i = 0; i < length; i++) {
+      bytes[i] = random.nextInt(256);
+    }
+    return bytes;
   }
 
   static Uint8List generateSalt() => generateSecureRandomBytes(_saltLength);
@@ -228,6 +230,15 @@ class EncryptionService {
     };
   }
 
+  static List<int> _hexToBytes(String hexStr) {
+    final result = <int>[];
+    for (var i = 0; i < hexStr.length; i += 2) {
+      final hex = hexStr.substring(i, i + 2);
+      result.add(int.parse(hex, radix: 16));
+    }
+    return result;
+  }
+
   static bool verifyPassword(
     String password,
     String storedHash,
@@ -243,9 +254,9 @@ class EncryptionService {
       memory: memory,
       parallelism: parallelism,
     );
-    final hash = sha256.convert(derived).toString();
+    final hashBytes = sha256.convert(derived).bytes;
     clearKey(derived);
-    return _constantTimeEquals(utf8.encode(hash), utf8.encode(storedHash));
+    return _constantTimeEquals(hashBytes, _hexToBytes(storedHash));
   }
 
   static Future<Map<String, String>> hashPasswordWithSaltAsync(
@@ -284,9 +295,9 @@ class EncryptionService {
       memory: memory,
       parallelism: parallelism,
     );
-    final hash = sha256.convert(derived).toString();
+    final hashBytes = sha256.convert(derived).bytes;
     clearKey(derived);
-    return _constantTimeEquals(utf8.encode(hash), utf8.encode(storedHash));
+    return _constantTimeEquals(hashBytes, _hexToBytes(storedHash));
   }
 
   // Constant-time byte comparison — prevents timing attacks.

@@ -37,7 +37,7 @@ class SessionService {
         value: base64Encode(key),
       );
     } catch (e) {
-      debugPrint('SessionService: Keychain write failed: $e');
+      // Ignored: Keychain write failed
     }
   }
 
@@ -53,7 +53,7 @@ class SessionService {
         return _sessionKey;
       }
     } catch (e) {
-      debugPrint('SessionService: Keychain read failed: $e');
+      // Ignored: Keychain read failed
     }
     return null;
   }
@@ -64,7 +64,7 @@ class SessionService {
     try {
       await _secureStorage.delete(key: _keyCredKey);
     } catch (e) {
-      debugPrint('SessionService: Keychain delete failed: $e');
+      // Ignored: Keychain delete failed
     }
   }
 
@@ -163,7 +163,7 @@ class SessionService {
       try {
         listener();
       } catch (e) {
-        debugPrint('SessionService: listener error: $e');
+        // Ignored: listener error
       }
     }
   }

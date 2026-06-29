@@ -38,6 +38,13 @@ class BiometricService {
       final enrolled = await isBiometricEnrolled();
       if (!enrolled) return false;
 
+      // Enforce STRONG biometrics (prevent 2D face unlock bypass)
+      final availableBiometrics = await _auth.getAvailableBiometrics();
+      if (availableBiometrics.contains(BiometricType.weak) && 
+          !availableBiometrics.contains(BiometricType.strong)) {
+        throw Exception('Only strong biometric authentication is allowed for security reasons.');
+      }
+
       final authenticated = await _auth.authenticate(
         localizedReason: reason ?? 'Authenticate to access your vault',
         options: const AuthenticationOptions(

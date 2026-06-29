@@ -92,11 +92,13 @@ class VaultService {
       baseDir = Directory(home);
     }
 
-    final dir = Directory('${baseDir.path}${Platform.pathSeparator}$_vaultDirName');
+    final dirPath = '${baseDir.path}${Platform.pathSeparator}$_vaultDirName';
+    final dir = Directory(dirPath);
     if (!await dir.exists()) {
-      await dir.create(recursive: true);
       if (Platform.isLinux || Platform.isMacOS) {
-        await Process.run('chmod', ['700', dir.path]);
+        await Process.run('mkdir', ['-m', '700', '-p', dirPath]);
+      } else {
+        await dir.create(recursive: true);
       }
     }
 
@@ -108,12 +110,6 @@ class VaultService {
   static Future<String> _getVaultFilePath() async {
     final dir = await _getVaultDirectory();
     return '${dir.path}/$_vaultFileName';
-  }
-
-  static Future<void> _lockFilePermissions(String filePath) async {
-    if (Platform.isLinux || Platform.isMacOS) {
-      await Process.run('chmod', ['600', filePath]);
-    }
   }
 
   // --- Per-Entry Encryption ---
@@ -171,7 +167,17 @@ class VaultService {
       );
     } catch (e) {
       // Keep metadata visible even if one record's encrypted payload is invalid.
-      return entry;
+      return VaultEntry(
+        id: entry.id,
+        type: entry.type,
+        title: '${entry.title} (Bozuk Kayıt)',
+        category: entry.category,
+        createdAt: entry.createdAt,
+        updatedAt: entry.updatedAt,
+        isFavorite: entry.isFavorite,
+        colorValue: entry.colorValue,
+        notes: 'Bu kaydın şifresi çözülemedi veya verisi bozuk.',
+      );
     }
   }
 
@@ -210,11 +216,26 @@ class VaultService {
 
   static const _allowedZipEntries = {'manifest.json', 'encryption.json', 'vault.enc'};
 
-  static bool _isZipEntrySafe(String name) {
+  static bool _isZipEntrySafe(ArchiveFile file) {
+    final name = file.name;
     if (name.contains('..') || name.startsWith('/') || name.contains('\\')) {
       return false;
     }
+    if (!file.isFile) return false;
     return _allowedZipEntries.contains(name);
+  }
+
+  static void _checkZipSecurity(Archive archive) {
+    int totalUncompressedSize = 0;
+    for (final file in archive) {
+      if (!_isZipEntrySafe(file)) {
+        throw Exception('Invalid .pgvault file: unexpected entry');
+      }
+      totalUncompressedSize += file.size;
+      if (totalUncompressedSize > _maxImportFileSize) {
+        throw Exception('Invalid .pgvault file: exceeds maximum size (ZIP bomb protection)');
+      }
+    }
   }
 
   /// Build ZIP archive using pre-derived session key (v4 format).
@@ -261,12 +282,7 @@ class VaultService {
   /// Decrypt a v4 ZIP archive using pre-derived session key.
   static Map<String, dynamic> _readZipArchiveWithKey(Uint8List bytes, Uint8List rawKey) {
     final archive = ZipDecoder().decodeBytes(bytes);
-
-    for (final file in archive) {
-      if (!_isZipEntrySafe(file.name)) {
-        throw Exception('Invalid .pgvault file: unexpected entry');
-      }
-    }
+    _checkZipSecurity(archive);
 
     final encryptionFile = archive.findFile('encryption.json');
     final vaultEncFile = archive.findFile('vault.enc');
@@ -291,12 +307,7 @@ class VaultService {
   /// Decrypt a v3 ZIP archive using master password (one-time at login for old vaults).
   static Map<String, dynamic> _readZipArchiveV3(Uint8List bytes, String masterPassword) {
     final archive = ZipDecoder().decodeBytes(bytes);
-
-    for (final file in archive) {
-      if (!_isZipEntrySafe(file.name)) {
-        throw Exception('Invalid .pgvault file: unexpected entry');
-      }
-    }
+    _checkZipSecurity(archive);
 
     final manifestFile = archive.findFile('manifest.json');
     final encryptionFile = archive.findFile('encryption.json');
@@ -341,8 +352,18 @@ class VaultService {
     try {
       final zipBytes = _buildZipArchiveWithKey(vault, rawKey);
       final filePath = await _getVaultFilePath();
-      await File(filePath).writeAsBytes(zipBytes);
-      await _lockFilePermissions(filePath);
+      final tempPath = '$filePath.tmp';
+      final tempFile = File(tempPath);
+      
+      if (Platform.isLinux || Platform.isMacOS) {
+        if (!await tempFile.exists()) {
+          await Process.run('touch', [tempPath]);
+        }
+        await Process.run('chmod', ['600', tempPath]);
+      }
+      
+      await tempFile.writeAsBytes(zipBytes);
+      await tempFile.rename(filePath);
     } catch (e) {
       throw Exception('Failed to save vault');
     }
@@ -666,8 +687,16 @@ class VaultService {
     final dir = await _getVaultDirectory();
     final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-').replaceAll('.', '-');
     final backupPath = '${dir.path}/passguard_backup_$timestamp.pgvault';
-    await File(backupPath).writeAsBytes(zipBytes);
-    await _lockFilePermissions(backupPath);
+    final tempPath = '$backupPath.tmp';
+    final tempFile = File(tempPath);
+    if (Platform.isLinux || Platform.isMacOS) {
+      if (!await tempFile.exists()) {
+        await Process.run('touch', [tempPath]);
+      }
+      await Process.run('chmod', ['600', tempPath]);
+    }
+    await tempFile.writeAsBytes(zipBytes);
+    await tempFile.rename(backupPath);
     return backupPath;
   }
 
@@ -722,7 +751,13 @@ class VaultService {
           }
         }
       }
-      rows.add(fields);
+      rows.add(fields.map((f) {
+        final tf = f.trimLeft();
+        if (tf.startsWith('=') || tf.startsWith('+') || tf.startsWith('-') || tf.startsWith('@')) {
+          return "'$f";
+        }
+        return f;
+      }).toList());
     }
     return rows;
   }

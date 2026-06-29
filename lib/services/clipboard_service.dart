@@ -14,7 +14,7 @@ class ClipboardService with WidgetsBindingObserver {
   static final ClipboardService _instance = ClipboardService._();
 
   Timer? _clearTimer;
-  static const _autoClearDuration = Duration(seconds: 30);
+  static const _autoClearDuration = Duration(seconds: 15);
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {

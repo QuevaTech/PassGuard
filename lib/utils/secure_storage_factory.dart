@@ -25,7 +25,10 @@ class SecureStorageFactory {
         aOptions: const AndroidOptions(
           encryptedSharedPreferences: true,
         ),
-        // iOS: default IOSOptions — Keychain with kSecAttrAccessibleWhenUnlocked
+        // iOS: enforce passcode-locked keychain for session keys
+        iOptions: const IOSOptions(
+          accessibility: KeychainAccessibility.passcode,
+        ),
         // macOS: Data Protection Keychain in release; legacy Keychain in debug.
         mOptions: MacOsOptions(usesDataProtectionKeychain: kReleaseMode),
         // Windows: DPAPI with background-isolate writes (default, keeps UI smooth).
