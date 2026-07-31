@@ -6,6 +6,7 @@ import 'package:passguard_vault/services/clipboard_service.dart';
 import 'package:passguard_vault/services/password_generator_service.dart';
 import 'vault/vault_screen.dart';
 import 'settings/settings_screen.dart';
+import 'auth/login_screen.dart';
 import '../../utils/app_localizations.dart';
 import '../../widgets/app_scaffold.dart';
 import '../../widgets/glass_card.dart';
@@ -52,6 +53,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   }
 
   Future<void> _reauthenticate() async {
+    if (!SessionService.isBiometricEnabled()) {
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
+      return;
+    }
+
     try {
       final authenticated = await _biometricService.authenticate(
         reason: AppLocalizations.of(context).biometricAuth,
@@ -84,7 +94,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     final l = AppLocalizations.of(context);
     final ext = Theme.of(context).extension<AppThemeExtension>();
     final accent = ext?.primaryAccent ?? Theme.of(context).colorScheme.primary;
-    final textPrimary = ext?.textPrimary ?? Theme.of(context).colorScheme.onSurface;
+    final textPrimary =
+        ext?.textPrimary ?? Theme.of(context).colorScheme.onSurface;
     final textSecondary = ext?.textSecondary ??
         Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6);
 
@@ -181,8 +192,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     final l = AppLocalizations.of(context);
     final ext = Theme.of(context).extension<AppThemeExtension>();
     final accent = ext?.primaryAccent ?? Theme.of(context).colorScheme.primary;
-    final secondary = ext?.secondaryAccent ?? Theme.of(context).colorScheme.secondary;
-    final textPrimary = ext?.textPrimary ?? Theme.of(context).colorScheme.onSurface;
+    final secondary =
+        ext?.secondaryAccent ?? Theme.of(context).colorScheme.secondary;
+    final textPrimary =
+        ext?.textPrimary ?? Theme.of(context).colorScheme.onSurface;
     final textSecondary = ext?.textSecondary ??
         Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6);
 
@@ -234,8 +247,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 GlassCard(
                   padding: const EdgeInsets.all(10),
                   child: GestureDetector(
-                    onTap: () => Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => const SettingsScreen())),
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const SettingsScreen())),
                     child: Icon(
                       Icons.settings_outlined,
                       size: 22,
@@ -251,8 +266,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             // ── Hero card: Vault ─────────────────────────────────────────
             GlassCard(
               child: InkWell(
-                onTap: () => Navigator.push(
-                    context, MaterialPageRoute(builder: (_) => const VaultScreen())),
+                onTap: () => Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => const VaultScreen())),
                 borderRadius: BorderRadius.circular(ext?.cardRadius ?? 14),
                 child: Padding(
                   padding: const EdgeInsets.all(22),
@@ -264,8 +279,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                         height: 52,
                         decoration: BoxDecoration(
                           gradient: ext?.ctaGradient ??
-                              LinearGradient(
-                                  colors: [accent, secondary]),
+                              LinearGradient(colors: [accent, secondary]),
                           borderRadius: BorderRadius.circular(14),
                           boxShadow: [
                             BoxShadow(
@@ -294,8 +308,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                             const SizedBox(height: 3),
                             Text(
                               l.addPassword,
-                              style: TextStyle(
-                                  fontSize: 12, color: textSecondary),
+                              style:
+                                  TextStyle(fontSize: 12, color: textSecondary),
                             ),
                           ],
                         ),
@@ -361,8 +375,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             Row(
               children: [
                 Expanded(
-                  child: Divider(
-                      color: accent.withValues(alpha: 0.15), height: 1),
+                  child:
+                      Divider(color: accent.withValues(alpha: 0.15), height: 1),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -376,8 +390,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   ),
                 ),
                 Expanded(
-                  child: Divider(
-                      color: accent.withValues(alpha: 0.15), height: 1),
+                  child:
+                      Divider(color: accent.withValues(alpha: 0.15), height: 1),
                 ),
               ],
             ),

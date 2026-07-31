@@ -80,6 +80,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         if (!mounted) return;
 
         if (pinEnabled) {
+          await SessionService.setQuickUnlockEnabled(true);
+          if (!mounted) return;
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -103,12 +105,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         if (!mounted) return;
 
         if (biometricEnabled) {
+          await SessionService.setQuickUnlockEnabled(true);
+          if (!mounted) return;
           SessionService.initialize(biometricEnabled: true);
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (_) => const VerificationScreen()),
           );
         } else {
+          // A master-password-only vault must never retain a stale cached
+          // session key from a previously enabled quick-unlock method.
+          await SessionService.setQuickUnlockEnabled(false);
+          if (!mounted) return;
           SessionService.initialize(biometricEnabled: false);
           Navigator.pushReplacement(
             context,
@@ -116,6 +124,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           );
         }
       } else {
+        await SessionService.setQuickUnlockEnabled(false);
+        if (!mounted) return;
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(

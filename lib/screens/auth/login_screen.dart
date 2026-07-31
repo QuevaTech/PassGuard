@@ -8,7 +8,7 @@ import 'package:passguard_vault/services/session_service.dart';
 import 'package:passguard_vault/services/encryption_service.dart';
 import 'package:passguard_vault/services/password_generator_service.dart';
 import 'package:passguard_vault/services/auth_guard_service.dart';
-import '../home_screen.dart';
+import 'package:passguard_vault/services/pin_service.dart';
 import '../vault/vault_screen.dart';
 import '../../utils/app_localizations.dart';
 import '../../utils/vault_exceptions.dart';
@@ -155,14 +155,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
         final Uint8List sessionKey =
             await VaultService.deriveSessionKey(password, vault);
         await VaultService.saveVault(vault, sessionKey);
-        await SessionService.setSessionKey(sessionKey);
+        final pinEnabled = await PinService.isPinEnabled();
+        await SessionService.setSessionKey(
+          sessionKey,
+          persistForQuickUnlock: _enableBiometric || pinEnabled,
+        );
         EncryptionService.clearKey(sessionKey);
         await _persistBiometricPreference();
         SessionService.initialize(biometricEnabled: _enableBiometric);
 
         if (mounted) {
           Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+              context, MaterialPageRoute(builder: (_) => const VaultScreen()));
         }
       } else {
         try {
@@ -181,7 +185,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           }
           await VaultService.saveVault(vault, sessionKey);
           AuthGuardService.recordSuccess();
-          await SessionService.setSessionKey(sessionKey);
+          final pinEnabled = await PinService.isPinEnabled();
+          await SessionService.setSessionKey(
+            sessionKey,
+            persistForQuickUnlock: _enableBiometric || pinEnabled,
+          );
           EncryptionService.clearKey(sessionKey);
           await _persistBiometricPreference();
           SessionService.initialize(biometricEnabled: _enableBiometric);
@@ -485,7 +493,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                               value: _enableBiometric,
                               onChanged: (v) =>
                                   setState(() => _enableBiometric = v),
-                              activeColor: secondary,
+                              activeThumbColor: secondary,
                             ),
                           ],
                         ),

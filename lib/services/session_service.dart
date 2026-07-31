@@ -19,6 +19,7 @@ class SessionService {
   static DateTime? _sessionStartedAt;
   static bool _isLocked = false;
   static bool _biometricEnabled = false;
+  static bool _quickUnlockEnabled = false;
   static Duration _sessionTimeout = _defaultTimeout;
 
   // Derived key bytes — never the master password string
@@ -26,26 +27,71 @@ class SessionService {
 
   static final List<VoidCallback> _listeners = [];
 
-  /// Store the derived session key in memory and Keychain.
-  /// The master password is NOT stored — only the Argon2id-derived key bytes.
-  static Future<void> setSessionKey(Uint8List key) async {
+  /// Store the derived session key in memory, and optionally in the platform
+  /// secure store for an explicitly enabled PIN or biometric quick-unlock.
+  ///
+  /// The master password is never stored. When [persistForQuickUnlock] is
+  /// false, any previously cached key is removed so a normal master-password
+  /// session cannot later be reopened through a stale keychain entry.
+  static Future<void> setSessionKey(
+    Uint8List key, {
+    bool? persistForQuickUnlock,
+  }) async {
+    if (persistForQuickUnlock != null) {
+      _quickUnlockEnabled = persistForQuickUnlock;
+    }
     _zeroAndClear();
     _sessionKey = Uint8List.fromList(key);
+
+    if (_quickUnlockEnabled) {
+      await _persistCurrentSessionKey();
+    } else {
+      await _deletePersistedSessionKey();
+    }
+  }
+
+  /// Enables or disables persistence of the current derived key for a PIN or
+  /// biometric quick-unlock. Disabling this setting immediately removes the
+  /// cached key from the platform secure store.
+  static Future<void> setQuickUnlockEnabled(bool enabled) async {
+    _quickUnlockEnabled = enabled;
+    if (enabled && _sessionKey != null) {
+      await _persistCurrentSessionKey();
+    } else if (!enabled) {
+      await _deletePersistedSessionKey();
+    }
+  }
+
+  static bool isQuickUnlockEnabled() => _quickUnlockEnabled;
+
+  static Future<void> _persistCurrentSessionKey() async {
+    final key = _sessionKey;
+    if (key == null) return;
     try {
       await _secureStorage.write(
         key: _keyCredKey,
         value: base64Encode(key),
       );
-    } catch (e) {
-      // Ignored: Keychain write failed
+    } catch (_) {
+      // Keychain write failures are handled by the calling UI's availability
+      // checks; the in-memory session remains usable until it locks.
+    }
+  }
+
+  static Future<void> _deletePersistedSessionKey() async {
+    try {
+      await _secureStorage.delete(key: _keyCredKey);
+    } catch (_) {
+      // Best effort: a failed delete must not prevent an in-memory lock.
     }
   }
 
   /// Returns the current session key, or null if locked.
   static Uint8List? getSessionKey() => _isLocked ? null : _sessionKey;
 
-  /// Load session key from Keychain (for biometric re-auth).
+  /// Load a cached key only after PIN or biometric quick-unlock was enabled.
   static Future<Uint8List?> loadSessionKey() async {
+    if (!_quickUnlockEnabled) return null;
     try {
       final encoded = await _secureStorage.read(key: _keyCredKey);
       if (encoded != null) {
@@ -61,11 +107,8 @@ class SessionService {
   /// Zero out and remove session key from memory and Keychain.
   static Future<void> clearSessionKey() async {
     _zeroAndClear();
-    try {
-      await _secureStorage.delete(key: _keyCredKey);
-    } catch (e) {
-      // Ignored: Keychain delete failed
-    }
+    _quickUnlockEnabled = false;
+    await _deletePersistedSessionKey();
   }
 
   static void initialize({
@@ -182,6 +225,7 @@ class SessionService {
     _stopSessionTimer();
     _listeners.clear();
     _zeroAndClear();
+    _quickUnlockEnabled = false;
   }
 
   static void extendSession() {
@@ -210,6 +254,7 @@ class SessionService {
       'time_until_lock': timeUntilLock(),
       'timeout_duration': _sessionTimeout,
       'biometric_enabled': _biometricEnabled,
+      'quick_unlock_enabled': _quickUnlockEnabled,
       'session_started_at': _sessionStartedAt,
     };
   }

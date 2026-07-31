@@ -5,6 +5,7 @@ import 'package:passguard_vault/services/vault_service.dart';
 import 'package:passguard_vault/services/session_service.dart';
 import 'package:passguard_vault/services/auth_guard_service.dart';
 import 'package:passguard_vault/services/encryption_service.dart';
+import 'package:passguard_vault/services/pin_service.dart';
 import '../vault/vault_screen.dart';
 import '../../utils/app_localizations.dart';
 import '../../widgets/app_scaffold.dart';
@@ -151,7 +152,12 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
 
       // Password authentication successful
       AuthGuardService.recordSuccess();
-      await SessionService.setSessionKey(sessionKey);
+      final pinEnabled = await PinService.isPinEnabled();
+      await SessionService.setSessionKey(
+        sessionKey,
+        persistForQuickUnlock:
+            SessionService.isBiometricEnabled() || pinEnabled,
+      );
       SessionService.unlockSession();
 
       // Navigate to vault

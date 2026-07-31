@@ -43,4 +43,27 @@ void main() {
 
     expect(SessionService.isBiometricEnabled(), isFalse);
   });
+
+  test('quick-unlock key caching is opt-in and can be revoked', () async {
+    final key = Uint8List.fromList(List<int>.filled(32, 7));
+
+    await SessionService.setSessionKey(key);
+    expect(SessionService.isQuickUnlockEnabled(), isFalse);
+
+    await SessionService.setQuickUnlockEnabled(true);
+    expect(SessionService.isQuickUnlockEnabled(), isTrue);
+
+    await SessionService.setQuickUnlockEnabled(false);
+    expect(SessionService.isQuickUnlockEnabled(), isFalse);
+  });
+
+  test('a master-password-only lock cannot restore a cached session key',
+      () async {
+    final key = Uint8List.fromList(List<int>.filled(32, 9));
+    await SessionService.setSessionKey(key, persistForQuickUnlock: false);
+    SessionService.initialize(timeout: const Duration(hours: 1));
+    SessionService.forceLock();
+
+    expect(await SessionService.loadSessionKey(), isNull);
+  });
 }

@@ -35,13 +35,15 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  static const _autoLockEnabledKey = 'auto_lock_enabled';
+
   final BiometricService _biometricService = BiometricService();
   bool _biometricEnabled = false;
   bool _biometricAvailable = false;
   bool _biometricEnrolled = false;
   bool _pinEnabled = false;
   bool _autoLockEnabled = true;
-  int _autoLockMinutes = 5;
+  final int _autoLockMinutes = 5;
   bool _isExporting = false;
   bool _isImporting = false;
   String _appVersion = '';
@@ -59,6 +61,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       final prefs = await SharedPreferences.getInstance();
       final saved = prefs.getBool('biometric_enabled') ?? false;
       final pinEnabled = await PinService.isPinEnabled();
+      final autoLockEnabled = prefs.getBool(_autoLockEnabledKey) ?? true;
       final packageInfo = await PackageInfo.fromPlatform();
       if (mounted) {
         setState(() {
@@ -66,8 +69,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _biometricEnrolled = enrolled;
           _biometricEnabled = available && enrolled && saved;
           _pinEnabled = pinEnabled;
+          _autoLockEnabled = autoLockEnabled;
           _appVersion = packageInfo.version;
         });
+        await SessionService.setQuickUnlockEnabled(
+            _biometricEnabled || _pinEnabled);
+        SessionService.initialize(
+          timeout: _autoLockEnabled
+              ? Duration(minutes: _autoLockMinutes)
+              : const Duration(hours: 1),
+        );
       }
     } catch (e) {
       // Biometric not available on this device — keep defaults (false)
@@ -758,12 +769,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     if (mounted) {
                       setState(() {
                         _biometricEnabled = value;
-                        if (value) {
-                          SessionService.extendSession();
-                        } else {
-                          SessionService.shortenSession();
-                        }
                       });
+                      await SessionService.setQuickUnlockEnabled(
+                          _biometricEnabled || _pinEnabled);
                     }
                   },
                 ),
@@ -788,7 +796,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       tooltip: 'Remove PIN',
                       onPressed: () async {
                         await PinService.disablePin();
-                        if (mounted) setState(() => _pinEnabled = false);
+                        if (mounted) {
+                          setState(() => _pinEnabled = false);
+                          await SessionService.setQuickUnlockEnabled(
+                              _biometricEnabled || _pinEnabled);
+                        }
                       },
                     )
                   : TextButton(
@@ -803,6 +815,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         );
                         if (result == true && mounted) {
                           setState(() => _pinEnabled = true);
+                          await SessionService.setQuickUnlockEnabled(true);
+                          if (!mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('PIN set successfully'),
@@ -827,17 +841,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               subtitle: Text('$_autoLockMinutes ${localizations.minutes}'),
               trailing: Switch(
                 value: _autoLockEnabled,
-                onChanged: (value) {
+                onChanged: (value) async {
                   setState(() {
                     _autoLockEnabled = value;
-                    if (value) {
-                      SessionService.initialize(
-                          timeout: Duration(minutes: _autoLockMinutes));
-                    } else {
-                      SessionService.initialize(
-                          timeout: const Duration(hours: 1));
-                    }
                   });
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.setBool(_autoLockEnabledKey, value);
+                  SessionService.initialize(
+                    timeout: value
+                        ? Duration(minutes: _autoLockMinutes)
+                        : const Duration(hours: 1),
+                  );
                 },
               ),
             ),
