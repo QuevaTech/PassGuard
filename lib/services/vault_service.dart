@@ -15,7 +15,8 @@ class ImportResult {
   final int imported;
   final int skipped;
   final int total;
-  ImportResult({required this.imported, required this.skipped, required this.total});
+  ImportResult(
+      {required this.imported, required this.skipped, required this.total});
 }
 
 class VaultService {
@@ -33,7 +34,8 @@ class VaultService {
   static Future<void> _migrateWindowsVaultIfNeeded(Directory targetDir) async {
     if (!Platform.isWindows) return;
 
-    final targetFile = File('${targetDir.path}${Platform.pathSeparator}$_vaultFileName');
+    final targetFile =
+        File('${targetDir.path}${Platform.pathSeparator}$_vaultFileName');
     if (await targetFile.exists()) return;
 
     final candidates = <String>[];
@@ -163,6 +165,14 @@ class VaultService {
         password: fields['password'] as String?,
         website: fields['website'] as String?,
         content: fields['content'] as String?,
+        privateKey: fields['private_key'] as String?,
+        publicKey: fields['public_key'] as String?,
+        keyFingerprint: fields['key_fingerprint'] as String?,
+        certificateData: fields['certificate_data'] as String?,
+        attachmentBase64: fields['attachment_base64'] as String?,
+        attachmentFileName: fields['attachment_file_name'] as String?,
+        attachmentMimeType: fields['attachment_mime_type'] as String?,
+        credentialKind: fields['credential_kind'] as String?,
         notes: fields['notes'] as String?,
       );
     } catch (e) {
@@ -214,7 +224,11 @@ class VaultService {
         bytes[3] == 0x04;
   }
 
-  static const _allowedZipEntries = {'manifest.json', 'encryption.json', 'vault.enc'};
+  static const _allowedZipEntries = {
+    'manifest.json',
+    'encryption.json',
+    'vault.enc'
+  };
 
   static bool _isZipEntrySafe(ArchiveFile file) {
     final name = file.name;
@@ -233,7 +247,8 @@ class VaultService {
       }
       totalUncompressedSize += file.size;
       if (totalUncompressedSize > _maxImportFileSize) {
-        throw Exception('Invalid .pgvault file: exceeds maximum size (ZIP bomb protection)');
+        throw Exception(
+            'Invalid .pgvault file: exceeds maximum size (ZIP bomb protection)');
       }
     }
   }
@@ -241,7 +256,8 @@ class VaultService {
   /// Build ZIP archive using pre-derived session key (v4 format).
   /// The kdf_salt from the vault header is stored in the manifest so
   /// the key can be re-derived from password at next login.
-  static Uint8List _buildZipArchiveWithKey(Map<String, dynamic> vault, Uint8List rawKey) {
+  static Uint8List _buildZipArchiveWithKey(
+      Map<String, dynamic> vault, Uint8List rawKey) {
     final vaultJson = jsonEncode(vault);
     final encrypted = EncryptionService.encryptWithKey(vaultJson, rawKey);
 
@@ -254,9 +270,12 @@ class VaultService {
       'kdf_salt': kdfSalt,
       // Store KDF params in the unencrypted manifest so loadVault can derive
       // the correct key without a chicken-and-egg problem.
-      'kdf_iterations': header['kdf_iterations'] as int? ?? EncryptionService.argon2Iterations,
-      'kdf_memory': header['kdf_memory'] as int? ?? EncryptionService.argon2Memory,
-      'kdf_parallelism': header['kdf_parallelism'] as int? ?? EncryptionService.argon2Parallelism,
+      'kdf_iterations': header['kdf_iterations'] as int? ??
+          EncryptionService.argon2Iterations,
+      'kdf_memory':
+          header['kdf_memory'] as int? ?? EncryptionService.argon2Memory,
+      'kdf_parallelism': header['kdf_parallelism'] as int? ??
+          EncryptionService.argon2Parallelism,
       'created_at': DateTime.now().toIso8601String(),
       'entry_count': (vault['entries'] as List?)?.length ?? 0,
       'app': 'PassGuard Vault',
@@ -270,17 +289,21 @@ class VaultService {
 
     final archive = Archive();
     final manifestBytes = utf8.encode(jsonEncode(manifest));
-    archive.addFile(ArchiveFile('manifest.json', manifestBytes.length, manifestBytes));
+    archive.addFile(
+        ArchiveFile('manifest.json', manifestBytes.length, manifestBytes));
     final encParamsBytes = utf8.encode(jsonEncode(encryptionParams));
-    archive.addFile(ArchiveFile('encryption.json', encParamsBytes.length, encParamsBytes));
+    archive.addFile(
+        ArchiveFile('encryption.json', encParamsBytes.length, encParamsBytes));
     final encDataBytes = utf8.encode(encrypted['encrypted']!);
-    archive.addFile(ArchiveFile('vault.enc', encDataBytes.length, encDataBytes));
+    archive
+        .addFile(ArchiveFile('vault.enc', encDataBytes.length, encDataBytes));
 
     return Uint8List.fromList(ZipEncoder().encode(archive)!);
   }
 
   /// Decrypt a v4 ZIP archive using pre-derived session key.
-  static Map<String, dynamic> _readZipArchiveWithKey(Uint8List bytes, Uint8List rawKey) {
+  static Map<String, dynamic> _readZipArchiveWithKey(
+      Uint8List bytes, Uint8List rawKey) {
     final archive = ZipDecoder().decodeBytes(bytes);
     _checkZipSecurity(archive);
 
@@ -291,7 +314,8 @@ class VaultService {
       throw Exception('Invalid .pgvault file: missing required components');
     }
 
-    final encParams = jsonDecode(utf8.decode(encryptionFile.content as List<int>));
+    final encParams =
+        jsonDecode(utf8.decode(encryptionFile.content as List<int>));
     final encryptedContent = utf8.decode(vaultEncFile.content as List<int>);
 
     final decrypted = EncryptionService.decryptWithKey(
@@ -305,7 +329,8 @@ class VaultService {
   }
 
   /// Decrypt a v3 ZIP archive using master password (one-time at login for old vaults).
-  static Map<String, dynamic> _readZipArchiveV3(Uint8List bytes, String masterPassword) {
+  static Map<String, dynamic> _readZipArchiveV3(
+      Uint8List bytes, String masterPassword) {
     final archive = ZipDecoder().decodeBytes(bytes);
     _checkZipSecurity(archive);
 
@@ -313,7 +338,9 @@ class VaultService {
     final encryptionFile = archive.findFile('encryption.json');
     final vaultEncFile = archive.findFile('vault.enc');
 
-    if (manifestFile == null || encryptionFile == null || vaultEncFile == null) {
+    if (manifestFile == null ||
+        encryptionFile == null ||
+        vaultEncFile == null) {
       throw Exception('Invalid .pgvault file: missing required components');
     }
 
@@ -322,7 +349,8 @@ class VaultService {
       throw Exception('Invalid .pgvault file: unknown format');
     }
 
-    final encParams = jsonDecode(utf8.decode(encryptionFile.content as List<int>));
+    final encParams =
+        jsonDecode(utf8.decode(encryptionFile.content as List<int>));
     final encryptedContent = utf8.decode(vaultEncFile.content as List<int>);
 
     final decrypted = EncryptionService.decryptContent(
@@ -339,8 +367,10 @@ class VaultService {
   // --- Core Vault Operations ---
 
   /// Create a new vault. Call deriveSessionKey() afterwards to get the session key.
-  static Future<Map<String, dynamic>> createNewVault(String masterPassword) async {
-    final header = await EncryptionService.createVaultHeaderAsync(masterPassword);
+  static Future<Map<String, dynamic>> createNewVault(
+      String masterPassword) async {
+    final header =
+        await EncryptionService.createVaultHeaderAsync(masterPassword);
     return {
       'header': header,
       'entries': <Map<String, dynamic>>[],
@@ -348,20 +378,21 @@ class VaultService {
   }
 
   /// Save vault using the pre-derived session key (v4 format).
-  static Future<void> saveVault(Map<String, dynamic> vault, Uint8List rawKey) async {
+  static Future<void> saveVault(
+      Map<String, dynamic> vault, Uint8List rawKey) async {
     try {
       final zipBytes = _buildZipArchiveWithKey(vault, rawKey);
       final filePath = await _getVaultFilePath();
       final tempPath = '$filePath.tmp';
       final tempFile = File(tempPath);
-      
+
       if (Platform.isLinux || Platform.isMacOS) {
         if (!await tempFile.exists()) {
           await Process.run('touch', [tempPath]);
         }
         await Process.run('chmod', ['600', tempPath]);
       }
-      
+
       await tempFile.writeAsBytes(zipBytes);
       await tempFile.rename(filePath);
     } catch (e) {
@@ -384,7 +415,8 @@ class VaultService {
         final archive = ZipDecoder().decodeBytes(bytes);
         final manifestFile = archive.findFile('manifest.json');
         if (manifestFile != null) {
-          final manifest = jsonDecode(utf8.decode(manifestFile.content as List<int>));
+          final manifest =
+              jsonDecode(utf8.decode(manifestFile.content as List<int>));
           final version = manifest['version'] as int? ?? 3;
 
           // Reject vaults created by a newer app version — opening them with
@@ -439,7 +471,8 @@ class VaultService {
   }
 
   /// Load vault using the pre-derived session key (v4 format only).
-  static Future<Map<String, dynamic>> _loadVaultWithKey(Uint8List rawKey) async {
+  static Future<Map<String, dynamic>> _loadVaultWithKey(
+      Uint8List rawKey) async {
     try {
       final filePath = await _getVaultFilePath();
       final bytes = await File(filePath).readAsBytes();
@@ -544,7 +577,8 @@ class VaultService {
     }
   }
 
-  static Future<List<VaultEntry>> searchEntries(String query, Uint8List rawKey) async {
+  static Future<List<VaultEntry>> searchEntries(
+      String query, Uint8List rawKey) async {
     try {
       final allEntries = await getAllEntries(rawKey);
       final queryLower = query.toLowerCase();
@@ -553,18 +587,25 @@ class VaultService {
             entry.category.toLowerCase().contains(queryLower) ||
             (entry.username?.toLowerCase().contains(queryLower) ?? false) ||
             (entry.website?.toLowerCase().contains(queryLower) ?? false) ||
-            (entry.content?.toLowerCase().contains(queryLower) ?? false);
+            (entry.content?.toLowerCase().contains(queryLower) ?? false) ||
+            (entry.publicKey?.toLowerCase().contains(queryLower) ?? false) ||
+            (entry.keyFingerprint?.toLowerCase().contains(queryLower) ??
+                false) ||
+            (entry.certificateData?.toLowerCase().contains(queryLower) ??
+                false);
       }).toList();
     } catch (e) {
       throw Exception('Failed to search entries');
     }
   }
 
-  static Future<List<VaultEntry>> filterByCategory(String category, Uint8List rawKey) async {
+  static Future<List<VaultEntry>> filterByCategory(
+      String category, Uint8List rawKey) async {
     try {
       final allEntries = await getAllEntries(rawKey);
       return allEntries
-          .where((entry) => entry.category.toLowerCase() == category.toLowerCase())
+          .where(
+              (entry) => entry.category.toLowerCase() == category.toLowerCase())
           .toList();
     } catch (e) {
       throw Exception('Failed to filter entries');
@@ -574,13 +615,21 @@ class VaultService {
   static Future<Map<String, dynamic>> getVaultStats(Uint8List rawKey) async {
     try {
       final entries = await getAllEntries(rawKey);
-      final passwordCount = entries.where((e) => e.type == VaultEntryType.password).length;
-      final noteCount = entries.where((e) => e.type == VaultEntryType.note).length;
+      final passwordCount =
+          entries.where((e) => e.type == VaultEntryType.password).length;
+      final noteCount =
+          entries.where((e) => e.type == VaultEntryType.note).length;
+      final sshKeyCount =
+          entries.where((e) => e.type == VaultEntryType.sshKey).length;
+      final certificateCount =
+          entries.where((e) => e.type == VaultEntryType.certificate).length;
       final categories = entries.map((e) => e.category).toSet();
       return {
         'total_entries': entries.length,
         'password_count': passwordCount,
         'note_count': noteCount,
+        'ssh_key_count': sshKeyCount,
+        'certificate_count': certificateCount,
         'categories': categories.length,
         'categories_list': categories.toList(),
       };
@@ -608,9 +657,11 @@ class VaultService {
     EncryptionService.clearKey(oldKey);
 
     // New vault header with new password
-    final newHeader = await EncryptionService.createVaultHeaderAsync(newPassword);
+    final newHeader =
+        await EncryptionService.createVaultHeaderAsync(newPassword);
     final newSalt = base64Decode(newHeader['salt'] as String);
-    final newKey = await EncryptionService.deriveKeyAsync(newPassword, Uint8List.fromList(newSalt));
+    final newKey = await EncryptionService.deriveKeyAsync(
+        newPassword, Uint8List.fromList(newSalt));
 
     // Re-encrypt all entries
     final reEncryptedEntries = decryptedEntries.map((entry) {
@@ -647,13 +698,13 @@ class VaultService {
         header['kdf_iterations'] as int? ?? EncryptionService.argon2Iterations;
     final storedMemory =
         header['kdf_memory'] as int? ?? EncryptionService.argon2Memory;
-    final storedParallelism =
-        header['kdf_parallelism'] as int? ?? EncryptionService.argon2Parallelism;
+    final storedParallelism = header['kdf_parallelism'] as int? ??
+        EncryptionService.argon2Parallelism;
 
     final needsUpgrade =
         storedIterations < EncryptionService.argon2Iterations ||
-        storedMemory < EncryptionService.argon2Memory ||
-        storedParallelism < EncryptionService.argon2Parallelism;
+            storedMemory < EncryptionService.argon2Memory ||
+            storedParallelism < EncryptionService.argon2Parallelism;
 
     if (!needsUpgrade) return null;
 
@@ -665,9 +716,11 @@ class VaultService {
     }).toList();
 
     // New header: new salt + updated KDF params
-    final newHeader = await EncryptionService.createVaultHeaderAsync(masterPassword);
+    final newHeader =
+        await EncryptionService.createVaultHeaderAsync(masterPassword);
     final newSalt = base64Decode(newHeader['salt'] as String);
-    final newKey = await EncryptionService.deriveKeyAsync(masterPassword, Uint8List.fromList(newSalt));
+    final newKey = await EncryptionService.deriveKeyAsync(
+        masterPassword, Uint8List.fromList(newSalt));
 
     // Re-encrypt all entries with the new key
     final reEncryptedEntries = decryptedEntries.map((entry) {
@@ -685,7 +738,10 @@ class VaultService {
     final zipBytes = _buildZipArchiveWithKey(vault, rawKey);
 
     final dir = await _getVaultDirectory();
-    final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-').replaceAll('.', '-');
+    final timestamp = DateTime.now()
+        .toIso8601String()
+        .replaceAll(':', '-')
+        .replaceAll('.', '-');
     final backupPath = '${dir.path}/passguard_backup_$timestamp.pgvault';
     final tempPath = '$backupPath.tmp';
     final tempFile = File(tempPath);
@@ -700,7 +756,8 @@ class VaultService {
     return backupPath;
   }
 
-  static Future<Map<String, dynamic>?> readBackupManifest(String filePath) async {
+  static Future<Map<String, dynamic>?> readBackupManifest(
+      String filePath) async {
     try {
       final bytes = await File(filePath).readAsBytes();
       if (!_isZipFile(bytes)) return null;
@@ -753,7 +810,10 @@ class VaultService {
       }
       rows.add(fields.map((f) {
         final tf = f.trimLeft();
-        if (tf.startsWith('=') || tf.startsWith('+') || tf.startsWith('-') || tf.startsWith('@')) {
+        if (tf.startsWith('=') ||
+            tf.startsWith('+') ||
+            tf.startsWith('-') ||
+            tf.startsWith('@')) {
           return "'$f";
         }
         return f;
@@ -771,49 +831,57 @@ class VaultService {
   }) async {
     final content = await File(csvPath).readAsString();
     final rows = _parseCsv(content);
-    if (rows.isEmpty) return ImportResult(imported: 0, skipped: 0, total: 0);
+    if (rows.isEmpty) {
+      return ImportResult(imported: 0, skipped: 0, total: 0);
+    }
 
     final header = rows.first.map((h) => h.toLowerCase().trim()).toList();
     final dataRows = rows.skip(1).toList();
 
-    int Function(String) col = (name) => header.indexOf(name);
+    int col(String name) => header.indexOf(name);
 
     // Detect format by header columns
     final isBitwarden = header.contains('login_password');
-    final isChrome = header.contains('password') && header.contains('url') && header.contains('name');
-    final is1Password = header.contains('password') && header.contains('username') && header.contains('title');
+    final isChrome = header.contains('password') &&
+        header.contains('url') &&
+        header.contains('name');
+    final is1Password = header.contains('password') &&
+        header.contains('username') &&
+        header.contains('title');
 
     if (!isBitwarden && !isChrome && !is1Password) {
       throw const CsvFormatUnsupportedException();
     }
 
     final entries = <VaultEntry>[];
-    final uuid = const Uuid();
+    const uuid = Uuid();
 
     for (final row in dataRows) {
-      String get(int idx) => (idx >= 0 && idx < row.length) ? row[idx].trim() : '';
+      String get(int idx) =>
+          (idx >= 0 && idx < row.length) ? row[idx].trim() : '';
 
       final String title, username, password, website, notes;
 
       if (isBitwarden) {
-        title    = get(col('name'));
+        title = get(col('name'));
         username = get(col('login_username'));
         password = get(col('login_password'));
-        website  = get(col('login_uri'));
-        notes    = get(col('notes'));
+        website = get(col('login_uri'));
+        notes = get(col('notes'));
       } else if (isChrome) {
-        title    = get(col('name'));
+        title = get(col('name'));
         username = get(col('username'));
         password = get(col('password'));
-        website  = get(col('url'));
-        notes    = '';
+        website = get(col('url'));
+        notes = '';
       } else {
         // 1Password
-        title    = get(col('title'));
+        title = get(col('title'));
         username = get(col('username'));
         password = get(col('password'));
-        website  = get(col('website')) != '' ? get(col('website')) : get(col('url'));
-        notes    = get(col('notes')) != '' ? get(col('notes')) : get(col('memo'));
+        website =
+            get(col('website')) != '' ? get(col('website')) : get(col('url'));
+        notes = get(col('notes')) != '' ? get(col('notes')) : get(col('memo'));
       }
 
       if (password.isEmpty && title.isEmpty) continue;
@@ -849,7 +917,8 @@ class VaultService {
     }
     vault['entries'] = currentEntries;
     await saveVault(vault, rawKey);
-    return ImportResult(imported: imported, skipped: skipped, total: entries.length);
+    return ImportResult(
+        imported: imported, skipped: skipped, total: entries.length);
   }
 
   static Future<ImportResult> importBackup({
@@ -858,7 +927,9 @@ class VaultService {
     required ImportMode mode,
   }) async {
     final fileSize = await File(filePath).length();
-    if (fileSize > _maxImportFileSize) throw const ImportFileTooLargeException();
+    if (fileSize > _maxImportFileSize) {
+      throw const ImportFileTooLargeException();
+    }
 
     final bytes = await File(filePath).readAsBytes();
     if (!_isZipFile(bytes)) throw Exception('Not a valid .pgvault file');
@@ -874,13 +945,16 @@ class VaultService {
     if (mode == ImportMode.replace) {
       await saveVault(importedVault, rawKey);
       final entries = importedVault['entries'] as List;
-      return ImportResult(imported: entries.length, skipped: 0, total: entries.length);
+      return ImportResult(
+          imported: entries.length, skipped: 0, total: entries.length);
     }
 
     // Merge mode
     final currentVault = await _loadVaultWithKey(rawKey);
-    final currentEntries = List<Map<String, dynamic>>.from(currentVault['entries']);
-    final importEntries = List<Map<String, dynamic>>.from(importedVault['entries']);
+    final currentEntries =
+        List<Map<String, dynamic>>.from(currentVault['entries']);
+    final importEntries =
+        List<Map<String, dynamic>>.from(importedVault['entries']);
     final existingIds = currentEntries.map((e) => e['id']).toSet();
 
     int imported = 0;
@@ -895,6 +969,7 @@ class VaultService {
     }
     currentVault['entries'] = currentEntries;
     await saveVault(currentVault, rawKey);
-    return ImportResult(imported: imported, skipped: skipped, total: importEntries.length);
+    return ImportResult(
+        imported: imported, skipped: skipped, total: importEntries.length);
   }
 }

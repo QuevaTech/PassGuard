@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -288,6 +287,18 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
             (entry.content
                     ?.toLowerCase()
                     .contains(_searchQuery.toLowerCase()) ??
+                false) ||
+            (entry.publicKey
+                    ?.toLowerCase()
+                    .contains(_searchQuery.toLowerCase()) ??
+                false) ||
+            (entry.keyFingerprint
+                    ?.toLowerCase()
+                    .contains(_searchQuery.toLowerCase()) ??
+                false) ||
+            (entry.certificateData
+                    ?.toLowerCase()
+                    .contains(_searchQuery.toLowerCase()) ??
                 false);
       }).toList();
     }
@@ -432,6 +443,8 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
   void _showQuickCopySheet(VaultEntry entry) {
     final localizations = AppLocalizations.of(context);
     final isPassword = entry.type == VaultEntryType.password;
+    final isNote = entry.type == VaultEntryType.note;
+    final isSshKey = entry.type == VaultEntryType.sshKey;
 
     showModalBottomSheet(
       context: context,
@@ -446,7 +459,7 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Row(
                 children: [
-                  Icon(isPassword ? Icons.lock : Icons.note,
+                  Icon(_entryIcon(entry),
                       color: Theme.of(context).colorScheme.primary),
                   const SizedBox(width: 12),
                   Expanded(
@@ -506,7 +519,7 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
                     ));
                   },
                 ),
-            ] else ...[
+            ] else if (isNote) ...[
               if (entry.content != null)
                 ListTile(
                   leading: const Icon(Icons.copy),
@@ -519,6 +532,56 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
                       content: Text('${localizations.contentCopied} · 30s'),
                       backgroundColor: Colors.green,
                       duration: const Duration(seconds: 3),
+                    ));
+                  },
+                ),
+            ] else if (isSshKey) ...[
+              if (entry.publicKey != null && entry.publicKey!.isNotEmpty)
+                ListTile(
+                  leading: const Icon(Icons.key_outlined),
+                  title: const Text('Copy public key'),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    HapticFeedback.lightImpact();
+                    ClipboardService.copyContent(entry.publicKey!);
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Public key copied · 15s'),
+                      backgroundColor: Colors.green,
+                      duration: Duration(seconds: 3),
+                    ));
+                  },
+                ),
+              if (entry.privateKey != null && entry.privateKey!.isNotEmpty)
+                ListTile(
+                  leading: const Icon(Icons.vpn_key_rounded),
+                  title: const Text('Copy private key'),
+                  subtitle:
+                      const Text('Sensitive — clipboard clears in 15 seconds'),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    HapticFeedback.mediumImpact();
+                    ClipboardService.copyContent(entry.privateKey!);
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Private key copied · 15s'),
+                      backgroundColor: Colors.green,
+                      duration: Duration(seconds: 3),
+                    ));
+                  },
+                ),
+            ] else ...[
+              if (entry.certificateData != null &&
+                  entry.certificateData!.isNotEmpty)
+                ListTile(
+                  leading: const Icon(Icons.description_outlined),
+                  title: const Text('Copy certificate'),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    HapticFeedback.lightImpact();
+                    ClipboardService.copyContent(entry.certificateData!);
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Certificate copied · 15s'),
+                      backgroundColor: Colors.green,
+                      duration: Duration(seconds: 3),
                     ));
                   },
                 ),
@@ -605,6 +668,8 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
     const categories = [
       'Personal',
       'Work',
+      'Servers',
+      'Certificates',
       'Banking',
       'Social',
       'Shopping',
@@ -933,8 +998,13 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
                               final entry = favorites[index];
                               final isPassword =
                                   entry.type == VaultEntryType.password;
-                              final accent =
-                                  isPassword ? colors.primary : colors.tertiary;
+                              final accent = entry.type == VaultEntryType.sshKey
+                                  ? colors.secondary
+                                  : entry.type == VaultEntryType.certificate
+                                      ? colors.tertiary
+                                      : isPassword
+                                          ? colors.primary
+                                          : colors.tertiary;
 
                               return SizedBox(
                                 width: 148,
@@ -945,22 +1015,7 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
                                     borderRadius: BorderRadius.circular(20),
                                     onTap: () {
                                       HapticFeedback.lightImpact();
-                                      if (isPassword &&
-                                          entry.password != null) {
-                                        ClipboardService.copyPassword(
-                                            entry.password!);
-                                      } else if (entry.content != null) {
-                                        ClipboardService.copyContent(
-                                            entry.content!);
-                                      }
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                        content: Text(isPassword
-                                            ? '${AppLocalizations.of(context).passwordCopied} · 30s'
-                                            : '${AppLocalizations.of(context).contentCopied} · 30s'),
-                                        backgroundColor: Colors.green,
-                                        duration: const Duration(seconds: 3),
-                                      ));
+                                      _copyPrimaryValue(entry);
                                     },
                                     onLongPress: () =>
                                         _showQuickCopySheet(entry),
@@ -985,9 +1040,7 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
                                               shape: BoxShape.circle,
                                             ),
                                             child: Icon(
-                                              isPassword
-                                                  ? Icons.key_rounded
-                                                  : Icons.sticky_note_2_rounded,
+                                              _entryIcon(entry),
                                               size: 18,
                                               color: accent,
                                             ),
@@ -1013,13 +1066,7 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
                                                 ),
                                                 const SizedBox(height: 2),
                                                 Text(
-                                                  isPassword
-                                                      ? AppLocalizations.of(
-                                                              context)
-                                                          .passwords
-                                                      : AppLocalizations.of(
-                                                              context)
-                                                          .notes,
+                                                  _entryTypeLabel(entry),
                                                   style: theme
                                                       .textTheme.labelSmall
                                                       ?.copyWith(
@@ -1120,11 +1167,15 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
           Expanded(
             child: _buildStatItem(
               count: _entries
-                  .where((entry) => entry.type == VaultEntryType.note)
+                  .where(
+                    (entry) =>
+                        entry.type == VaultEntryType.sshKey ||
+                        entry.type == VaultEntryType.certificate,
+                  )
                   .length
                   .toString(),
-              label: localizations.notes,
-              icon: Icons.sticky_note_2_rounded,
+              label: 'Keys & certs',
+              icon: Icons.verified_user_outlined,
               color: colors.tertiary,
             ),
           ),
@@ -1295,6 +1346,20 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
                             category: entry.displayCategory,
                           ),
                         ),
+                        if (!isPassword) ...[
+                          const SizedBox(width: 7),
+                          Flexible(
+                            child: Text(
+                              _entryTypeLabel(entry),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: entryAccent,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
                         if (isPassword) ...[
                           const SizedBox(width: 9),
                           _buildPasswordStrengthIndicator(
@@ -1344,18 +1409,7 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
                       padding: const EdgeInsets.all(8),
                       onPressed: () {
                         HapticFeedback.lightImpact();
-                        if (isPassword) {
-                          ClipboardService.copyPassword(entry.password ?? '');
-                        } else {
-                          ClipboardService.copyContent(entry.content ?? '');
-                        }
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(isPassword
-                              ? '${AppLocalizations.of(context).passwordCopied} · 30s'
-                              : '${AppLocalizations.of(context).contentCopied} · 30s'),
-                          backgroundColor: Colors.green,
-                          duration: const Duration(seconds: 3),
-                        ));
+                        _copyPrimaryValue(entry);
                       },
                       icon: const Icon(Icons.copy_rounded, size: 19),
                     ),
@@ -1425,7 +1479,16 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
   }
 
   IconData _entryIcon(VaultEntry entry) {
-    if (entry.type == VaultEntryType.note) return Icons.sticky_note_2_rounded;
+    switch (entry.type) {
+      case VaultEntryType.note:
+        return Icons.sticky_note_2_rounded;
+      case VaultEntryType.sshKey:
+        return Icons.terminal_rounded;
+      case VaultEntryType.certificate:
+        return Icons.verified_user_rounded;
+      case VaultEntryType.password:
+        break;
+    }
 
     switch (entry.category.toLowerCase()) {
       case 'banking':
@@ -1445,6 +1508,55 @@ class _VaultScreenState extends ConsumerState<VaultScreen>
       default:
         return Icons.lock_outline_rounded;
     }
+  }
+
+  String _entryTypeLabel(VaultEntry entry) {
+    switch (entry.type) {
+      case VaultEntryType.password:
+        return AppLocalizations.of(context).password;
+      case VaultEntryType.note:
+        return AppLocalizations.of(context).note;
+      case VaultEntryType.sshKey:
+        return 'SSH key';
+      case VaultEntryType.certificate:
+        return 'Certificate';
+    }
+  }
+
+  void _copyPrimaryValue(VaultEntry entry) {
+    String? value;
+    String label;
+    switch (entry.type) {
+      case VaultEntryType.password:
+        value = entry.password;
+        label = 'Password copied';
+        break;
+      case VaultEntryType.note:
+        value = entry.content;
+        label = 'Content copied';
+        break;
+      case VaultEntryType.sshKey:
+        // A public key is the safe default for a one-tap copy action.
+        value = entry.publicKey;
+        label = 'Public key copied';
+        break;
+      case VaultEntryType.certificate:
+        value = entry.certificateData;
+        label = 'Certificate copied';
+        break;
+    }
+    if (value == null || value.isEmpty) {
+      _viewEntry(entry);
+      return;
+    }
+    ClipboardService.copyContent(value);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$label · 15s'),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 
   Widget _buildPasswordStrengthIndicator(
