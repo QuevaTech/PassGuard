@@ -52,6 +52,7 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
   String? _attachmentFileName;
   String? _attachmentMimeType;
   String _credentialKind = 'TLS / SSL';
+  SshKeyAlgorithm _sshAlgorithm = SshKeyAlgorithm.ed25519;
 
   static const List<String> _categoryKeys = [
     'Personal',
@@ -91,6 +92,7 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
       _attachmentFileName = e.attachmentFileName;
       _attachmentMimeType = e.attachmentMimeType;
       _credentialKind = e.credentialKind ?? _credentialKind;
+      _sshAlgorithm = _inferSshAlgorithm(e.publicKey);
     }
   }
 
@@ -150,7 +152,8 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
   Future<void> _generateSshKey() async {
     setState(() => _isGeneratingKey = true);
     try {
-      final generated = await SshKeyService.generateRsaKeyPair(
+      final generated = await SshKeyService.generateKeyPair(
+        algorithm: _sshAlgorithm,
         comment: _titleController.text.trim().isEmpty
             ? 'passguard'
             : _titleController.text.trim(),
@@ -163,8 +166,10 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
       });
       HapticFeedback.mediumImpact();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('RSA 3072 SSH key pair created inside your vault.'),
+        SnackBar(
+          content: Text(
+            '${generated.algorithm.label} SSH key pair created inside your vault.',
+          ),
           backgroundColor: Colors.green,
         ),
       );
@@ -196,15 +201,17 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
       return;
     }
     try {
-      final text = utf8.decode(file.bytes!, allowMalformed: false).trim();
-      if (text.isEmpty) throw const FormatException();
+      final decoded = utf8.decode(file.bytes!, allowMalformed: false);
+      if (decoded.trim().isEmpty) throw const FormatException();
       setState(() {
         if (publicKey) {
+          final text = decoded.trim();
           _publicKeyController.text = text;
           _keyFingerprint =
               _sshFingerprintFromPublicKey(text) ?? _keyFingerprint;
         } else {
-          _privateKeyController.text = text;
+          // Preserve trailing newlines: OpenSSH PEM parsing requires one.
+          _privateKeyController.text = decoded;
         }
       });
       HapticFeedback.lightImpact();
@@ -286,7 +293,7 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
 
   String? _sshFingerprintFromPublicKey(String publicKey) {
     final parts = publicKey.trim().split(RegExp(r'\s+'));
-    if (parts.length < 2 || parts.first != 'ssh-rsa') return null;
+    if (parts.length < 2 || !parts.first.startsWith('ssh-')) return null;
     try {
       // The SHA-256 fingerprint is calculated on the decoded OpenSSH blob.
       // A display-only import has no security impact when parsing fails.
@@ -302,6 +309,65 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: Colors.red),
     );
+  }
+
+  SshKeyAlgorithm _inferSshAlgorithm(String? publicKey) {
+    if (publicKey == null) return SshKeyAlgorithm.ed25519;
+    if (publicKey.startsWith('ssh-ed25519 ')) return SshKeyAlgorithm.ed25519;
+    if (publicKey.startsWith('ecdsa-sha2-nistp256 ')) {
+      return SshKeyAlgorithm.ecdsaP256;
+    }
+    if (publicKey.startsWith('ecdsa-sha2-nistp384 ')) {
+      return SshKeyAlgorithm.ecdsaP384;
+    }
+    // A public RSA line does not encode its modulus length. RSA 3072 remains
+    // the best default representation for existing imported RSA material.
+    return SshKeyAlgorithm.rsa3072;
+  }
+
+  Future<void> _selectSshAlgorithm() async {
+    final selected = await showModalBottomSheet<SshKeyAlgorithm>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            const ListTile(
+              title: Text('SSH key algorithm'),
+              subtitle: Text('Choose based on the target server requirements'),
+            ),
+            ...SshKeyAlgorithm.values.map(
+              (algorithm) => ListTile(
+                leading: Icon(
+                  algorithm == SshKeyAlgorithm.ed25519
+                      ? Icons.auto_awesome_rounded
+                      : algorithm.name.startsWith('ecdsa')
+                          ? Icons.hub_outlined
+                          : Icons.key_rounded,
+                ),
+                title: Text(algorithm.label),
+                subtitle: Text(algorithm.subtitle),
+                trailing: algorithm == _sshAlgorithm
+                    ? Icon(
+                        Icons.check_circle_rounded,
+                        color: Theme.of(context).colorScheme.primary,
+                      )
+                    : algorithm.isRecommended
+                        ? const _RecommendedBadge()
+                        : algorithm.isLegacy
+                            ? const _LegacyBadge()
+                            : null,
+                onTap: () => Navigator.pop(sheetContext, algorithm),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (selected != null && mounted) {
+      setState(() => _sshAlgorithm = selected);
+    }
   }
 
   Future<void> _saveEntry() async {
@@ -336,7 +402,7 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
         privateKey: _entryType == VaultEntryType.sshKey
             ? (_privateKeyController.text.trim().isEmpty
                 ? null
-                : _privateKeyController.text.trim())
+                : _privateKeyController.text)
             : null,
         publicKey: _entryType == VaultEntryType.sshKey
             ? (_publicKeyController.text.trim().isEmpty
@@ -874,6 +940,21 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
                       'Use a separate passphrase before exporting a key for use outside PassGuard.',
                 ),
                 const SizedBox(height: 16),
+                OutlinedButton.icon(
+                  onPressed: _isGeneratingKey ? null : _selectSshAlgorithm,
+                  icon: Icon(
+                    _sshAlgorithm == SshKeyAlgorithm.ed25519
+                        ? Icons.auto_awesome_rounded
+                        : _sshAlgorithm.name.startsWith('ecdsa')
+                            ? Icons.hub_outlined
+                            : Icons.key_rounded,
+                  ),
+                  label: Text(
+                    '${_sshAlgorithm.label} · ${_sshAlgorithm.subtitle}',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(height: 10),
                 Row(
                   children: [
                     Expanded(
@@ -890,7 +971,7 @@ class _AddEntryScreenState extends ConsumerState<AddEntryScreen> {
                         label: Text(
                           _isGeneratingKey
                               ? 'Generating…'
-                              : 'Generate RSA 3072',
+                              : 'Generate ${_sshAlgorithm.label}',
                         ),
                       ),
                     ),
@@ -1161,6 +1242,50 @@ class _EntryTypeChoice extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _RecommendedBadge extends StatelessWidget {
+  const _RecommendedBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        'Recommended',
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.w700,
+            ),
+      ),
+    );
+  }
+}
+
+class _LegacyBadge extends StatelessWidget {
+  const _LegacyBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.orange.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        'Legacy',
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: Colors.orange.shade800,
+              fontWeight: FontWeight.w700,
+            ),
       ),
     );
   }
