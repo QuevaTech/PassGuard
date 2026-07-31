@@ -63,12 +63,21 @@ class _PinScreenState extends ConsumerState<PinScreen> {
       } else {
         if (_pin == _confirmPin) {
           setState(() => _isLoading = true);
-          try {
-            await PinService.setPin(_pin);
-          } finally {
-            if (mounted) setState(() => _isLoading = false);
+          final saved = await PinService.setPin(_pin);
+          if (!mounted) return;
+
+          setState(() => _isLoading = false);
+          if (saved) {
+            Navigator.pop(context, true);
+          } else {
+            setState(() {
+              _errorMessage =
+                  'PIN could not be saved securely. Check Keychain access and try again.';
+              _pin = '';
+              _confirmPin = '';
+              _isConfirming = false;
+            });
           }
-          if (mounted) Navigator.pop(context, true);
         } else {
           setState(() {
             _errorMessage = 'PINs do not match. Try again.';
@@ -152,9 +161,7 @@ class _PinScreenState extends ConsumerState<PinScreen> {
     }
 
     return AppScaffold(
-      appBar: isSetup
-          ? AppBar(title: const Text('Set PIN Lock'))
-          : null,
+      appBar: isSetup ? AppBar(title: const Text('Set PIN Lock')) : null,
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -184,9 +191,8 @@ class _PinScreenState extends ConsumerState<PinScreen> {
                   height: 18,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: filled
-                        ? theme.colorScheme.primary
-                        : Colors.transparent,
+                    color:
+                        filled ? theme.colorScheme.primary : Colors.transparent,
                     border: Border.all(
                       color: theme.colorScheme.primary,
                       width: 2,

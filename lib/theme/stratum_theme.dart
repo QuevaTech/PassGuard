@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import 'app_theme_extension.dart';
 
 class StratumTheme {
-  static const _gold  = Color(0xFFD4B038);
+  static const _gold = Color(0xFFD4B038);
   static const _ember = Color(0xFFD87E37);
 
   static const _darkBg0 = Color(0xFF14172e);
   static const _darkBg1 = Color(0xFF1b1f3b);
 
   static const _darkSurface = Color(0xFF1E2240);
-  static const _darkCard    = Color(0xFF232849);
+  static const _darkCard = Color(0xFF232849);
 
   static const _lightBg0 = Color(0xFFfaf5e8);
   static const _lightBg1 = Color(0xFFefe6d2);
 
   static const _lightSurface = Color(0xFFF5EFE3);
-  static const _lightCard    = Colors.white;
+  static const _lightCard = Colors.white;
 
   static const _darkText1 = Color(0xFFf4ecdb);
   static const _darkText2 = Color(0xFFc9c4b8);
@@ -52,6 +52,7 @@ class StratumTheme {
         : _lightExtension.copyWith(primaryAccent: accent);
 
     return ThemeData(
+      useMaterial3: true,
       brightness: brightness,
       primaryColor: _darkBg1,
       scaffoldBackgroundColor: Colors.transparent,
@@ -62,7 +63,8 @@ class StratumTheme {
         elevation: 0,
         scrolledUnderElevation: 0,
         iconTheme: IconThemeData(color: isDark ? _darkText1 : _lightText1),
-        actionsIconTheme: IconThemeData(color: isDark ? _darkText1 : _lightText1),
+        actionsIconTheme:
+            IconThemeData(color: isDark ? _darkText1 : _lightText1),
         titleTextStyle: TextStyle(
           color: isDark ? _darkText1 : _lightText1,
           fontSize: 18,
@@ -124,7 +126,7 @@ class StratumTheme {
         color: isDark ? _darkCard : _lightCard,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(28),
           side: BorderSide(
             color: isDark
                 ? _gold.withValues(alpha: 0.18)
@@ -136,28 +138,32 @@ class StratumTheme {
         filled: true,
         fillColor: isDark ? _darkCard : _lightCard,
         border: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(12)),
+          borderRadius: const BorderRadius.all(Radius.circular(28)),
           borderSide: BorderSide(
-              color: isDark ? _gold.withValues(alpha: 0.20) : _darkBg1.withValues(alpha: 0.12)),
+              color: isDark
+                  ? _gold.withValues(alpha: 0.20)
+                  : _darkBg1.withValues(alpha: 0.12)),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(12)),
+          borderRadius: const BorderRadius.all(Radius.circular(28)),
           borderSide: BorderSide(
-              color: isDark ? _gold.withValues(alpha: 0.16) : _darkBg1.withValues(alpha: 0.10)),
+              color: isDark
+                  ? _gold.withValues(alpha: 0.16)
+                  : _darkBg1.withValues(alpha: 0.10)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(12)),
+          borderRadius: const BorderRadius.all(Radius.circular(28)),
           borderSide: BorderSide(color: accent, width: 2),
         ),
         labelStyle: TextStyle(color: isDark ? _darkText2 : _lightText2),
-        hintStyle:  TextStyle(color: isDark ? _darkText3 : _lightText3),
+        hintStyle: TextStyle(color: isDark ? _darkText3 : _lightText3),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: isDark ? _darkCard : accent,
           foregroundColor: isDark ? _darkText1 : onAccent,
           side: isDark ? BorderSide(color: accent) : BorderSide.none,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: const StadiumBorder(),
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 22),
           textStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
           elevation: 0,
@@ -167,9 +173,23 @@ class StratumTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: accent,
           side: BorderSide(color: accent),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: const StadiumBorder(),
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 22),
         ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(shape: const StadiumBorder()),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: isDark ? _darkCard : _lightCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: isDark ? _darkSurface : _lightSurface,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        showDragHandle: true,
       ),
       iconTheme: IconThemeData(color: isDark ? _darkText1 : _lightText1),
       extensions: [ext],
@@ -185,7 +205,7 @@ class StratumTheme {
     cardBackground: _darkCard,
     cardBorderColor: Color(0x29D4B038),
     cardBlur: 0.0,
-    cardRadius: 14.0,
+    cardRadius: 28.0,
     primaryAccent: _gold,
     secondaryAccent: _ember,
     ctaGradient: LinearGradient(
@@ -214,7 +234,7 @@ class StratumTheme {
     cardBackground: _lightCard,
     cardBorderColor: Color(0x1A1b1f3b),
     cardBlur: 0.0,
-    cardRadius: 14.0,
+    cardRadius: 28.0,
     primaryAccent: _gold,
     secondaryAccent: _ember,
     ctaGradient: LinearGradient(

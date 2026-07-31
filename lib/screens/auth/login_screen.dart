@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:passguard_vault/services/vault_service.dart';
 import 'package:passguard_vault/services/biometric_service.dart';
 import 'package:passguard_vault/services/session_service.dart';
@@ -53,8 +54,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     _entryCtrl = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 500));
     _fadeAnim = CurvedAnimation(parent: _entryCtrl, curve: Curves.easeOut);
-    _slideAnim = Tween<Offset>(
-            begin: const Offset(0, 0.08), end: Offset.zero)
+    _slideAnim = Tween<Offset>(begin: const Offset(0, 0.08), end: Offset.zero)
         .animate(CurvedAnimation(parent: _entryCtrl, curve: Curves.easeOut));
     _entryCtrl.forward();
 
@@ -78,12 +78,32 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
 
   Future<void> _checkBiometricAvailability() async {
     try {
-      _biometricAvailable = await _biometricService.isBiometricAvailable();
-      _biometricEnrolled = await _biometricService.isBiometricEnrolled();
-      if (_biometricAvailable && _biometricEnrolled) {
-        setState(() => _enableBiometric = true);
+      final available = await _biometricService.isBiometricAvailable();
+      final enrolled = await _biometricService.isBiometricEnrolled();
+      final prefs = await SharedPreferences.getInstance();
+      // A newly created vault starts with biometric unlock disabled, even if a
+      // preference from an older/deleted vault remains on the device.
+      final savedPreference = widget.isCreating
+          ? false
+          : prefs.getBool('biometric_enabled') ?? false;
+      if (mounted) {
+        setState(() {
+          _biometricAvailable = available;
+          _biometricEnrolled = enrolled;
+          _enableBiometric = available && enrolled && savedPreference;
+        });
       }
     } catch (_) {}
+  }
+
+  Future<void> _persistBiometricPreference() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('biometric_enabled', _enableBiometric);
+    } catch (_) {
+      // The current session remains usable even if this non-sensitive setting
+      // cannot be persisted.
+    }
   }
 
   Future<void> _submit() async {
@@ -137,11 +157,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
         await VaultService.saveVault(vault, sessionKey);
         await SessionService.setSessionKey(sessionKey);
         EncryptionService.clearKey(sessionKey);
+        await _persistBiometricPreference();
         SessionService.initialize(biometricEnabled: _enableBiometric);
 
         if (mounted) {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (_) => const HomeScreen()));
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (_) => const HomeScreen()));
         }
       } else {
         try {
@@ -162,6 +183,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           AuthGuardService.recordSuccess();
           await SessionService.setSessionKey(sessionKey);
           EncryptionService.clearKey(sessionKey);
+          await _persistBiometricPreference();
           SessionService.initialize(biometricEnabled: _enableBiometric);
 
           if (mounted) {
@@ -329,8 +351,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                               horizontal: 16, vertical: 16),
                         ),
                         validator: (v) {
-                          if (v == null || v.isEmpty) return l.enterMasterPassword;
-                          if (widget.isCreating && v.length < 8) return l.passwordTooShort;
+                          if (v == null || v.isEmpty) {
+                            return l.enterMasterPassword;
+                          }
+                          if (widget.isCreating && v.length < 8) {
+                            return l.passwordTooShort;
+                          }
                           return null;
                         },
                         onFieldSubmitted: (_) => _submit(),
@@ -338,7 +364,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                     ),
 
                     // Strength bar (create mode only)
-                    if (widget.isCreating && _passwordController.text.isNotEmpty) ...[
+                    if (widget.isCreating &&
+                        _passwordController.text.isNotEmpty) ...[
                       const SizedBox(height: 8),
                       _StrengthBar(value: _strength, accent: accent),
                     ],
@@ -356,8 +383,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                             hintText: l.confirmMasterPassword,
                             hintStyle:
                                 TextStyle(color: textTertiary, fontSize: 14),
-                            prefixIcon: Icon(Icons.lock_person_outlined,
-                                color: accent),
+                            prefixIcon:
+                                Icon(Icons.lock_person_outlined, color: accent),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _obscureConfirmPassword
@@ -380,8 +407,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                 horizontal: 16, vertical: 16),
                           ),
                           validator: (v) {
-                            if (v == null || v.isEmpty) return l.confirmMasterPassword;
-                            if (v != _passwordController.text) return l.passwordsDoNotMatch;
+                            if (v == null || v.isEmpty) {
+                              return l.confirmMasterPassword;
+                            }
+                            if (v != _passwordController.text) {
+                              return l.passwordsDoNotMatch;
+                            }
                             return null;
                           },
                         ),
@@ -472,7 +503,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                               width: 32,
                               height: 32,
                               decoration: BoxDecoration(
-                                color: const Color(0xFFEF4444).withValues(alpha: 0.15),
+                                color: const Color(0xFFEF4444)
+                                    .withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: const Icon(Icons.error_outline_rounded,

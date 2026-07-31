@@ -1,7 +1,6 @@
 import 'encryption_service.dart';
 import '../utils/secure_storage_factory.dart';
 
-
 /// PIN storage using flutter_secure_storage + Argon2id key derivation.
 /// Replaces the previous SHA-256 + SharedPreferences approach.
 ///
@@ -29,7 +28,8 @@ class PinService {
     try {
       final enabled = await _secureStorage.read(key: _keyPinEnabled);
       final hash = await _secureStorage.read(key: _keyPinHash);
-      return enabled == 'true' && hash != null;
+      final salt = await _secureStorage.read(key: _keyPinSalt);
+      return enabled == 'true' && hash != null && salt != null;
     } catch (e) {
       // Ignored: isPinEnabled check failed
       return false;
@@ -37,7 +37,7 @@ class PinService {
   }
 
   /// Hash the PIN with Argon2id + random salt and store in the platform keychain.
-  static Future<void> setPin(String pin) async {
+  static Future<bool> setPin(String pin) async {
     final result = await EncryptionService.hashPasswordWithSaltAsync(
       pin,
       iterations: _kdfIterations,
@@ -48,8 +48,17 @@ class PinService {
       await _secureStorage.write(key: _keyPinHash, value: result['hash']);
       await _secureStorage.write(key: _keyPinSalt, value: result['salt']);
       await _secureStorage.write(key: _keyPinEnabled, value: 'true');
+      return await isPinEnabled();
     } catch (e) {
-      // Ignored: keychain write failed
+      // Do not leave a partial PIN configuration behind on a failed write.
+      try {
+        await _secureStorage.delete(key: _keyPinHash);
+        await _secureStorage.delete(key: _keyPinSalt);
+        await _secureStorage.delete(key: _keyPinEnabled);
+      } catch (_) {
+        // Best effort cleanup; the original failure is still reported to UI.
+      }
+      return false;
     }
   }
 
@@ -60,7 +69,9 @@ class PinService {
       final storedSalt = await _secureStorage.read(key: _keyPinSalt);
       if (storedHash == null || storedSalt == null) return false;
       return EncryptionService.verifyPasswordAsync(
-        pin, storedHash, storedSalt,
+        pin,
+        storedHash,
+        storedSalt,
         iterations: _kdfIterations,
         memory: _kdfMemory,
         parallelism: _kdfParallelism,

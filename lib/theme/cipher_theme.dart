@@ -16,7 +16,7 @@ class AuroraRibbon {
 }
 
 class CipherTheme {
-  static const _cyan    = Color(0xFF00E5FF);
+  static const _cyan = Color(0xFF00E5FF);
   static const _magenta = Color(0xFFFF2EB4);
   static const _auroraGreen = Color(0xFF39FF96);
 
@@ -25,14 +25,14 @@ class CipherTheme {
   static const _darkBg2 = Color(0xFF050714);
 
   static const _darkSurface = Color(0xFF0D1336);
-  static const _darkCard    = Color(0xFF111640);
+  static const _darkCard = Color(0xFF111640);
 
   static const _lightBg0 = Color(0xFFf0f4ff);
   static const _lightBg1 = Color(0xFFfafbff);
   static const _lightBg2 = Color(0xFFf5f7fc);
 
   static const _lightSurface = Color(0xFFF0F4FF);
-  static const _lightCard    = Colors.white;
+  static const _lightCard = Colors.white;
 
   static const _darkText1 = Color(0xFFe8f4ff);
   static const _darkText2 = Color(0xFF8b9bbf);
@@ -60,9 +60,12 @@ class CipherTheme {
   };
 
   static const auroraRibbons = [
-    AuroraRibbon(color: Color(0x2E00E5FF), topFraction: 0.05, widthFraction: 0.75),
-    AuroraRibbon(color: Color(0x23FF2EB4), topFraction: 0.22, widthFraction: 0.55),
-    AuroraRibbon(color: Color(0x1A39FF96), topFraction: 0.42, widthFraction: 0.65),
+    AuroraRibbon(
+        color: Color(0x2E00E5FF), topFraction: 0.05, widthFraction: 0.75),
+    AuroraRibbon(
+        color: Color(0x23FF2EB4), topFraction: 0.22, widthFraction: 0.55),
+    AuroraRibbon(
+        color: Color(0x1A39FF96), topFraction: 0.42, widthFraction: 0.65),
   ];
 
   // Cipher accent is always fixed (cyan/magenta — not user-customisable).
@@ -72,6 +75,7 @@ class CipherTheme {
     final ext = isDark ? _darkExtension : _lightExtension;
 
     return ThemeData(
+      useMaterial3: true,
       brightness: brightness,
       primaryColor: _darkBg1,
       scaffoldBackgroundColor: Colors.transparent,
@@ -82,7 +86,8 @@ class CipherTheme {
         elevation: 0,
         scrolledUnderElevation: 0,
         iconTheme: IconThemeData(color: isDark ? _darkText1 : _lightText1),
-        actionsIconTheme: IconThemeData(color: isDark ? _darkText1 : _lightText1),
+        actionsIconTheme:
+            IconThemeData(color: isDark ? _darkText1 : _lightText1),
       ),
       textTheme: TextTheme(
         displayLarge: TextStyle(
@@ -137,7 +142,7 @@ class CipherTheme {
         color: isDark ? _darkCard : _lightCard,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(28),
           side: BorderSide(
             color: isDark
                 ? _cyan.withValues(alpha: 0.25)
@@ -149,27 +154,30 @@ class CipherTheme {
         filled: true,
         fillColor: isDark ? _darkCard : _lightCard,
         border: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(12)),
+          borderRadius: const BorderRadius.all(Radius.circular(28)),
           borderSide: BorderSide(
-              color: isDark ? const Color(0x268B9BBF) : const Color(0x1A0a0e27)),
+              color:
+                  isDark ? const Color(0x268B9BBF) : const Color(0x1A0a0e27)),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(12)),
+          borderRadius: const BorderRadius.all(Radius.circular(28)),
           borderSide: BorderSide(
-              color: isDark ? const Color(0x268B9BBF) : const Color(0x1A0a0e27)),
+              color:
+                  isDark ? const Color(0x268B9BBF) : const Color(0x1A0a0e27)),
         ),
         focusedBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
+          borderRadius: BorderRadius.all(Radius.circular(28)),
           borderSide: BorderSide(color: _cyan, width: 2),
         ),
         labelStyle: TextStyle(color: isDark ? _darkText2 : _lightText2),
-        hintStyle:  TextStyle(color: isDark ? _darkText3 : _lightText3),
+        hintStyle: TextStyle(color: isDark ? _darkText3 : _lightText3),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: _cyan,
           foregroundColor: _darkBg1,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 22),
           textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
           elevation: 0,
@@ -179,9 +187,23 @@ class CipherTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: _cyan,
           side: const BorderSide(color: _cyan),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: const StadiumBorder(),
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 22),
         ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(shape: const StadiumBorder()),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: isDark ? _darkCard : _lightCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: isDark ? _darkSurface : _lightSurface,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        showDragHandle: true,
       ),
       iconTheme: IconThemeData(color: isDark ? _darkText1 : _lightText1),
       extensions: [ext],
@@ -197,7 +219,7 @@ class CipherTheme {
     cardBackground: Color(0x1A111640),
     cardBorderColor: Color(0x4000E5FF),
     cardBlur: 20.0,
-    cardRadius: 12.0,
+    cardRadius: 28.0,
     primaryAccent: _cyan,
     secondaryAccent: _magenta,
     ctaGradient: LinearGradient(
@@ -226,7 +248,7 @@ class CipherTheme {
     cardBackground: Color(0xCCFFFFFF),
     cardBorderColor: Color(0x1A0a0e27),
     cardBlur: 20.0,
-    cardRadius: 12.0,
+    cardRadius: 28.0,
     primaryAccent: _cyan,
     secondaryAccent: _magenta,
     ctaGradient: LinearGradient(

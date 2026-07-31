@@ -29,6 +29,7 @@ class SessionService {
   /// Store the derived session key in memory and Keychain.
   /// The master password is NOT stored — only the Argon2id-derived key bytes.
   static Future<void> setSessionKey(Uint8List key) async {
+    _zeroAndClear();
     _sessionKey = Uint8List.fromList(key);
     try {
       await _secureStorage.write(
@@ -41,7 +42,7 @@ class SessionService {
   }
 
   /// Returns the current session key, or null if locked.
-  static Uint8List? getSessionKey() => _sessionKey;
+  static Uint8List? getSessionKey() => _isLocked ? null : _sessionKey;
 
   /// Load session key from Keychain (for biometric re-auth).
   static Future<Uint8List?> loadSessionKey() async {
@@ -69,10 +70,10 @@ class SessionService {
 
   static void initialize({
     Duration? timeout,
-    bool biometricEnabled = false,
+    bool? biometricEnabled,
   }) {
     _sessionTimeout = timeout ?? _defaultTimeout;
-    _biometricEnabled = biometricEnabled;
+    _biometricEnabled = biometricEnabled ?? _biometricEnabled;
     _lastActivity = DateTime.now();
     _sessionStartedAt = DateTime.now();
     _isLocked = false;
@@ -112,6 +113,7 @@ class SessionService {
     if (_isLocked) return;
     _isLocked = true;
     _stopSessionTimer();
+    _zeroAndClear();
     _notifyListeners();
   }
 
@@ -124,7 +126,7 @@ class SessionService {
   }
 
   static void unlockSession() {
-    if (!_isLocked) return;
+    if (!_isLocked || _sessionKey == null) return;
     _isLocked = false;
     _lastActivity = DateTime.now();
     _sessionStartedAt = DateTime.now();
@@ -133,6 +135,15 @@ class SessionService {
   }
 
   static bool isLocked() => _isLocked;
+
+  static bool isBiometricEnabled() => _biometricEnabled;
+
+  /// Updates the active session's re-authentication policy immediately.
+  /// The caller is responsible for persisting the user preference separately.
+  static void setBiometricEnabled(bool enabled) {
+    _biometricEnabled = enabled;
+    resetTimer();
+  }
 
   static Duration? timeUntilLock() {
     if (_isLocked || _lastActivity == null || _sessionTimer == null) {

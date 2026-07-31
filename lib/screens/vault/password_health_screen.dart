@@ -173,14 +173,11 @@ class _PasswordHealthScreenState extends State<PasswordHealthScreen> {
                         ),
                         const SizedBox(height: 24),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            _statChip(
-                                context, l.weak, _weak.length, const Color(0xFFEF4444)),
-                            _divider(context),
+                            _statChip(context, l.weak, _weak.length,
+                                const Color(0xFFEF4444)),
                             _statChip(context, l.oldPasswords, _old.length,
                                 const Color(0xFFF97316)),
-                            _divider(context),
                             _statChip(context, l.duplicatePasswords,
                                 _duplicate.length, const Color(0xFFFF6B35)),
                           ],
@@ -218,33 +215,48 @@ class _PasswordHealthScreenState extends State<PasswordHealthScreen> {
                   // ── Weak ─────────────────────────────────────────────────
                   if (_weak.isNotEmpty) ...[
                     const SizedBox(height: 4),
-                    _sectionHeader(context, Icons.warning_amber_rounded,
+                    _sectionHeader(
+                        context,
+                        Icons.warning_amber_rounded,
                         const Color(0xFFEF4444),
                         '${l.weakPasswords} (${_weak.length})'),
                     ..._weak.map((e) => _EntryTile(
-                        entry: e, rawKey: widget.rawKey, subtitle: l.strengthTooLow)),
+                          entry: e,
+                          rawKey: widget.rawKey,
+                          subtitle: l.strengthTooLow,
+                          color: const Color(0xFFEF4444),
+                        )),
                     const SizedBox(height: 8),
                   ],
 
                   // ── Old ──────────────────────────────────────────────────
                   if (_old.isNotEmpty) ...[
-                    _sectionHeader(context, Icons.schedule,
+                    _sectionHeader(
+                        context,
+                        Icons.schedule,
                         const Color(0xFFF97316),
                         '${l.oldPasswords} (${_old.length})'),
                     ..._old.map((e) => _EntryTile(
-                        entry: e, rawKey: widget.rawKey, subtitle: l.notUpdated90)),
+                          entry: e,
+                          rawKey: widget.rawKey,
+                          subtitle: l.notUpdated90,
+                          color: const Color(0xFFF97316),
+                        )),
                     const SizedBox(height: 8),
                   ],
 
                   // ── Duplicate ────────────────────────────────────────────
                   if (_duplicate.isNotEmpty) ...[
-                    _sectionHeader(context, Icons.content_copy,
+                    _sectionHeader(
+                        context,
+                        Icons.content_copy,
                         const Color(0xFFFF6B35),
                         '${l.duplicatePasswords} (${_duplicate.length})'),
                     ..._duplicate.map((e) => _EntryTile(
                         entry: e,
                         rawKey: widget.rawKey,
-                        subtitle: l.samePasswordElsewhere)),
+                        subtitle: l.samePasswordElsewhere,
+                        color: const Color(0xFFFF6B35))),
                   ],
                 ],
               ),
@@ -252,36 +264,26 @@ class _PasswordHealthScreenState extends State<PasswordHealthScreen> {
     );
   }
 
-  Widget _statChip(
-      BuildContext context, String label, int count, Color color) {
-    return Column(
-      children: [
-        Text(
-          '$count',
-          style: TextStyle(
-              fontSize: 24, fontWeight: FontWeight.w800, color: color),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: color.withValues(alpha: 0.8)),
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
-  }
-
-  Widget _divider(BuildContext context) {
-    final ext = Theme.of(context).extension<AppThemeExtension>();
-    return Container(
-      width: 1,
-      height: 36,
-      color: (ext?.textTertiary ??
-              Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3))
-          .withValues(alpha: 0.3),
+  Widget _statChip(BuildContext context, String label, int count, Color color) {
+    return Expanded(
+      child: Column(
+        children: [
+          Text(
+            '$count',
+            style: TextStyle(
+                fontSize: 24, fontWeight: FontWeight.w800, color: color),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: color.withValues(alpha: 0.8)),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 
@@ -323,9 +325,14 @@ class _EntryTile extends StatelessWidget {
   final VaultEntry entry;
   final Uint8List rawKey;
   final String subtitle;
+  final Color color;
 
-  const _EntryTile(
-      {required this.entry, required this.rawKey, required this.subtitle});
+  const _EntryTile({
+    required this.entry,
+    required this.rawKey,
+    required this.subtitle,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -334,10 +341,9 @@ class _EntryTile extends StatelessWidget {
         ext?.textPrimary ?? Theme.of(context).colorScheme.onSurface;
     final textSecondary = ext?.textSecondary ??
         Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6);
-    final accent = ext?.primaryAccent ?? Theme.of(context).colorScheme.primary;
-
     return GlassCard(
       margin: const EdgeInsets.only(bottom: 6),
+      leftAccentColor: color,
       child: InkWell(
         onTap: () => Navigator.push(
           context,
@@ -345,7 +351,7 @@ class _EntryTile extends StatelessWidget {
             builder: (_) => EntryDetailScreen(entry: entry, rawKey: rawKey),
           ),
         ),
-        borderRadius: BorderRadius.circular(ext?.cardRadius ?? 12),
+        borderRadius: BorderRadius.circular(ext?.cardRadius ?? 28),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           child: Row(
@@ -354,10 +360,10 @@ class _EntryTile extends StatelessWidget {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(10),
+                  color: color.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.lock_outline, size: 18, color: accent),
+                child: Icon(Icons.lock_outline_rounded, size: 18, color: color),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -376,17 +382,13 @@ class _EntryTile extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
-                      style: TextStyle(
-                          fontSize: 11,
-                          color: textSecondary),
+                      style: TextStyle(fontSize: 11, color: textSecondary),
                     ),
                   ],
                 ),
               ),
               const SizedBox(width: 8),
-              Icon(Icons.chevron_right,
-                  size: 18,
-                  color: textSecondary.withValues(alpha: 0.6)),
+              Icon(Icons.chevron_right_rounded, size: 18, color: color),
             ],
           ),
         ),

@@ -67,6 +67,8 @@ class AppLocalizations {
         'no_notes': 'Not bulunamadı',
         'search_placeholder': 'Şifre veya not ara...',
         'categories': 'Kategoriler',
+        'smart_collections': 'Akıllı Koleksiyonlar',
+        'favorites': 'Favoriler',
         'all': 'Tümü',
         'work': 'İş',
         'personal': 'Kişisel',
@@ -92,14 +94,19 @@ class AppLocalizations {
         'password_deleted': 'Şifre silindi',
         'note_deleted': 'Not silindi',
         'biometric_not_available': 'Biyometrik kimlik doğrulama mevcut değil',
-        'biometric_not_enrolled': 'Biyometrik kimlik doğrulama aygıtınızda etkinleştirilmemiş',
+        'biometric_not_enrolled':
+            'Biyometrik kimlik doğrulama aygıtınızda etkinleştirilmemiş',
         'biometric_not_recognized': 'Biyometrik kimlik doğrulama tanınmadı',
         'biometric_cancelled': 'Biyometrik kimlik doğrulama iptal edildi',
-        'biometric_locked_out': 'Biyometrik kimlik doğrulama geçici olarak devre dışı',
+        'biometric_locked_out':
+            'Biyometrik kimlik doğrulama geçici olarak devre dışı',
         'session_timeout': 'Oturum zaman aşımına uğradı',
-        'session_timeout_message': 'Güvenlik nedeniyle oturumunuz kapatıldı. Lütfen tekrar giriş yapın.',
+        'session_timeout_message':
+            'Güvenlik nedeniyle oturumunuz kapatıldı. Lütfen tekrar giriş yapın.',
         'vault_locked': 'Kasa kilitlendi',
-        'vault_locked_message': 'Kasa güvenliğiniz için kilitlendi. Lütfen ana şifrenizle tekrar giriş yapın.',
+        'lock_vault': 'Kasayı Kilitle',
+        'vault_locked_message':
+            'Kasa güvenliğiniz için kilitlendi. Lütfen ana şifrenizle tekrar giriş yapın.',
         'invalid_master_password': 'Geçersiz ana şifre',
         'passwords_do_not_match': 'Şifreler eşleşmiyor',
         'password_too_short': 'Şifre en az 8 karakter olmalıdır',
@@ -111,7 +118,8 @@ class AppLocalizations {
         'accent_color': 'Vurgu Rengi',
         'export_failed': 'Kasa dışa aktarılamadı',
         'import_failed': 'Kasa içe aktarılamadı',
-        'file_picker_unavailable': 'Dosya seçici bulunamadı. Lütfen zenity veya kdialog yükleyin.',
+        'file_picker_unavailable':
+            'Dosya seçici bulunamadı. Lütfen zenity veya kdialog yükleyin.',
         'file_permission_denied': 'Dosya izni reddedildi',
         'file_not_found': 'Dosya bulunamadı',
         'invalid_file_format': 'Geçersiz dosya formatı',
@@ -136,7 +144,8 @@ class AppLocalizations {
         'rate_app': 'Uygulamayı Değerlendir',
         'share_app': 'Uygulamayı Paylaş',
         'logout_confirmation': 'Çıkış Yap',
-        'logout_message': 'Kasayı kapatmak ve uygulamadan çıkmak istediğinizden emin misiniz?',
+        'logout_message':
+            'Kasayı kapatmak ve uygulamadan çıkmak istediğinizden emin misiniz?',
         'vault_file': 'Kasa Dosyası',
         'select_file': 'Dosya Seçin',
         'file_size': 'Dosya Boyutu',
@@ -292,11 +301,13 @@ class AppLocalizations {
         'backup_file_write_error': 'Yedekleme dosyası yazma hatası',
         'backup_file_read_error': 'Yedekleme dosyası okuma hatası',
         'backup_file_delete_error': 'Yedekleme dosyası silme hatası',
-        'backup_file_rename_error': 'Yedekleme dosyası yeniden adlandırma hatası',
+        'backup_file_rename_error':
+            'Yedekleme dosyası yeniden adlandırma hatası',
         'backup_file_copy_error': 'Yedekleme dosyası kopyalama hatası',
         'backup_file_move_error': 'Yedekleme dosyası taşıma hatası',
         'backup_file_compress_error': 'Yedekleme dosyası sıkıştırma hatası',
-        'backup_file_decompress_error': 'Yedekleme dosyası sıkıştırma açma hatası',
+        'backup_file_decompress_error':
+            'Yedekleme dosyası sıkıştırma açma hatası',
         'backup_file_upload_error': 'Yedekleme dosyası yükleme hatası',
         'backup_file_download_error': 'Yedekleme dosyası indirme hatası',
         'backup_file_sync_error': 'Yedekleme dosyası senkronizasyon hatası',
@@ -324,25 +335,35 @@ class AppLocalizations {
         'backup_file_duplicate_resolution': 'Yedekleme dosyası çoğaltma çözümü',
         'backup_file_version_control': 'Yedekleme dosyası sürüm kontrolü',
         'backup_file_format_conversion': 'Yedekleme dosyası format dönüşümü',
-        'backup_file_compression_conversion': 'Yedekleme dosyası sıkıştırma dönüşümü',
-        'backup_file_encryption_conversion': 'Yedekleme dosyası şifreleme dönüşümü',
-        'backup_file_integrity_conversion': 'Yedekleme dosyası bütünlük dönüşümü',
+        'backup_file_compression_conversion':
+            'Yedekleme dosyası sıkıştırma dönüşümü',
+        'backup_file_encryption_conversion':
+            'Yedekleme dosyası şifreleme dönüşümü',
+        'backup_file_integrity_conversion':
+            'Yedekleme dosyası bütünlük dönüşümü',
         'backup_file_permissions_conversion': 'Yedekleme dosyası izin dönüşümü',
         'backup_file_access_conversion': 'Yedekleme dosyası erişim dönüşümü',
         'backup_file_write_conversion': 'Yedekleme dosyası yazma dönüşümü',
         'backup_file_read_conversion': 'Yedekleme dosyası okuma dönüşümü',
         'backup_file_delete_conversion': 'Yedekleme dosyası silme dönüşümü',
-        'backup_file_rename_conversion': 'Yedekleme dosyası yeniden adlandırma dönüşümü',
+        'backup_file_rename_conversion':
+            'Yedekleme dosyası yeniden adlandırma dönüşümü',
         'backup_file_copy_conversion': 'Yedekleme dosyası kopyalama dönüşümü',
         'backup_file_move_conversion': 'Yedekleme dosyası taşıma dönüşümü',
-        'backup_file_compress_conversion': 'Yedekleme dosyası sıkıştırma dönüşümü',
-        'backup_file_decompress_conversion': 'Yedekleme dosyası sıkıştırma açma dönüşümü',
+        'backup_file_compress_conversion':
+            'Yedekleme dosyası sıkıştırma dönüşümü',
+        'backup_file_decompress_conversion':
+            'Yedekleme dosyası sıkıştırma açma dönüşümü',
         'backup_file_upload_conversion': 'Yedekleme dosyası yükleme dönüşümü',
         'backup_file_download_conversion': 'Yedekleme dosyası indirme dönüşümü',
-        'backup_file_sync_conversion': 'Yedekleme dosyası senkronizasyon dönüşümü',
-        'backup_file_conflict_resolution_conversion': 'Yedekleme dosyası çakışma çözümü dönüşümü',
-        'backup_file_duplicate_resolution_conversion': 'Yedekleme dosyası çoğaltma çözümü dönüşümü',
-        'backup_file_version_control_conversion': 'Yedekleme dosyası sürüm kontrolü dönüşümü',
+        'backup_file_sync_conversion':
+            'Yedekleme dosyası senkronizasyon dönüşümü',
+        'backup_file_conflict_resolution_conversion':
+            'Yedekleme dosyası çakışma çözümü dönüşümü',
+        'backup_file_duplicate_resolution_conversion':
+            'Yedekleme dosyası çoğaltma çözümü dönüşümü',
+        'backup_file_version_control_conversion':
+            'Yedekleme dosyası sürüm kontrolü dönüşümü',
         'export_vault_desc': 'Şifreli .pgvault yedek dosyası oluştur',
         'import_vault_desc': '.pgvault dosyasından içe aktar',
         'import_mode_question': 'Nasıl içe aktarmak istersiniz?',
@@ -355,7 +376,8 @@ class AppLocalizations {
         'attempts_remaining': 'deneme hakkı kaldı',
         'seconds': 'saniye',
         'something_went_wrong': 'Bir hata oluştu. Lütfen tekrar deneyin.',
-        'vault_version_unsupported': 'Bu kasa daha yeni bir uygulama sürümüyle oluşturuldu. Lütfen uygulamayı güncelleyin.',
+        'vault_version_unsupported':
+            'Bu kasa daha yeni bir uygulama sürümüyle oluşturuldu. Lütfen uygulamayı güncelleyin.',
         'selected': 'seçildi',
         'import_csv': 'CSV İçe Aktar',
         'import_csv_desc': 'Bitwarden, Chrome veya 1Password CSV',
@@ -368,7 +390,8 @@ class AppLocalizations {
         'password_changed': 'Ana şifre başarıyla değiştirildi',
         'file_too_large': 'Dosya çok büyük (maksimum 50 MB)',
         'developer': 'Geliştirici',
-        'biometric_first_time': 'Biyometrik doğrulama başarılı. Bir kereliğine ana şifrenizi girin, sonraki girişlerde otomatik açılacak.',
+        'biometric_first_time':
+            'Biyometrik doğrulama başarılı. Bir kereliğine ana şifrenizi girin, sonraki girişlerde otomatik açılacak.',
         'code_copied': 'Kod kopyalandı · 30s',
         'report_bug': 'Hata Bildir',
         'report_bug_desc': 'GitHub Issues\'da sorun bildir',
@@ -376,20 +399,28 @@ class AppLocalizations {
         'next': 'İleri',
         'get_started': 'Başlayalım',
         'onboarding_title_1': 'Şifreleriniz Güvende',
-        'onboarding_desc_1': 'AES-256-GCM şifreleme ve Argon2id anahtar türetme ile korunuyor. Sadece siz erişebilirsiniz.',
+        'onboarding_desc_1':
+            'AES-256-GCM şifreleme ve Argon2id anahtar türetme ile korunuyor. Sadece siz erişebilirsiniz.',
         'onboarding_title_2': 'Ana Şifreyi Unutmayın',
-        'onboarding_desc_2': 'Ana şifrenizi unutursanız verilerinizi kurtarmanın hiçbir yolu yoktur. Güvenli bir yere not edin.',
+        'onboarding_desc_2':
+            'Ana şifrenizi unutursanız verilerinizi kurtarmanın hiçbir yolu yoktur. Güvenli bir yere not edin.',
         'onboarding_title_3': 'Biyometrik Kimlik Doğrulama',
-        'onboarding_desc_3': 'Face ID, parmak izi veya PIN ile kasanızı hızlıca açın. Her seferinde ana şifre girmenize gerek yok.',
+        'onboarding_desc_3':
+            'Face ID, parmak izi veya PIN ile kasanızı hızlıca açın. Her seferinde ana şifre girmenize gerek yok.',
         'onboarding_title_4': 'İçe Aktar & Yedekle',
-        'onboarding_desc_4': 'Chrome, Bitwarden veya 1Password\'dan içe aktarın. Şifreli yedeğinizi alın ve istediğiniz cihaza geri yükleyin.',
+        'onboarding_desc_4':
+            'Chrome, Bitwarden veya 1Password\'dan içe aktarın. Şifreli yedeğinizi alın ve istediğiniz cihaza geri yükleyin.',
         'onboarding_title_5': 'Sıfır Bilgi Mimarisi',
-        'onboarding_desc_5': 'Verileriniz cihazınızdan hiç çıkmaz. Bulut yok, sunucu yok, hesap yok — tamamen gizli.',
+        'onboarding_desc_5':
+            'Verileriniz cihazınızdan hiç çıkmaz. Bulut yok, sunucu yok, hesap yok — tamamen gizli.',
         'disclaimer_title': 'Sorumluluk Reddi',
-        'disclaimer_text': 'Bu yazılım "olduğu gibi" sunulmaktadır; açık veya zımni hiçbir garanti verilmemektedir.\n\nTüm verileriniz yalnızca cihazınızda saklanır. Ana şifreniz hiçbir yerde depolanmaz, iletilemez ve kurtarılamaz.\n\nAna şifrenizi kaybetmeniz halinde verilerinize erişim mümkün değildir. Sıfırlama mekanizması, kurtarma anahtarı veya arka kapı bulunmamaktadır.\n\nGeliştirici(ler), şifre kaybı, veri kaybı, erişim kaybı veya bu yazılımın kullanımından kaynaklanan doğrudan ya da dolaylı hiçbir zarardan sorumlu tutulamaz.\n\nKasanızı (.pgvault) düzenli olarak yedeklemeniz şiddetle tavsiye edilir.',
+        'disclaimer_text':
+            'Bu yazılım "olduğu gibi" sunulmaktadır; açık veya zımni hiçbir garanti verilmemektedir.\n\nTüm verileriniz yalnızca cihazınızda saklanır. Ana şifreniz hiçbir yerde depolanmaz, iletilemez ve kurtarılamaz.\n\nAna şifrenizi kaybetmeniz halinde verilerinize erişim mümkün değildir. Sıfırlama mekanizması, kurtarma anahtarı veya arka kapı bulunmamaktadır.\n\nGeliştirici(ler), şifre kaybı, veri kaybı, erişim kaybı veya bu yazılımın kullanımından kaynaklanan doğrudan ya da dolaylı hiçbir zarardan sorumlu tutulamaz.\n\nKasanızı (.pgvault) düzenli olarak yedeklemeniz şiddetle tavsiye edilir.',
         'disclaimer_accept': 'Okudum, anladım ve kabul ediyorum',
-        'disclaimer_must_accept': 'Devam etmek için sorumluluk reddini kabul etmelisiniz',
-        'master_password_unrecoverable': 'Bu şifre kurtarılamaz. Güvenli bir yere not edin ve düzenli yedek alın.',
+        'disclaimer_must_accept':
+            'Devam etmek için sorumluluk reddini kabul etmelisiniz',
+        'master_password_unrecoverable':
+            'Bu şifre kurtarılamaz. Güvenli bir yere not edin ve düzenli yedek alın.',
       };
     } else if (locale.languageCode == 'de') {
       return {
@@ -467,15 +498,21 @@ class AppLocalizations {
         'note_updated': 'Notiz aktualisiert',
         'password_deleted': 'Passwort gelöscht',
         'note_deleted': 'Notiz gelöscht',
-        'biometric_not_available': 'Biometrische Authentifizierung nicht verfügbar',
-        'biometric_not_enrolled': 'Biometrische Authentifizierung nicht auf Ihrem Gerät aktiviert',
-        'biometric_not_recognized': 'Biometrische Authentifizierung nicht erkannt',
+        'biometric_not_available':
+            'Biometrische Authentifizierung nicht verfügbar',
+        'biometric_not_enrolled':
+            'Biometrische Authentifizierung nicht auf Ihrem Gerät aktiviert',
+        'biometric_not_recognized':
+            'Biometrische Authentifizierung nicht erkannt',
         'biometric_cancelled': 'Biometrische Authentifizierung abgebrochen',
-        'biometric_locked_out': 'Biometrische Authentifizierung vorübergehend deaktiviert',
+        'biometric_locked_out':
+            'Biometrische Authentifizierung vorübergehend deaktiviert',
         'session_timeout': 'Sitzungszeitüberschreitung',
-        'session_timeout_message': 'Ihre Sitzung wurde aus Sicherheitsgründen geschlossen. Bitte melden Sie sich erneut an.',
+        'session_timeout_message':
+            'Ihre Sitzung wurde aus Sicherheitsgründen geschlossen. Bitte melden Sie sich erneut an.',
         'vault_locked': 'Tresor gesperrt',
-        'vault_locked_message': 'Der Tresor wurde aus Sicherheitsgründen gesperrt. Bitte melden Sie sich mit Ihrem Master-Passwort erneut an.',
+        'vault_locked_message':
+            'Der Tresor wurde aus Sicherheitsgründen gesperrt. Bitte melden Sie sich mit Ihrem Master-Passwort erneut an.',
         'invalid_master_password': 'Ungültiges Master-Passwort',
         'passwords_do_not_match': 'Passwörter stimmen nicht überein',
         'password_too_short': 'Passwort muss mindestens 8 Zeichen lang sein',
@@ -487,7 +524,8 @@ class AppLocalizations {
         'accent_color': 'Akzentfarbe',
         'export_failed': 'Tresor konnte nicht exportiert werden',
         'import_failed': 'Tresor konnte nicht importiert werden',
-        'file_picker_unavailable': 'Dateiauswahl nicht verfügbar. Bitte zenity oder kdialog installieren.',
+        'file_picker_unavailable':
+            'Dateiauswahl nicht verfügbar. Bitte zenity oder kdialog installieren.',
         'file_permission_denied': 'Dateiberechtigung verweigert',
         'file_not_found': 'Datei nicht gefunden',
         'invalid_file_format': 'Ungültiges Dateiformat',
@@ -512,7 +550,8 @@ class AppLocalizations {
         'rate_app': 'App bewerten',
         'share_app': 'App teilen',
         'logout_confirmation': 'Abmelden',
-        'logout_message': 'Möchten Sie den Tresor schließen und die App verlassen?',
+        'logout_message':
+            'Möchten Sie den Tresor schließen und die App verlassen?',
         'export_vault_desc': 'Verschlüsselte .pgvault-Sicherung erstellen',
         'import_vault_desc': 'Aus .pgvault-Datei importieren',
         'import_mode_question': 'Wie möchten Sie importieren?',
@@ -521,11 +560,14 @@ class AppLocalizations {
         'imported': 'importiert',
         'skipped': 'übersprungen',
         'entries': 'Einträge',
-        'too_many_attempts': 'Zu viele fehlgeschlagene Versuche. Versuchen Sie es erneut in',
+        'too_many_attempts':
+            'Zu viele fehlgeschlagene Versuche. Versuchen Sie es erneut in',
         'attempts_remaining': 'Versuche übrig',
         'seconds': 'Sekunden',
-        'something_went_wrong': 'Etwas ist schief gelaufen. Bitte versuchen Sie es erneut.',
-        'vault_version_unsupported': 'Dieser Tresor wurde mit einer neueren App-Version erstellt. Bitte aktualisieren Sie die App.',
+        'something_went_wrong':
+            'Etwas ist schief gelaufen. Bitte versuchen Sie es erneut.',
+        'vault_version_unsupported':
+            'Dieser Tresor wurde mit einer neueren App-Version erstellt. Bitte aktualisieren Sie die App.',
         'selected': 'ausgewählt',
         'import_csv': 'CSV importieren',
         'import_csv_desc': 'Bitwarden, Chrome oder 1Password CSV',
@@ -534,11 +576,13 @@ class AppLocalizations {
         'biometric_failed': 'Biometrische Authentifizierung fehlgeschlagen',
         'new_master_password': 'Neues Master-Passwort',
         'password_mismatch': 'Passwörter stimmen nicht überein',
-        'new_password_same_as_old': 'Neues Passwort darf nicht mit dem alten übereinstimmen',
+        'new_password_same_as_old':
+            'Neues Passwort darf nicht mit dem alten übereinstimmen',
         'password_changed': 'Master-Passwort erfolgreich geändert',
         'file_too_large': 'Datei zu groß (maximal 50 MB)',
         'developer': 'Entwickler',
-        'biometric_first_time': 'Biometrische Authentifizierung erfolgreich. Geben Sie einmalig Ihr Master-Passwort ein.',
+        'biometric_first_time':
+            'Biometrische Authentifizierung erfolgreich. Geben Sie einmalig Ihr Master-Passwort ein.',
         'code_copied': 'Code kopiert · 30s',
         'note': 'Notiz',
         'ok': 'OK',
@@ -588,10 +632,13 @@ class AppLocalizations {
         'updatedAt': 'Aktualisiert am',
         'minutes': 'Minuten',
         'disclaimer_title': 'Haftungsausschluss',
-        'disclaimer_text': 'Diese Software wird "wie besehen" ohne jegliche ausdrückliche oder stillschweigende Gewährleistung bereitgestellt.\n\nAlle Daten werden ausschließlich lokal auf Ihrem Gerät gespeichert. Ihr Master-Passwort wird nirgendwo gespeichert, übertragen oder kann wiederhergestellt werden.\n\nWenn Sie Ihr Master-Passwort verlieren, ist der Zugriff auf Ihre Daten nicht möglich. Es gibt keinen Rücksetzungsmechanismus, keinen Wiederherstellungsschlüssel und keine Hintertür.\n\nDer/die Entwickler haften nicht für Passwortverlust, Datenverlust, Zugriffsverlust oder direkte/indirekte Schäden aus der Nutzung dieser Software.\n\nEs wird dringend empfohlen, Ihren Tresor (.pgvault) regelmäßig zu sichern.',
+        'disclaimer_text':
+            'Diese Software wird "wie besehen" ohne jegliche ausdrückliche oder stillschweigende Gewährleistung bereitgestellt.\n\nAlle Daten werden ausschließlich lokal auf Ihrem Gerät gespeichert. Ihr Master-Passwort wird nirgendwo gespeichert, übertragen oder kann wiederhergestellt werden.\n\nWenn Sie Ihr Master-Passwort verlieren, ist der Zugriff auf Ihre Daten nicht möglich. Es gibt keinen Rücksetzungsmechanismus, keinen Wiederherstellungsschlüssel und keine Hintertür.\n\nDer/die Entwickler haften nicht für Passwortverlust, Datenverlust, Zugriffsverlust oder direkte/indirekte Schäden aus der Nutzung dieser Software.\n\nEs wird dringend empfohlen, Ihren Tresor (.pgvault) regelmäßig zu sichern.',
         'disclaimer_accept': 'Ich habe gelesen, verstanden und akzeptiere',
-        'disclaimer_must_accept': 'Sie müssen den Haftungsausschluss akzeptieren, um fortzufahren',
-        'master_password_unrecoverable': 'Dieses Passwort kann nicht wiederhergestellt werden. Notieren Sie es an einem sicheren Ort und erstellen Sie regelmäßig Backups.',
+        'disclaimer_must_accept':
+            'Sie müssen den Haftungsausschluss akzeptieren, um fortzufahren',
+        'master_password_unrecoverable':
+            'Dieses Passwort kann nicht wiederhergestellt werden. Notieren Sie es an einem sicheren Ort und erstellen Sie regelmäßig Backups.',
       };
     } else if (locale.languageCode == 'fr') {
       return {
@@ -669,18 +716,24 @@ class AppLocalizations {
         'note_updated': 'Note mise à jour',
         'password_deleted': 'Mot de passe supprimé',
         'note_deleted': 'Note supprimée',
-        'biometric_not_available': 'Authentification biométrique non disponible',
-        'biometric_not_enrolled': 'Authentification biométrique non activée sur votre appareil',
+        'biometric_not_available':
+            'Authentification biométrique non disponible',
+        'biometric_not_enrolled':
+            'Authentification biométrique non activée sur votre appareil',
         'biometric_not_recognized': 'Authentification biométrique non reconnue',
         'biometric_cancelled': 'Authentification biométrique annulée',
-        'biometric_locked_out': 'Authentification biométrique temporairement désactivée',
+        'biometric_locked_out':
+            'Authentification biométrique temporairement désactivée',
         'session_timeout': 'Délai de session expiré',
-        'session_timeout_message': 'Votre session a expiré pour des raisons de sécurité. Veuillez vous reconnecter.',
+        'session_timeout_message':
+            'Votre session a expiré pour des raisons de sécurité. Veuillez vous reconnecter.',
         'vault_locked': 'Coffre verrouillé',
-        'vault_locked_message': 'Le coffre a été verrouillé pour des raisons de sécurité. Veuillez vous reconnecter avec votre mot de passe principal.',
+        'vault_locked_message':
+            'Le coffre a été verrouillé pour des raisons de sécurité. Veuillez vous reconnecter avec votre mot de passe principal.',
         'invalid_master_password': 'Mot de passe principal invalide',
         'passwords_do_not_match': 'Les mots de passe ne correspondent pas',
-        'password_too_short': 'Le mot de passe doit contenir au moins 8 caractères',
+        'password_too_short':
+            'Le mot de passe doit contenir au moins 8 caractères',
         'password_too_weak': 'Le mot de passe est trop faible',
         'export_vault': 'Exporter le coffre',
         'import_vault': 'Importer le coffre',
@@ -689,7 +742,8 @@ class AppLocalizations {
         'accent_color': 'Couleur d\'accentuation',
         'export_failed': 'Impossible d\'exporter le coffre',
         'import_failed': 'Impossible d\'importer le coffre',
-        'file_picker_unavailable': 'Sélecteur de fichiers indisponible. Veuillez installer zenity ou kdialog.',
+        'file_picker_unavailable':
+            'Sélecteur de fichiers indisponible. Veuillez installer zenity ou kdialog.',
         'file_permission_denied': 'Permission de fichier refusée',
         'file_not_found': 'Fichier non trouvé',
         'invalid_file_format': 'Format de fichier invalide',
@@ -714,7 +768,8 @@ class AppLocalizations {
         'rate_app': 'Évaluer l\'application',
         'share_app': 'Partager l\'application',
         'logout_confirmation': 'Se déconnecter',
-        'logout_message': 'Voulez-vous fermer le coffre et quitter l\'application?',
+        'logout_message':
+            'Voulez-vous fermer le coffre et quitter l\'application?',
         'export_vault_desc': 'Créer une sauvegarde .pgvault chiffrée',
         'import_vault_desc': 'Importer depuis un fichier .pgvault',
         'import_mode_question': 'Comment souhaitez-vous importer?',
@@ -727,7 +782,8 @@ class AppLocalizations {
         'attempts_remaining': 'tentatives restantes',
         'seconds': 'secondes',
         'something_went_wrong': 'Une erreur est survenue. Veuillez réessayer.',
-        'vault_version_unsupported': 'Ce coffre a été créé avec une version plus récente de l\'application. Veuillez mettre à jour l\'application.',
+        'vault_version_unsupported':
+            'Ce coffre a été créé avec une version plus récente de l\'application. Veuillez mettre à jour l\'application.',
         'selected': 'sélectionné(s)',
         'import_csv': 'Importer CSV',
         'import_csv_desc': 'Bitwarden, Chrome ou 1Password CSV',
@@ -736,11 +792,13 @@ class AppLocalizations {
         'biometric_failed': 'Échec de l\'authentification biométrique',
         'new_master_password': 'Nouveau mot de passe principal',
         'password_mismatch': 'Les mots de passe ne correspondent pas',
-        'new_password_same_as_old': 'Le nouveau mot de passe ne peut pas être identique à l\'ancien',
+        'new_password_same_as_old':
+            'Le nouveau mot de passe ne peut pas être identique à l\'ancien',
         'password_changed': 'Mot de passe principal modifié avec succès',
         'file_too_large': 'Fichier trop volumineux (maximum 50 Mo)',
         'developer': 'Développeur',
-        'biometric_first_time': 'Authentification biométrique réussie. Saisissez votre mot de passe principal une seule fois.',
+        'biometric_first_time':
+            'Authentification biométrique réussie. Saisissez votre mot de passe principal une seule fois.',
         'code_copied': 'Code copié · 30s',
         'note': 'Note',
         'ok': 'OK',
@@ -790,10 +848,13 @@ class AppLocalizations {
         'updatedAt': 'Mis à jour le',
         'minutes': 'minutes',
         'disclaimer_title': 'Clause de non-responsabilité',
-        'disclaimer_text': 'Ce logiciel est fourni "tel quel", sans aucune garantie expresse ou implicite.\n\nToutes vos données sont stockées uniquement sur votre appareil. Votre mot de passe maître n\'est jamais stocké, transmis ou récupérable.\n\nSi vous perdez votre mot de passe maître, l\'accès à vos données est impossible. Il n\'existe aucun mécanisme de réinitialisation, clé de récupération ou porte dérobée.\n\nLe(s) développeur(s) ne peuvent être tenus responsables de la perte de mots de passe, de données, d\'accès ou de tout dommage direct ou indirect lié à l\'utilisation de ce logiciel.\n\nIl est fortement recommandé de sauvegarder régulièrement votre coffre (.pgvault).',
+        'disclaimer_text':
+            'Ce logiciel est fourni "tel quel", sans aucune garantie expresse ou implicite.\n\nToutes vos données sont stockées uniquement sur votre appareil. Votre mot de passe maître n\'est jamais stocké, transmis ou récupérable.\n\nSi vous perdez votre mot de passe maître, l\'accès à vos données est impossible. Il n\'existe aucun mécanisme de réinitialisation, clé de récupération ou porte dérobée.\n\nLe(s) développeur(s) ne peuvent être tenus responsables de la perte de mots de passe, de données, d\'accès ou de tout dommage direct ou indirect lié à l\'utilisation de ce logiciel.\n\nIl est fortement recommandé de sauvegarder régulièrement votre coffre (.pgvault).',
         'disclaimer_accept': 'J\'ai lu, compris et j\'accepte',
-        'disclaimer_must_accept': 'Vous devez accepter la clause de non-responsabilité pour continuer',
-        'master_password_unrecoverable': 'Ce mot de passe ne peut pas être récupéré. Notez-le dans un endroit sûr et effectuez des sauvegardes régulières.',
+        'disclaimer_must_accept':
+            'Vous devez accepter la clause de non-responsabilité pour continuer',
+        'master_password_unrecoverable':
+            'Ce mot de passe ne peut pas être récupéré. Notez-le dans un endroit sûr et effectuez des sauvegardes régulières.',
       };
     } else if (locale.languageCode == 'ar') {
       return {
@@ -877,12 +938,15 @@ class AppLocalizations {
         'biometric_cancelled': 'تم إلغاء المصادقة البيومترية',
         'biometric_locked_out': 'المصادقة البيومترية معطلة مؤقتًا',
         'session_timeout': 'انتهت مدة الجلسة',
-        'session_timeout_message': 'انتهت جلستك لأسباب أمنية. يرجى تسجيل الدخول مرة أخرى.',
+        'session_timeout_message':
+            'انتهت جلستك لأسباب أمنية. يرجى تسجيل الدخول مرة أخرى.',
         'vault_locked': 'تم قفل الخزنة',
-        'vault_locked_message': 'تم قفل الخزنة لأسباب أمنية. يرجى تسجيل الدخول مرة أخرى بكلمة المرور الرئيسية.',
+        'vault_locked_message':
+            'تم قفل الخزنة لأسباب أمنية. يرجى تسجيل الدخول مرة أخرى بكلمة المرور الرئيسية.',
         'invalid_master_password': 'كلمة المرور الرئيسية غير صالحة',
         'passwords_do_not_match': 'كلمات المرور غير متطابقة',
-        'password_too_short': 'يجب أن تكون كلمة المرور مكونة من 8 أحرف على الأقل',
+        'password_too_short':
+            'يجب أن تكون كلمة المرور مكونة من 8 أحرف على الأقل',
         'password_too_weak': 'كلمة المرور ضعيفة جدًا',
         'export_vault': 'تصدير الخزنة',
         'import_vault': 'استيراد الخزنة',
@@ -891,7 +955,8 @@ class AppLocalizations {
         'accent_color': 'لون التمييز',
         'export_failed': 'فشل تصدير الخزنة',
         'import_failed': 'فشل استيراد الخزنة',
-        'file_picker_unavailable': 'منتقي الملفات غير متاح. يرجى تثبيت zenity أو kdialog.',
+        'file_picker_unavailable':
+            'منتقي الملفات غير متاح. يرجى تثبيت zenity أو kdialog.',
         'file_permission_denied': 'تم رفض إذن الملف',
         'file_not_found': 'الملف غير موجود',
         'invalid_file_format': 'تنسيق ملف غير صالح',
@@ -929,7 +994,8 @@ class AppLocalizations {
         'attempts_remaining': 'محاولات متبقية',
         'seconds': 'ثانية',
         'something_went_wrong': 'حدث خطأ ما. يرجى المحاولة مرة أخرى.',
-        'vault_version_unsupported': 'تم إنشاء هذا الخزنة بإصدار أحدث من التطبيق. يرجى تحديث التطبيق.',
+        'vault_version_unsupported':
+            'تم إنشاء هذا الخزنة بإصدار أحدث من التطبيق. يرجى تحديث التطبيق.',
         'selected': 'محدد',
         'import_csv': 'استيراد CSV',
         'import_csv_desc': 'Bitwarden أو Chrome أو 1Password CSV',
@@ -938,11 +1004,13 @@ class AppLocalizations {
         'biometric_failed': 'فشل التحقق البيومتري',
         'new_master_password': 'كلمة المرور الرئيسية الجديدة',
         'password_mismatch': 'كلمات المرور غير متطابقة',
-        'new_password_same_as_old': 'لا يمكن أن تكون كلمة المرور الجديدة مثل القديمة',
+        'new_password_same_as_old':
+            'لا يمكن أن تكون كلمة المرور الجديدة مثل القديمة',
         'password_changed': 'تم تغيير كلمة المرور الرئيسية بنجاح',
         'file_too_large': 'الملف كبير جدًا (الحد الأقصى 50 ميجابايت)',
         'developer': 'المطور',
-        'biometric_first_time': 'تم التحقق البيومتري بنجاح. أدخل كلمة المرور الرئيسية مرة واحدة فقط.',
+        'biometric_first_time':
+            'تم التحقق البيومتري بنجاح. أدخل كلمة المرور الرئيسية مرة واحدة فقط.',
         'code_copied': 'تم نسخ الكود · 30s',
         'note': 'ملاحظة',
         'ok': 'موافق',
@@ -992,10 +1060,12 @@ class AppLocalizations {
         'updatedAt': 'تاريخ التحديث',
         'minutes': 'دقائق',
         'disclaimer_title': 'إخلاء المسؤولية',
-        'disclaimer_text': 'يُقدَّم هذا البرنامج "كما هو" دون أي ضمانات صريحة أو ضمنية.\n\nجميع بياناتك مخزَّنة فقط على جهازك. كلمة المرور الرئيسية لا تُخزَّن ولا تُنقَل ولا يمكن استردادها.\n\nإذا فقدتَ كلمة المرور الرئيسية، فلن يكون بالإمكان الوصول إلى بياناتك.\n\nالمطوّر(ون) غير مسؤولين عن فقدان كلمات المرور أو البيانات أو أي أضرار ناتجة عن استخدام هذا البرنامج.\n\nيُوصى بشدة بالنسخ الاحتياطي المنتظم لخزنتك (.pgvault).',
+        'disclaimer_text':
+            'يُقدَّم هذا البرنامج "كما هو" دون أي ضمانات صريحة أو ضمنية.\n\nجميع بياناتك مخزَّنة فقط على جهازك. كلمة المرور الرئيسية لا تُخزَّن ولا تُنقَل ولا يمكن استردادها.\n\nإذا فقدتَ كلمة المرور الرئيسية، فلن يكون بالإمكان الوصول إلى بياناتك.\n\nالمطوّر(ون) غير مسؤولين عن فقدان كلمات المرور أو البيانات أو أي أضرار ناتجة عن استخدام هذا البرنامج.\n\nيُوصى بشدة بالنسخ الاحتياطي المنتظم لخزنتك (.pgvault).',
         'disclaimer_accept': 'لقد قرأت وفهمت وأوافق',
         'disclaimer_must_accept': 'يجب قبول إخلاء المسؤولية للمتابعة',
-        'master_password_unrecoverable': 'لا يمكن استرداد كلمة المرور هذه. دوّنها في مكان آمن واحرص على النسخ الاحتياطي بانتظام.',
+        'master_password_unrecoverable':
+            'لا يمكن استرداد كلمة المرور هذه. دوّنها في مكان آمن واحرص على النسخ الاحتياطي بانتظام.',
       };
     } else if (locale.languageCode == 'es') {
       return {
@@ -1062,7 +1132,8 @@ class AppLocalizations {
         'username_copied': 'Usuario copiado al portapapeles',
         'website_copied': 'Sitio web copiado al portapapeles',
         'content_copied': 'Contenido copiado al portapapeles',
-        'delete_confirmation': '¿Está seguro de que desea eliminar este elemento?',
+        'delete_confirmation':
+            '¿Está seguro de que desea eliminar este elemento?',
         'delete_password': 'Eliminar contraseña',
         'delete_note': 'Eliminar nota',
         'edit_password': 'Editar contraseña',
@@ -1074,14 +1145,18 @@ class AppLocalizations {
         'password_deleted': 'Contraseña eliminada',
         'note_deleted': 'Nota eliminada',
         'biometric_not_available': 'Autenticación biométrica no disponible',
-        'biometric_not_enrolled': 'Autenticación biométrica no habilitada en su dispositivo',
+        'biometric_not_enrolled':
+            'Autenticación biométrica no habilitada en su dispositivo',
         'biometric_not_recognized': 'Autenticación biométrica no reconocida',
         'biometric_cancelled': 'Autenticación biométrica cancelada',
-        'biometric_locked_out': 'Autenticación biométrica temporalmente deshabilitada',
+        'biometric_locked_out':
+            'Autenticación biométrica temporalmente deshabilitada',
         'session_timeout': 'Tiempo de sesión agotado',
-        'session_timeout_message': 'Su sesión ha expirado por razones de seguridad. Por favor inicie sesión nuevamente.',
+        'session_timeout_message':
+            'Su sesión ha expirado por razones de seguridad. Por favor inicie sesión nuevamente.',
         'vault_locked': 'Bóveda bloqueada',
-        'vault_locked_message': 'La bóveda ha sido bloqueada por razones de seguridad. Por favor inicie sesión con su contraseña maestra.',
+        'vault_locked_message':
+            'La bóveda ha sido bloqueada por razones de seguridad. Por favor inicie sesión con su contraseña maestra.',
         'invalid_master_password': 'Contraseña maestra inválida',
         'passwords_do_not_match': 'Las contraseñas no coinciden',
         'password_too_short': 'La contraseña debe tener al menos 8 caracteres',
@@ -1093,8 +1168,10 @@ class AppLocalizations {
         'export_failed': 'Error al exportar la bóveda',
         'import_failed': 'Error al importar la bóveda',
         'accent_color': 'Color de acento',
-        'file_picker_unavailable': 'Selector de archivos no disponible. Instale zenity o kdialog.',
-        'vault_version_unsupported': 'Esta bóveda fue creada con una versión más reciente de la aplicación. Por favor actualice la aplicación.',
+        'file_picker_unavailable':
+            'Selector de archivos no disponible. Instale zenity o kdialog.',
+        'vault_version_unsupported':
+            'Esta bóveda fue creada con una versión más reciente de la aplicación. Por favor actualice la aplicación.',
         'file_permission_denied': 'Permiso de archivo denegado',
         'file_not_found': 'Archivo no encontrado',
         'invalid_file_format': 'Formato de archivo inválido',
@@ -1148,18 +1225,21 @@ class AppLocalizations {
         'imported': 'importado(s)',
         'skipped': 'omitido(s)',
         'entries': 'Entradas',
-        'too_many_attempts': 'Demasiados intentos fallidos. Intente de nuevo en',
+        'too_many_attempts':
+            'Demasiados intentos fallidos. Intente de nuevo en',
         'attempts_remaining': 'intentos restantes',
         'seconds': 'segundos',
         'something_went_wrong': 'Algo salió mal. Por favor intente de nuevo.',
         'biometric_failed': 'Autenticación biométrica fallida',
         'new_master_password': 'Nueva contraseña maestra',
         'password_mismatch': 'Las contraseñas no coinciden',
-        'new_password_same_as_old': 'La nueva contraseña no puede ser igual a la anterior',
+        'new_password_same_as_old':
+            'La nueva contraseña no puede ser igual a la anterior',
         'password_changed': 'Contraseña maestra cambiada exitosamente',
         'file_too_large': 'Archivo demasiado grande (máximo 50 MB)',
         'developer': 'Desarrollador',
-        'biometric_first_time': 'Verificación biométrica exitosa. Ingrese su contraseña maestra una vez, los futuros inicios de sesión serán automáticos.',
+        'biometric_first_time':
+            'Verificación biométrica exitosa. Ingrese su contraseña maestra una vez, los futuros inicios de sesión serán automáticos.',
         'code_copied': 'Código copiado · 30s',
         'selected': 'seleccionado(s)',
         'import_csv': 'Importar CSV',
@@ -1167,10 +1247,13 @@ class AppLocalizations {
         'csv_format_unsupported': 'Formato CSV no compatible',
         'edit_entry': 'Editar entrada',
         'disclaimer_title': 'Exención de responsabilidad',
-        'disclaimer_text': 'Este software se proporciona "tal cual", sin garantías de ningún tipo, expresas o implícitas.\n\nTodos sus datos se almacenan únicamente en su dispositivo. Su contraseña maestra nunca se almacena, transmite ni puede recuperarse.\n\nSi pierde su contraseña maestra, no será posible acceder a sus datos. No existe mecanismo de restablecimiento, clave de recuperación ni puerta trasera.\n\nEl/los desarrollador(es) no se hacen responsables de la pérdida de contraseñas, datos, acceso o cualquier daño directo o indirecto derivado del uso de este software.\n\nSe recomienda encarecidamente realizar copias de seguridad periódicas de su bóveda (.pgvault).',
+        'disclaimer_text':
+            'Este software se proporciona "tal cual", sin garantías de ningún tipo, expresas o implícitas.\n\nTodos sus datos se almacenan únicamente en su dispositivo. Su contraseña maestra nunca se almacena, transmite ni puede recuperarse.\n\nSi pierde su contraseña maestra, no será posible acceder a sus datos. No existe mecanismo de restablecimiento, clave de recuperación ni puerta trasera.\n\nEl/los desarrollador(es) no se hacen responsables de la pérdida de contraseñas, datos, acceso o cualquier daño directo o indirecto derivado del uso de este software.\n\nSe recomienda encarecidamente realizar copias de seguridad periódicas de su bóveda (.pgvault).',
         'disclaimer_accept': 'He leído, entendido y acepto',
-        'disclaimer_must_accept': 'Debe aceptar la exención de responsabilidad para continuar',
-        'master_password_unrecoverable': 'Esta contraseña no se puede recuperar. Anótela en un lugar seguro y realice copias de seguridad periódicas.',
+        'disclaimer_must_accept':
+            'Debe aceptar la exención de responsabilidad para continuar',
+        'master_password_unrecoverable':
+            'Esta contraseña no se puede recuperar. Anótela en un lugar seguro y realice copias de seguridad periódicas.',
       };
     } else if (locale.languageCode == 'it') {
       return {
@@ -1249,14 +1332,19 @@ class AppLocalizations {
         'password_deleted': 'Password eliminata',
         'note_deleted': 'Nota eliminata',
         'biometric_not_available': 'Autenticazione biometrica non disponibile',
-        'biometric_not_enrolled': 'Autenticazione biometrica non abilitata sul dispositivo',
-        'biometric_not_recognized': 'Autenticazione biometrica non riconosciuta',
+        'biometric_not_enrolled':
+            'Autenticazione biometrica non abilitata sul dispositivo',
+        'biometric_not_recognized':
+            'Autenticazione biometrica non riconosciuta',
         'biometric_cancelled': 'Autenticazione biometrica annullata',
-        'biometric_locked_out': 'Autenticazione biometrica temporaneamente disabilitata',
+        'biometric_locked_out':
+            'Autenticazione biometrica temporaneamente disabilitata',
         'session_timeout': 'Sessione scaduta',
-        'session_timeout_message': 'La sessione è scaduta per motivi di sicurezza. Effettua nuovamente l\'accesso.',
+        'session_timeout_message':
+            'La sessione è scaduta per motivi di sicurezza. Effettua nuovamente l\'accesso.',
         'vault_locked': 'Cassaforte bloccata',
-        'vault_locked_message': 'La cassaforte è stata bloccata per motivi di sicurezza. Accedi con la password principale.',
+        'vault_locked_message':
+            'La cassaforte è stata bloccata per motivi di sicurezza. Accedi con la password principale.',
         'invalid_master_password': 'Password principale non valida',
         'passwords_do_not_match': 'Le password non corrispondono',
         'password_too_short': 'La password deve contenere almeno 8 caratteri',
@@ -1268,8 +1356,10 @@ class AppLocalizations {
         'export_failed': 'Esportazione cassaforte fallita',
         'import_failed': 'Importazione cassaforte fallita',
         'accent_color': 'Colore principale',
-        'file_picker_unavailable': 'Selezione file non disponibile. Installa zenity o kdialog.',
-        'vault_version_unsupported': 'Questa cassaforte è stata creata con una versione più recente. Aggiorna l\'app.',
+        'file_picker_unavailable':
+            'Selezione file non disponibile. Installa zenity o kdialog.',
+        'vault_version_unsupported':
+            'Questa cassaforte è stata creata con una versione più recente. Aggiorna l\'app.',
         'file_permission_denied': 'Permesso file negato',
         'file_not_found': 'File non trovato',
         'invalid_file_format': 'Formato file non valido',
@@ -1330,11 +1420,13 @@ class AppLocalizations {
         'biometric_failed': 'Autenticazione biometrica fallita',
         'new_master_password': 'Nuova password principale',
         'password_mismatch': 'Le password non corrispondono',
-        'new_password_same_as_old': 'La nuova password non può essere uguale a quella precedente',
+        'new_password_same_as_old':
+            'La nuova password non può essere uguale a quella precedente',
         'password_changed': 'Password principale modificata con successo',
         'file_too_large': 'File troppo grande (massimo 50 MB)',
         'developer': 'Sviluppatore',
-        'biometric_first_time': 'Verifica biometrica riuscita. Inserisci la password principale una volta, i futuri accessi saranno automatici.',
+        'biometric_first_time':
+            'Verifica biometrica riuscita. Inserisci la password principale una volta, i futuri accessi saranno automatici.',
         'code_copied': 'Codice copiato · 30s',
         'selected': 'selezionato/i',
         'import_csv': 'Importa CSV',
@@ -1342,10 +1434,13 @@ class AppLocalizations {
         'csv_format_unsupported': 'Formato CSV non supportato',
         'edit_entry': 'Modifica voce',
         'disclaimer_title': 'Esclusione di responsabilità',
-        'disclaimer_text': 'Questo software è fornito "così com\'è" senza alcuna garanzia espressa o implicita.\n\nTutti i dati sono archiviati esclusivamente sul dispositivo. La password principale non viene mai memorizzata, trasmessa o può essere recuperata.\n\nSe si perde la password principale, l\'accesso ai dati non sarà possibile. Non esistono meccanismi di ripristino, chiavi di recupero o backdoor.\n\nLo/gli sviluppatore/i non sono responsabili per la perdita di password, dati, accesso o qualsiasi danno diretto o indiretto derivante dall\'uso di questo software.\n\nSi consiglia vivamente di eseguire backup regolari del proprio vault (.pgvault).',
+        'disclaimer_text':
+            'Questo software è fornito "così com\'è" senza alcuna garanzia espressa o implicita.\n\nTutti i dati sono archiviati esclusivamente sul dispositivo. La password principale non viene mai memorizzata, trasmessa o può essere recuperata.\n\nSe si perde la password principale, l\'accesso ai dati non sarà possibile. Non esistono meccanismi di ripristino, chiavi di recupero o backdoor.\n\nLo/gli sviluppatore/i non sono responsabili per la perdita di password, dati, accesso o qualsiasi danno diretto o indiretto derivante dall\'uso di questo software.\n\nSi consiglia vivamente di eseguire backup regolari del proprio vault (.pgvault).',
         'disclaimer_accept': 'Ho letto, compreso e accetto',
-        'disclaimer_must_accept': 'Devi accettare l\'esclusione di responsabilità per continuare',
-        'master_password_unrecoverable': 'Questa password non può essere recuperata. Annotala in un luogo sicuro e fai backup regolari.',
+        'disclaimer_must_accept':
+            'Devi accettare l\'esclusione di responsabilità per continuare',
+        'master_password_unrecoverable':
+            'Questa password non può essere recuperata. Annotala in un luogo sicuro e fai backup regolari.',
       };
     } else if (locale.languageCode == 'pt') {
       return {
@@ -1409,7 +1504,8 @@ class AppLocalizations {
         'security': 'Segurança',
         'other': 'Outro',
         'password_copied': 'Senha copiada para a área de transferência',
-        'username_copied': 'Nome de usuário copiado para a área de transferência',
+        'username_copied':
+            'Nome de usuário copiado para a área de transferência',
         'website_copied': 'Site copiado para a área de transferência',
         'content_copied': 'Conteúdo copiado para a área de transferência',
         'delete_confirmation': 'Tem certeza que deseja excluir este item?',
@@ -1424,14 +1520,18 @@ class AppLocalizations {
         'password_deleted': 'Senha excluída',
         'note_deleted': 'Nota excluída',
         'biometric_not_available': 'Autenticação biométrica não disponível',
-        'biometric_not_enrolled': 'Autenticação biométrica não habilitada no dispositivo',
+        'biometric_not_enrolled':
+            'Autenticação biométrica não habilitada no dispositivo',
         'biometric_not_recognized': 'Autenticação biométrica não reconhecida',
         'biometric_cancelled': 'Autenticação biométrica cancelada',
-        'biometric_locked_out': 'Autenticação biométrica temporariamente desabilitada',
+        'biometric_locked_out':
+            'Autenticação biométrica temporariamente desabilitada',
         'session_timeout': 'Tempo de sessão esgotado',
-        'session_timeout_message': 'Sua sessão expirou por razões de segurança. Por favor faça login novamente.',
+        'session_timeout_message':
+            'Sua sessão expirou por razões de segurança. Por favor faça login novamente.',
         'vault_locked': 'Cofre bloqueado',
-        'vault_locked_message': 'O cofre foi bloqueado por razões de segurança. Por favor faça login com sua senha mestra.',
+        'vault_locked_message':
+            'O cofre foi bloqueado por razões de segurança. Por favor faça login com sua senha mestra.',
         'invalid_master_password': 'Senha mestra inválida',
         'passwords_do_not_match': 'As senhas não coincidem',
         'password_too_short': 'A senha deve ter pelo menos 8 caracteres',
@@ -1443,8 +1543,10 @@ class AppLocalizations {
         'export_failed': 'Falha ao exportar cofre',
         'import_failed': 'Falha ao importar cofre',
         'accent_color': 'Cor de destaque',
-        'file_picker_unavailable': 'Seletor de arquivos indisponível. Instale zenity ou kdialog.',
-        'vault_version_unsupported': 'Este cofre foi criado com uma versão mais recente do aplicativo. Por favor atualize o aplicativo.',
+        'file_picker_unavailable':
+            'Seletor de arquivos indisponível. Instale zenity ou kdialog.',
+        'vault_version_unsupported':
+            'Este cofre foi criado com uma versão mais recente do aplicativo. Por favor atualize o aplicativo.',
         'file_permission_denied': 'Permissão de arquivo negada',
         'file_not_found': 'Arquivo não encontrado',
         'invalid_file_format': 'Formato de arquivo inválido',
@@ -1505,11 +1607,13 @@ class AppLocalizations {
         'biometric_failed': 'Autenticação biométrica falhou',
         'new_master_password': 'Nova senha mestra',
         'password_mismatch': 'As senhas não coincidem',
-        'new_password_same_as_old': 'A nova senha não pode ser igual à anterior',
+        'new_password_same_as_old':
+            'A nova senha não pode ser igual à anterior',
         'password_changed': 'Senha mestra alterada com sucesso',
         'file_too_large': 'Arquivo muito grande (máximo 50 MB)',
         'developer': 'Desenvolvedor',
-        'biometric_first_time': 'Verificação biométrica bem-sucedida. Digite sua senha mestra uma vez, os futuros logins serão automáticos.',
+        'biometric_first_time':
+            'Verificação biométrica bem-sucedida. Digite sua senha mestra uma vez, os futuros logins serão automáticos.',
         'code_copied': 'Código copiado · 30s',
         'selected': 'selecionado(s)',
         'import_csv': 'Importar CSV',
@@ -1517,10 +1621,13 @@ class AppLocalizations {
         'csv_format_unsupported': 'Formato CSV não suportado',
         'edit_entry': 'Editar entrada',
         'disclaimer_title': 'Isenção de responsabilidade',
-        'disclaimer_text': 'Este software é fornecido "como está", sem qualquer garantia expressa ou implícita.\n\nTodos os seus dados são armazenados apenas no seu dispositivo. Sua senha mestra nunca é armazenada, transmitida ou pode ser recuperada.\n\nSe você perder sua senha mestra, o acesso aos seus dados não será possível. Não há mecanismo de redefinição, chave de recuperação ou porta dos fundos.\n\nO(s) desenvolvedor(es) não se responsabilizam pela perda de senhas, dados, acesso ou quaisquer danos diretos ou indiretos decorrentes do uso deste software.\n\nÉ altamente recomendável fazer backups regulares do seu cofre (.pgvault).',
+        'disclaimer_text':
+            'Este software é fornecido "como está", sem qualquer garantia expressa ou implícita.\n\nTodos os seus dados são armazenados apenas no seu dispositivo. Sua senha mestra nunca é armazenada, transmitida ou pode ser recuperada.\n\nSe você perder sua senha mestra, o acesso aos seus dados não será possível. Não há mecanismo de redefinição, chave de recuperação ou porta dos fundos.\n\nO(s) desenvolvedor(es) não se responsabilizam pela perda de senhas, dados, acesso ou quaisquer danos diretos ou indiretos decorrentes do uso deste software.\n\nÉ altamente recomendável fazer backups regulares do seu cofre (.pgvault).',
         'disclaimer_accept': 'Li, entendi e aceito',
-        'disclaimer_must_accept': 'Você deve aceitar a isenção de responsabilidade para continuar',
-        'master_password_unrecoverable': 'Esta senha não pode ser recuperada. Anote-a em local seguro e faça backups regulares.',
+        'disclaimer_must_accept':
+            'Você deve aceitar a isenção de responsabilidade para continuar',
+        'master_password_unrecoverable':
+            'Esta senha não pode ser recuperada. Anote-a em local seguro e faça backups regulares.',
       };
     } else if (locale.languageCode == 'ru') {
       return {
@@ -1599,14 +1706,19 @@ class AppLocalizations {
         'password_deleted': 'Пароль удалён',
         'note_deleted': 'Заметка удалена',
         'biometric_not_available': 'Биометрическая аутентификация недоступна',
-        'biometric_not_enrolled': 'Биометрическая аутентификация не настроена на устройстве',
-        'biometric_not_recognized': 'Биометрическая аутентификация не распознана',
+        'biometric_not_enrolled':
+            'Биометрическая аутентификация не настроена на устройстве',
+        'biometric_not_recognized':
+            'Биометрическая аутентификация не распознана',
         'biometric_cancelled': 'Биометрическая аутентификация отменена',
-        'biometric_locked_out': 'Биометрическая аутентификация временно отключена',
+        'biometric_locked_out':
+            'Биометрическая аутентификация временно отключена',
         'session_timeout': 'Сессия истекла',
-        'session_timeout_message': 'Ваша сессия истекла по соображениям безопасности. Пожалуйста, войдите снова.',
+        'session_timeout_message':
+            'Ваша сессия истекла по соображениям безопасности. Пожалуйста, войдите снова.',
         'vault_locked': 'Хранилище заблокировано',
-        'vault_locked_message': 'Хранилище заблокировано по соображениям безопасности. Войдите с мастер-паролем.',
+        'vault_locked_message':
+            'Хранилище заблокировано по соображениям безопасности. Войдите с мастер-паролем.',
         'invalid_master_password': 'Неверный мастер-пароль',
         'passwords_do_not_match': 'Пароли не совпадают',
         'password_too_short': 'Пароль должен содержать не менее 8 символов',
@@ -1618,8 +1730,10 @@ class AppLocalizations {
         'export_failed': 'Ошибка экспорта хранилища',
         'import_failed': 'Ошибка импорта хранилища',
         'accent_color': 'Акцентный цвет',
-        'file_picker_unavailable': 'Выбор файла недоступен. Установите zenity или kdialog.',
-        'vault_version_unsupported': 'Это хранилище создано в более новой версии приложения. Обновите приложение.',
+        'file_picker_unavailable':
+            'Выбор файла недоступен. Установите zenity или kdialog.',
+        'vault_version_unsupported':
+            'Это хранилище создано в более новой версии приложения. Обновите приложение.',
         'file_permission_denied': 'Доступ к файлу запрещён',
         'file_not_found': 'Файл не найден',
         'invalid_file_format': 'Неверный формат файла',
@@ -1684,7 +1798,8 @@ class AppLocalizations {
         'password_changed': 'Мастер-пароль успешно изменён',
         'file_too_large': 'Файл слишком большой (максимум 50 МБ)',
         'developer': 'Разработчик',
-        'biometric_first_time': 'Биометрическая верификация успешна. Введите мастер-пароль один раз, следующие входы будут автоматическими.',
+        'biometric_first_time':
+            'Биометрическая верификация успешна. Введите мастер-пароль один раз, следующие входы будут автоматическими.',
         'code_copied': 'Код скопирован · 30s',
         'selected': 'выбрано',
         'import_csv': 'Импорт CSV',
@@ -1692,10 +1807,13 @@ class AppLocalizations {
         'csv_format_unsupported': 'Неподдерживаемый формат CSV',
         'edit_entry': 'Изменить запись',
         'disclaimer_title': 'Отказ от ответственности',
-        'disclaimer_text': 'Это программное обеспечение предоставляется "как есть" без каких-либо явных или подразумеваемых гарантий.\n\nВсе данные хранятся только на вашем устройстве. Мастер-пароль нигде не сохраняется, не передаётся и не может быть восстановлен.\n\nЕсли вы потеряете мастер-пароль, доступ к данным будет невозможен.\n\nРазработчик(и) не несут ответственности за потерю паролей, данных, доступа или любой ущерб, вызванный использованием этого ПО.\n\nНастоятельно рекомендуется регулярно создавать резервные копии хранилища (.pgvault).',
+        'disclaimer_text':
+            'Это программное обеспечение предоставляется "как есть" без каких-либо явных или подразумеваемых гарантий.\n\nВсе данные хранятся только на вашем устройстве. Мастер-пароль нигде не сохраняется, не передаётся и не может быть восстановлен.\n\nЕсли вы потеряете мастер-пароль, доступ к данным будет невозможен.\n\nРазработчик(и) не несут ответственности за потерю паролей, данных, доступа или любой ущерб, вызванный использованием этого ПО.\n\nНастоятельно рекомендуется регулярно создавать резервные копии хранилища (.pgvault).',
         'disclaimer_accept': 'Я прочитал(а), понял(а) и принимаю',
-        'disclaimer_must_accept': 'Вы должны принять отказ от ответственности для продолжения',
-        'master_password_unrecoverable': 'Этот пароль невозможно восстановить. Запишите его в надёжном месте и регулярно создавайте резервные копии.',
+        'disclaimer_must_accept':
+            'Вы должны принять отказ от ответственности для продолжения',
+        'master_password_unrecoverable':
+            'Этот пароль невозможно восстановить. Запишите его в надёжном месте и регулярно создавайте резервные копии.',
       };
     } else if (locale.languageCode == 'ja') {
       return {
@@ -1793,7 +1911,8 @@ class AppLocalizations {
         'export_failed': 'エクスポートに失敗しました',
         'import_failed': 'インポートに失敗しました',
         'accent_color': 'アクセントカラー',
-        'file_picker_unavailable': 'ファイル選択が利用できません。zenityまたはkdialogをインストールしてください。',
+        'file_picker_unavailable':
+            'ファイル選択が利用できません。zenityまたはkdialogをインストールしてください。',
         'vault_version_unsupported': 'このボールトは新しいバージョンで作成されました。アプリを更新してください。',
         'file_permission_denied': 'ファイルのアクセス許可が拒否されました',
         'file_not_found': 'ファイルが見つかりません',
@@ -1859,7 +1978,8 @@ class AppLocalizations {
         'password_changed': 'マスターパスワードが正常に変更されました',
         'file_too_large': 'ファイルが大きすぎます（最大50 MB）',
         'developer': '開発者',
-        'biometric_first_time': '生体認証が成功しました。一度マスターパスワードを入力すると、以降は自動的にログインされます。',
+        'biometric_first_time':
+            '生体認証が成功しました。一度マスターパスワードを入力すると、以降は自動的にログインされます。',
         'code_copied': 'コードをコピーしました · 30s',
         'selected': '選択済み',
         'import_csv': 'CSVをインポート',
@@ -1867,10 +1987,12 @@ class AppLocalizations {
         'csv_format_unsupported': 'サポートされていないCSV形式',
         'edit_entry': '項目を編集',
         'disclaimer_title': '免責事項',
-        'disclaimer_text': '本ソフトウェアは「現状のまま」提供され、明示・黙示を問わず一切の保証はありません。\n\nすべてのデータはお使いのデバイスにのみ保存されます。マスターパスワードは保存・送信・復元されません。\n\nマスターパスワードを失うとデータへのアクセスは不可能になります。\n\n開発者はパスワードの喪失、データの損失、アクセスの喪失、または本ソフトウェアの使用によるいかなる損害についても責任を負いません。\n\n保管庫(.pgvault)の定期的なバックアップを強くお勧めします。',
+        'disclaimer_text':
+            '本ソフトウェアは「現状のまま」提供され、明示・黙示を問わず一切の保証はありません。\n\nすべてのデータはお使いのデバイスにのみ保存されます。マスターパスワードは保存・送信・復元されません。\n\nマスターパスワードを失うとデータへのアクセスは不可能になります。\n\n開発者はパスワードの喪失、データの損失、アクセスの喪失、または本ソフトウェアの使用によるいかなる損害についても責任を負いません。\n\n保管庫(.pgvault)の定期的なバックアップを強くお勧めします。',
         'disclaimer_accept': '読みました、理解し、同意します',
         'disclaimer_must_accept': '続行するには免責事項に同意する必要があります',
-        'master_password_unrecoverable': 'このパスワードは復元できません。安全な場所に記録し、定期的にバックアップを取ってください。',
+        'master_password_unrecoverable':
+            'このパスワードは復元できません。安全な場所に記録し、定期的にバックアップを取ってください。',
       };
     } else if (locale.languageCode == 'zh') {
       return {
@@ -2042,7 +2164,8 @@ class AppLocalizations {
         'csv_format_unsupported': '不支持的CSV格式',
         'edit_entry': '编辑条目',
         'disclaimer_title': '免责声明',
-        'disclaimer_text': '本软件按“原样”提供，不提供任何明示或暗示的保证。\n\n您的所有数据仅存储在您的设备上。主密码不会被存储、传输或可以恢复。\n\n如果您丢失主密码，将无法访问您的数据。\n\n开发者不对密码丢失、数据丢失、访问丢失或因使用本软件而造成的任何损害承担责任。\n\n强烈建议定期备份您的保管库(.pgvault)。',
+        'disclaimer_text':
+            '本软件按“原样”提供，不提供任何明示或暗示的保证。\n\n您的所有数据仅存储在您的设备上。主密码不会被存储、传输或可以恢复。\n\n如果您丢失主密码，将无法访问您的数据。\n\n开发者不对密码丢失、数据丢失、访问丢失或因使用本软件而造成的任何损害承担责任。\n\n强烈建议定期备份您的保管库(.pgvault)。',
         'disclaimer_accept': '我已阅读、理解并接受',
         'disclaimer_must_accept': '您必须接受免责声明才能继续',
         'master_password_unrecoverable': '此密码无法恢复。请将其记录在安全的地方并定期备份。',
@@ -2143,7 +2266,8 @@ class AppLocalizations {
         'export_failed': '보관함 내보내기 실패',
         'import_failed': '보관함 가져오기 실패',
         'accent_color': '강조 색상',
-        'file_picker_unavailable': '파일 선택기를 사용할 수 없습니다. zenity 또는 kdialog를 설치하세요.',
+        'file_picker_unavailable':
+            '파일 선택기를 사용할 수 없습니다. zenity 또는 kdialog를 설치하세요.',
         'vault_version_unsupported': '이 보관함은 더 새로운 버전으로 만들어졌습니다. 앱을 업데이트하세요.',
         'file_permission_denied': '파일 접근 권한이 거부되었습니다',
         'file_not_found': '파일을 찾을 수 없습니다',
@@ -2209,7 +2333,8 @@ class AppLocalizations {
         'password_changed': '마스터 비밀번호가 성공적으로 변경되었습니다',
         'file_too_large': '파일이 너무 큽니다 (최대 50 MB)',
         'developer': '개발자',
-        'biometric_first_time': '생체 인증이 성공했습니다. 마스터 비밀번호를 한 번 입력하면 이후 로그인은 자동으로 됩니다.',
+        'biometric_first_time':
+            '생체 인증이 성공했습니다. 마스터 비밀번호를 한 번 입력하면 이후 로그인은 자동으로 됩니다.',
         'code_copied': '코드 복사됨 · 30s',
         'selected': '선택됨',
         'import_csv': 'CSV 가져오기',
@@ -2217,10 +2342,12 @@ class AppLocalizations {
         'csv_format_unsupported': '지원되지 않는 CSV 형식',
         'edit_entry': '항목 편집',
         'disclaimer_title': '면책 조항',
-        'disclaimer_text': '이 소프트웨어는 "있는 그대로" 제공되며, 명시적 또는 묵시적 어떤 보증도 제공되지 않습니다.\n\n모든 데이터는 기기에만 저장됩니다. 마스터 비밀번호는 저장, 전송 또는 복구되지 않습니다.\n\n마스터 비밀번호를 잃으면 데이터에 접근할 수 없습니다.\n\n개발자는 비밀번호 손실, 데이터 손실, 접근 손실 또는 이 소프트웨어 사용으로 인한 어떤 손해에 대해서도 책임을 지지 않습니다.\n\n보관함(.pgvault)의 정기적인 백업을 강력히 권장합니다.',
+        'disclaimer_text':
+            '이 소프트웨어는 "있는 그대로" 제공되며, 명시적 또는 묵시적 어떤 보증도 제공되지 않습니다.\n\n모든 데이터는 기기에만 저장됩니다. 마스터 비밀번호는 저장, 전송 또는 복구되지 않습니다.\n\n마스터 비밀번호를 잃으면 데이터에 접근할 수 없습니다.\n\n개발자는 비밀번호 손실, 데이터 손실, 접근 손실 또는 이 소프트웨어 사용으로 인한 어떤 손해에 대해서도 책임을 지지 않습니다.\n\n보관함(.pgvault)의 정기적인 백업을 강력히 권장합니다.',
         'disclaimer_accept': '읽었으며 이해하고 동의합니다',
         'disclaimer_must_accept': '계속하려면 면책 조항에 동의해야 합니다',
-        'master_password_unrecoverable': '이 비밀번호는 복구할 수 없습니다. 안전한 곳에 적어두고 정기적으로 백업하세요.',
+        'master_password_unrecoverable':
+            '이 비밀번호는 복구할 수 없습니다. 안전한 곳에 적어두고 정기적으로 백업하세요.',
       };
     } else if (locale.languageCode == 'nl') {
       return {
@@ -2299,14 +2426,18 @@ class AppLocalizations {
         'password_deleted': 'Wachtwoord verwijderd',
         'note_deleted': 'Notitie verwijderd',
         'biometric_not_available': 'Biometrische verificatie niet beschikbaar',
-        'biometric_not_enrolled': 'Biometrische verificatie niet ingesteld op apparaat',
+        'biometric_not_enrolled':
+            'Biometrische verificatie niet ingesteld op apparaat',
         'biometric_not_recognized': 'Biometrische verificatie niet herkend',
         'biometric_cancelled': 'Biometrische verificatie geannuleerd',
-        'biometric_locked_out': 'Biometrische verificatie tijdelijk uitgeschakeld',
+        'biometric_locked_out':
+            'Biometrische verificatie tijdelijk uitgeschakeld',
         'session_timeout': 'Sessie verlopen',
-        'session_timeout_message': 'Uw sessie is verlopen om veiligheidsredenen. Log opnieuw in.',
+        'session_timeout_message':
+            'Uw sessie is verlopen om veiligheidsredenen. Log opnieuw in.',
         'vault_locked': 'Kluis vergrendeld',
-        'vault_locked_message': 'De kluis is vergrendeld om veiligheidsredenen. Log in met uw hoofdwachtwoord.',
+        'vault_locked_message':
+            'De kluis is vergrendeld om veiligheidsredenen. Log in met uw hoofdwachtwoord.',
         'invalid_master_password': 'Ongeldig hoofdwachtwoord',
         'passwords_do_not_match': 'Wachtwoorden komen niet overeen',
         'password_too_short': 'Wachtwoord moet minimaal 8 tekens bevatten',
@@ -2318,8 +2449,10 @@ class AppLocalizations {
         'export_failed': 'Exporteren mislukt',
         'import_failed': 'Importeren mislukt',
         'accent_color': 'Accentkleur',
-        'file_picker_unavailable': 'Bestandskiezer niet beschikbaar. Installeer zenity of kdialog.',
-        'vault_version_unsupported': 'Deze kluis is gemaakt met een nieuwere versie. Update de app.',
+        'file_picker_unavailable':
+            'Bestandskiezer niet beschikbaar. Installeer zenity of kdialog.',
+        'vault_version_unsupported':
+            'Deze kluis is gemaakt met een nieuwere versie. Update de app.',
         'file_permission_denied': 'Bestandstoestemming geweigerd',
         'file_not_found': 'Bestand niet gevonden',
         'invalid_file_format': 'Ongeldig bestandsformaat',
@@ -2380,11 +2513,13 @@ class AppLocalizations {
         'biometric_failed': 'Biometrische verificatie mislukt',
         'new_master_password': 'Nieuw hoofdwachtwoord',
         'password_mismatch': 'Wachtwoorden komen niet overeen',
-        'new_password_same_as_old': 'Nieuw wachtwoord mag niet hetzelfde zijn als het oude',
+        'new_password_same_as_old':
+            'Nieuw wachtwoord mag niet hetzelfde zijn als het oude',
         'password_changed': 'Hoofdwachtwoord succesvol gewijzigd',
         'file_too_large': 'Bestand te groot (maximaal 50 MB)',
         'developer': 'Ontwikkelaar',
-        'biometric_first_time': 'Biometrische verificatie geslaagd. Voer eenmalig uw hoofdwachtwoord in, toekomstige aanmeldingen worden automatisch gedaan.',
+        'biometric_first_time':
+            'Biometrische verificatie geslaagd. Voer eenmalig uw hoofdwachtwoord in, toekomstige aanmeldingen worden automatisch gedaan.',
         'code_copied': 'Code gekopieerd · 30s',
         'selected': 'geselecteerd',
         'import_csv': 'CSV importeren',
@@ -2392,10 +2527,13 @@ class AppLocalizations {
         'csv_format_unsupported': 'Niet-ondersteund CSV-formaat',
         'edit_entry': 'Vermelding bewerken',
         'disclaimer_title': 'Aansprakelijkheidsbeperking',
-        'disclaimer_text': 'Deze software wordt "zoals het is" aangeboden, zonder enige uitdrukkelijke of impliciete garantie.\n\nAl uw gegevens worden alleen op uw apparaat opgeslagen. Uw hoofdwachtwoord wordt nooit opgeslagen, verzonden of kan worden hersteld.\n\nAls u uw hoofdwachtwoord verliest, is toegang tot uw gegevens niet mogelijk. Er is geen resetmechanisme, herstelsleutel of achterdeur.\n\nDe ontwikkelaar(s) zijn niet aansprakelijk voor verlies van wachtwoorden, gegevens, toegang of enige directe of indirecte schade door het gebruik van deze software.\n\nHet wordt sterk aanbevolen om regelmatig back-ups te maken van uw kluis (.pgvault).',
+        'disclaimer_text':
+            'Deze software wordt "zoals het is" aangeboden, zonder enige uitdrukkelijke of impliciete garantie.\n\nAl uw gegevens worden alleen op uw apparaat opgeslagen. Uw hoofdwachtwoord wordt nooit opgeslagen, verzonden of kan worden hersteld.\n\nAls u uw hoofdwachtwoord verliest, is toegang tot uw gegevens niet mogelijk. Er is geen resetmechanisme, herstelsleutel of achterdeur.\n\nDe ontwikkelaar(s) zijn niet aansprakelijk voor verlies van wachtwoorden, gegevens, toegang of enige directe of indirecte schade door het gebruik van deze software.\n\nHet wordt sterk aanbevolen om regelmatig back-ups te maken van uw kluis (.pgvault).',
         'disclaimer_accept': 'Ik heb gelezen, begrepen en accepteer',
-        'disclaimer_must_accept': 'U moet de aansprakelijkheidsbeperking accepteren om door te gaan',
-        'master_password_unrecoverable': 'Dit wachtwoord kan niet worden hersteld. Noteer het op een veilige plaats en maak regelmatig back-ups.',
+        'disclaimer_must_accept':
+            'U moet de aansprakelijkheidsbeperking accepteren om door te gaan',
+        'master_password_unrecoverable':
+            'Dit wachtwoord kan niet worden hersteld. Noteer het op een veilige plaats en maak regelmatig back-ups.',
       };
     } else {
       // Default to English
@@ -2450,6 +2588,8 @@ class AppLocalizations {
         'no_notes': 'No notes found',
         'search_placeholder': 'Search passwords or notes...',
         'categories': 'Categories',
+        'smart_collections': 'Smart Collections',
+        'favorites': 'Favorites',
         'all': 'All',
         'work': 'Work',
         'personal': 'Personal',
@@ -2475,14 +2615,18 @@ class AppLocalizations {
         'password_deleted': 'Password deleted',
         'note_deleted': 'Note deleted',
         'biometric_not_available': 'Biometric authentication not available',
-        'biometric_not_enrolled': 'Biometric authentication not enabled on your device',
+        'biometric_not_enrolled':
+            'Biometric authentication not enabled on your device',
         'biometric_not_recognized': 'Biometric authentication not recognized',
         'biometric_cancelled': 'Biometric authentication cancelled',
         'biometric_locked_out': 'Biometric authentication temporarily disabled',
         'session_timeout': 'Session timeout',
-        'session_timeout_message': 'Your session has timed out for security reasons. Please log in again.',
+        'session_timeout_message':
+            'Your session has timed out for security reasons. Please log in again.',
         'vault_locked': 'Vault locked',
-        'vault_locked_message': 'Vault has been locked for security reasons. Please log in again with your master password.',
+        'lock_vault': 'Lock Vault',
+        'vault_locked_message':
+            'Vault has been locked for security reasons. Please log in again with your master password.',
         'invalid_master_password': 'Invalid master password',
         'passwords_do_not_match': 'Passwords do not match',
         'password_too_short': 'Password must be at least 8 characters',
@@ -2494,7 +2638,8 @@ class AppLocalizations {
         'accent_color': 'Accent Color',
         'export_failed': 'Failed to export vault',
         'import_failed': 'Failed to import vault',
-        'file_picker_unavailable': 'File picker unavailable. Please install zenity or kdialog.',
+        'file_picker_unavailable':
+            'File picker unavailable. Please install zenity or kdialog.',
         'file_permission_denied': 'File permission denied',
         'file_not_found': 'File not found',
         'invalid_file_format': 'Invalid file format',
@@ -2532,7 +2677,8 @@ class AppLocalizations {
         'attempts_remaining': 'attempts remaining',
         'seconds': 'seconds',
         'something_went_wrong': 'Something went wrong. Please try again.',
-        'vault_version_unsupported': 'This vault was created with a newer version of the app. Please update the app.',
+        'vault_version_unsupported':
+            'This vault was created with a newer version of the app. Please update the app.',
         'selected': 'selected',
         'import_csv': 'Import CSV',
         'import_csv_desc': 'Bitwarden, Chrome or 1Password CSV',
@@ -2541,11 +2687,13 @@ class AppLocalizations {
         'biometric_failed': 'Biometric authentication failed',
         'new_master_password': 'New Master Password',
         'password_mismatch': 'Passwords do not match',
-        'new_password_same_as_old': 'New password cannot be the same as old password',
+        'new_password_same_as_old':
+            'New password cannot be the same as old password',
         'password_changed': 'Master password changed successfully',
         'file_too_large': 'File too large (maximum 50 MB)',
         'developer': 'Developer',
-        'biometric_first_time': 'Biometric verification successful. Enter your master password once, future logins will be automatic.',
+        'biometric_first_time':
+            'Biometric verification successful. Enter your master password once, future logins will be automatic.',
         'code_copied': 'Code copied · 30s',
         'report_bug': 'Report a Bug',
         'report_bug_desc': 'Open an issue on GitHub',
@@ -2561,10 +2709,12 @@ class AppLocalizations {
         'score_fair': 'Fair',
         'score_poor': 'Poor',
         'disclaimer_title': 'Disclaimer & Liability',
-        'disclaimer_text': 'This software is provided "as is" without any express or implied warranty.\n\nAll your data is stored only on your device. Your master password is never stored, transmitted, or recoverable by anyone — including the developer.\n\nIf you lose your master password, access to your data will not be possible. There is no reset mechanism, recovery key, or backdoor.\n\nThe developer(s) shall not be held liable for loss of passwords, data, access, or any direct or indirect damages arising from the use of this software.\n\nIt is strongly recommended to regularly back up your vault (.pgvault) file.',
+        'disclaimer_text':
+            'This software is provided "as is" without any express or implied warranty.\n\nAll your data is stored only on your device. Your master password is never stored, transmitted, or recoverable by anyone — including the developer.\n\nIf you lose your master password, access to your data will not be possible. There is no reset mechanism, recovery key, or backdoor.\n\nThe developer(s) shall not be held liable for loss of passwords, data, access, or any direct or indirect damages arising from the use of this software.\n\nIt is strongly recommended to regularly back up your vault (.pgvault) file.',
         'disclaimer_accept': 'I have read, understood, and accept',
         'disclaimer_must_accept': 'You must accept the disclaimer to continue',
-        'master_password_unrecoverable': 'This password cannot be recovered. Write it down in a safe place and back up regularly.',
+        'master_password_unrecoverable':
+            'This password cannot be recovered. Write it down in a safe place and back up regularly.',
       };
     }
   }
@@ -2573,8 +2723,10 @@ class AppLocalizations {
   String get welcome => _localizedValues['welcome']!;
   String get masterPassword => _localizedValues['master_password']!;
   String get enterMasterPassword => _localizedValues['enter_master_password']!;
-  String get confirmMasterPassword => _localizedValues['confirm_master_password']!;
-  String get createMasterPassword => _localizedValues['create_master_password']!;
+  String get confirmMasterPassword =>
+      _localizedValues['confirm_master_password']!;
+  String get createMasterPassword =>
+      _localizedValues['create_master_password']!;
   String get unlockVault => _localizedValues['unlock_vault']!;
   String get createVault => _localizedValues['create_vault']!;
   String get vaultCreated => _localizedValues['vault_created']!;
@@ -2619,6 +2771,9 @@ class AppLocalizations {
   String get noNotes => _localizedValues['no_notes']!;
   String get searchPlaceholder => _localizedValues['search_placeholder']!;
   String get categories => _localizedValues['categories']!;
+  String get smartCollections =>
+      _localizedValues['smart_collections'] ?? 'Smart Collections';
+  String get favorites => _localizedValues['favorites'] ?? 'Favorites';
   String get all => _localizedValues['all']!;
   String get work => _localizedValues['work']!;
   String get personal => _localizedValues['personal']!;
@@ -2643,16 +2798,22 @@ class AppLocalizations {
   String get noteUpdated => _localizedValues['note_updated']!;
   String get passwordDeleted => _localizedValues['password_deleted']!;
   String get noteDeleted => _localizedValues['note_deleted']!;
-  String get biometricNotAvailable => _localizedValues['biometric_not_available']!;
-  String get biometricNotEnrolled => _localizedValues['biometric_not_enrolled']!;
-  String get biometricNotRecognized => _localizedValues['biometric_not_recognized']!;
+  String get biometricNotAvailable =>
+      _localizedValues['biometric_not_available']!;
+  String get biometricNotEnrolled =>
+      _localizedValues['biometric_not_enrolled']!;
+  String get biometricNotRecognized =>
+      _localizedValues['biometric_not_recognized']!;
   String get biometricCancelled => _localizedValues['biometric_cancelled']!;
   String get biometricLockedOut => _localizedValues['biometric_locked_out']!;
   String get sessionTimeout => _localizedValues['session_timeout']!;
-  String get sessionTimeoutMessage => _localizedValues['session_timeout_message']!;
+  String get sessionTimeoutMessage =>
+      _localizedValues['session_timeout_message']!;
   String get vaultLocked => _localizedValues['vault_locked']!;
+  String get lockVault => _localizedValues['lock_vault'] ?? 'Lock Vault';
   String get vaultLockedMessage => _localizedValues['vault_locked_message']!;
-  String get invalidMasterPassword => _localizedValues['invalid_master_password']!;
+  String get invalidMasterPassword =>
+      _localizedValues['invalid_master_password']!;
   String get passwordsDoNotMatch => _localizedValues['passwords_do_not_match']!;
   String get passwordTooShort => _localizedValues['password_too_short']!;
   String get passwordTooWeak => _localizedValues['password_too_weak']!;
@@ -2663,9 +2824,12 @@ class AppLocalizations {
   String get exportFailed => _localizedValues['export_failed']!;
   String get importFailed => _localizedValues['import_failed']!;
   String get accentColor => _localizedValues['accent_color']!;
-  String get filePickerUnavailable => _localizedValues['file_picker_unavailable']!;
-  String get vaultVersionUnsupported => _localizedValues['vault_version_unsupported']!;
-  String get filePermissionDenied => _localizedValues['file_permission_denied']!;
+  String get filePickerUnavailable =>
+      _localizedValues['file_picker_unavailable']!;
+  String get vaultVersionUnsupported =>
+      _localizedValues['vault_version_unsupported']!;
+  String get filePermissionDenied =>
+      _localizedValues['file_permission_denied']!;
   String get fileNotFound => _localizedValues['file_not_found']!;
   String get invalidFileFormat => _localizedValues['invalid_file_format']!;
   String get backupVault => _localizedValues['backup_vault']!;
@@ -2693,20 +2857,24 @@ class AppLocalizations {
   // Additional getters used by screens
   // ignore: non_constant_identifier_names
   String get app_name => appName;
-  String get changeMasterPassword => _localizedValues['change_master_password'] ?? 'Change Master Password';
+  String get changeMasterPassword =>
+      _localizedValues['change_master_password'] ?? 'Change Master Password';
   String get change_master_password => changeMasterPassword;
   String get note => _localizedValues['note'] ?? 'Note';
   String get createdAt => _localizedValues['created_at'] ?? 'Created At';
   String get updatedAt => _localizedValues['updated_at'] ?? 'Updated At';
   String get autoLock => _localizedValues['auto_lock'] ?? 'Auto Lock';
   String get backup_vault => _localizedValues['backup_vault'] ?? 'Backup Vault';
-  String get restore_vault => _localizedValues['restore_vault'] ?? 'Restore Vault';
+  String get restore_vault =>
+      _localizedValues['restore_vault'] ?? 'Restore Vault';
   String get quick_tools => _localizedValues['quick_tools'] ?? 'Quick Tools';
-  String get quick_actions => _localizedValues['quick_actions'] ?? 'Quick Actions';
+  String get quick_actions =>
+      _localizedValues['quick_actions'] ?? 'Quick Actions';
   String get vault_backup => _localizedValues['vault_backup'] ?? 'Vault Backup';
   String get vault_health => _localizedValues['vault_health'] ?? 'Vault Health';
   String get vaultHealth => _localizedValues['vault_health'] ?? 'Vault Health';
-  String get security_features => _localizedValues['security_features'] ?? 'Security Features';
+  String get security_features =>
+      _localizedValues['security_features'] ?? 'Security Features';
   String get clear => _localizedValues['clear'] ?? 'Clear';
   String get minutes => _localizedValues['minutes'] ?? 'minutes';
   String get dark => _localizedValues['dark_theme'] ?? 'Dark';
@@ -2723,9 +2891,14 @@ class AppLocalizations {
   String get usePassword => _localizedValues['use_password'] ?? 'Use Password';
   // noData already defined above
   // Backup/Import getters
-  String get exportVaultDesc => _localizedValues['export_vault_desc'] ?? 'Export encrypted .pgvault backup';
-  String get importVaultDesc => _localizedValues['import_vault_desc'] ?? 'Import from .pgvault file';
-  String get importModeQuestion => _localizedValues['import_mode_question'] ?? 'How would you like to import?';
+  String get exportVaultDesc =>
+      _localizedValues['export_vault_desc'] ??
+      'Export encrypted .pgvault backup';
+  String get importVaultDesc =>
+      _localizedValues['import_vault_desc'] ?? 'Import from .pgvault file';
+  String get importModeQuestion =>
+      _localizedValues['import_mode_question'] ??
+      'How would you like to import?';
   String get merge => _localizedValues['merge'] ?? 'Merge';
   String get replace => _localizedValues['replace'] ?? 'Replace';
   String get imported => _localizedValues['imported'] ?? 'imported';
@@ -2733,80 +2906,135 @@ class AppLocalizations {
   String get entries => _localizedValues['entries'] ?? 'Entries';
 
   // Security / brute-force protection
-  String get tooManyAttempts => _localizedValues['too_many_attempts'] ?? 'Too many failed attempts. Try again in';
-  String get attemptsRemaining => _localizedValues['attempts_remaining'] ?? 'attempts remaining';
+  String get tooManyAttempts =>
+      _localizedValues['too_many_attempts'] ??
+      'Too many failed attempts. Try again in';
+  String get attemptsRemaining =>
+      _localizedValues['attempts_remaining'] ?? 'attempts remaining';
   String get seconds => _localizedValues['seconds'] ?? 'seconds';
-  String get somethingWentWrong => _localizedValues['something_went_wrong'] ?? 'Something went wrong. Please try again.';
-  String get biometricFailed => _localizedValues['biometric_failed'] ?? 'Biometric authentication failed';
-  String get newMasterPassword => _localizedValues['new_master_password'] ?? 'New Master Password';
-  String get passwordMismatch => _localizedValues['password_mismatch'] ?? 'Passwords do not match';
-  String get newPasswordSameAsOld => _localizedValues['new_password_same_as_old'] ?? 'New password cannot be the same as old password';
-  String get passwordChanged => _localizedValues['password_changed'] ?? 'Master password changed successfully';
-  String get fileTooLarge => _localizedValues['file_too_large'] ?? 'File too large (maximum 50 MB)';
+  String get somethingWentWrong =>
+      _localizedValues['something_went_wrong'] ??
+      'Something went wrong. Please try again.';
+  String get biometricFailed =>
+      _localizedValues['biometric_failed'] ?? 'Biometric authentication failed';
+  String get newMasterPassword =>
+      _localizedValues['new_master_password'] ?? 'New Master Password';
+  String get passwordMismatch =>
+      _localizedValues['password_mismatch'] ?? 'Passwords do not match';
+  String get newPasswordSameAsOld =>
+      _localizedValues['new_password_same_as_old'] ??
+      'New password cannot be the same as old password';
+  String get passwordChanged =>
+      _localizedValues['password_changed'] ??
+      'Master password changed successfully';
+  String get fileTooLarge =>
+      _localizedValues['file_too_large'] ?? 'File too large (maximum 50 MB)';
   String get developer => _localizedValues['developer'] ?? 'Developer';
-  String get biometricFirstTime => _localizedValues['biometric_first_time'] ?? 'Biometric verification successful. Enter your master password once, future logins will be automatic.';
-  String get codeCopied => _localizedValues['code_copied'] ?? 'Code copied · 30s';
+  String get biometricFirstTime =>
+      _localizedValues['biometric_first_time'] ??
+      'Biometric verification successful. Enter your master password once, future logins will be automatic.';
+  String get codeCopied =>
+      _localizedValues['code_copied'] ?? 'Code copied · 30s';
   String get reportBug => _localizedValues['report_bug'] ?? 'Report a Bug';
-  String get reportBugDesc => _localizedValues['report_bug_desc'] ?? 'Open an issue on GitHub';
+  String get reportBugDesc =>
+      _localizedValues['report_bug_desc'] ?? 'Open an issue on GitHub';
   String get skip => _localizedValues['skip'] ?? 'Skip';
   String get next => _localizedValues['next'] ?? 'Next';
   String get getStarted => _localizedValues['get_started'] ?? 'Get Started';
-  String get onboardingTitle1 => _localizedValues['onboarding_title_1'] ?? 'Your Passwords, Safe & Encrypted';
-  String get onboardingDesc1 => _localizedValues['onboarding_desc_1'] ?? 'Protected with AES-256-GCM encryption and Argon2id key derivation. Only you can access your data.';
-  String get onboardingTitle2 => _localizedValues['onboarding_title_2'] ?? 'Never Forget Your Master Password';
-  String get onboardingDesc2 => _localizedValues['onboarding_desc_2'] ?? 'If you forget your master password, there is no way to recover your data. Write it down somewhere safe.';
-  String get onboardingTitle3 => _localizedValues['onboarding_title_3'] ?? 'Biometric Authentication';
-  String get onboardingDesc3 => _localizedValues['onboarding_desc_3'] ?? 'Use Face ID, fingerprint or PIN to unlock your vault quickly without typing your master password every time.';
-  String get onboardingTitle4 => _localizedValues['onboarding_title_4'] ?? 'Import & Backup';
-  String get onboardingDesc4 => _localizedValues['onboarding_desc_4'] ?? 'Import from Chrome, Bitwarden or 1Password. Back up your encrypted vault and restore it on any device.';
-  String get onboardingTitle5 => _localizedValues['onboarding_title_5'] ?? 'Zero Knowledge Security';
-  String get onboardingDesc5 => _localizedValues['onboarding_desc_5'] ?? 'Your data never leaves your device. No cloud sync, no servers, no accounts — complete privacy by design.';
+  String get onboardingTitle1 =>
+      _localizedValues['onboarding_title_1'] ??
+      'Your Passwords, Safe & Encrypted';
+  String get onboardingDesc1 =>
+      _localizedValues['onboarding_desc_1'] ??
+      'Protected with AES-256-GCM encryption and Argon2id key derivation. Only you can access your data.';
+  String get onboardingTitle2 =>
+      _localizedValues['onboarding_title_2'] ??
+      'Never Forget Your Master Password';
+  String get onboardingDesc2 =>
+      _localizedValues['onboarding_desc_2'] ??
+      'If you forget your master password, there is no way to recover your data. Write it down somewhere safe.';
+  String get onboardingTitle3 =>
+      _localizedValues['onboarding_title_3'] ?? 'Biometric Authentication';
+  String get onboardingDesc3 =>
+      _localizedValues['onboarding_desc_3'] ??
+      'Use Face ID, fingerprint or PIN to unlock your vault quickly without typing your master password every time.';
+  String get onboardingTitle4 =>
+      _localizedValues['onboarding_title_4'] ?? 'Import & Backup';
+  String get onboardingDesc4 =>
+      _localizedValues['onboarding_desc_4'] ??
+      'Import from Chrome, Bitwarden or 1Password. Back up your encrypted vault and restore it on any device.';
+  String get onboardingTitle5 =>
+      _localizedValues['onboarding_title_5'] ?? 'Zero Knowledge Security';
+  String get onboardingDesc5 =>
+      _localizedValues['onboarding_desc_5'] ??
+      'Your data never leaves your device. No cloud sync, no servers, no accounts — complete privacy by design.';
 
   List<String> get categoryList => [
-    _localizedValues['personal'] ?? 'Personal',
-    _localizedValues['work'] ?? 'Work',
-    _localizedValues['banking'] ?? 'Banking',
-    _localizedValues['social'] ?? 'Social',
-    _localizedValues['shopping'] ?? 'Shopping',
-    _localizedValues['entertainment'] ?? 'Entertainment',
-    _localizedValues['security'] ?? 'Security',
-    _localizedValues['other'] ?? 'Other',
-  ];
+        _localizedValues['personal'] ?? 'Personal',
+        _localizedValues['work'] ?? 'Work',
+        _localizedValues['banking'] ?? 'Banking',
+        _localizedValues['social'] ?? 'Social',
+        _localizedValues['shopping'] ?? 'Shopping',
+        _localizedValues['entertainment'] ?? 'Entertainment',
+        _localizedValues['security'] ?? 'Security',
+        _localizedValues['other'] ?? 'Other',
+      ];
 
   String get select => _localizedValues['select'] ?? 'Select';
-  String get copyPassword => _localizedValues['copy_password'] ?? 'Copy Password';
-  String get copyUsername => _localizedValues['copy_username'] ?? 'Copy Username';
+  String get copyPassword =>
+      _localizedValues['copy_password'] ?? 'Copy Password';
+  String get copyUsername =>
+      _localizedValues['copy_username'] ?? 'Copy Username';
   String get copyWebsite => _localizedValues['copy_website'] ?? 'Copy Website';
   String get copyContent => _localizedValues['copy_content'] ?? 'Copy Content';
   String get selected => _localizedValues['selected']!;
   String get importCsv => _localizedValues['import_csv']!;
   String get importCsvDesc => _localizedValues['import_csv_desc']!;
-  String get csvFormatUnsupported => _localizedValues['csv_format_unsupported']!;
+  String get csvFormatUnsupported =>
+      _localizedValues['csv_format_unsupported']!;
   String get editEntry => _localizedValues['edit_entry']!;
 
   // Password Health Screen
-  String get securityScore => _localizedValues['security_score'] ?? 'Security Score';
-  String get passwordHealth => _localizedValues['password_health'] ?? 'Password Health';
-  String get oldPasswords => _localizedValues['old_passwords'] ?? 'Old Passwords';
-  String get duplicatePasswords => _localizedValues['duplicate_passwords'] ?? 'Duplicate Passwords';
-  String get weakPasswords => _localizedValues['weak_passwords'] ?? 'Weak Passwords';
-  String get allPasswordsGood => _localizedValues['all_passwords_good'] ?? 'All passwords look great!';
-  String get notUpdated90 => _localizedValues['not_updated_90'] ?? 'Not updated in 90+ days';
-  String get samePasswordElsewhere => _localizedValues['same_password_elsewhere'] ?? 'Same password used elsewhere';
-  String get strengthTooLow => _localizedValues['strength_too_low'] ?? 'Strength too low — consider changing';
+  String get securityScore =>
+      _localizedValues['security_score'] ?? 'Security Score';
+  String get passwordHealth =>
+      _localizedValues['password_health'] ?? 'Password Health';
+  String get oldPasswords =>
+      _localizedValues['old_passwords'] ?? 'Old Passwords';
+  String get duplicatePasswords =>
+      _localizedValues['duplicate_passwords'] ?? 'Duplicate Passwords';
+  String get weakPasswords =>
+      _localizedValues['weak_passwords'] ?? 'Weak Passwords';
+  String get allPasswordsGood =>
+      _localizedValues['all_passwords_good'] ?? 'All passwords look great!';
+  String get notUpdated90 =>
+      _localizedValues['not_updated_90'] ?? 'Not updated in 90+ days';
+  String get samePasswordElsewhere =>
+      _localizedValues['same_password_elsewhere'] ??
+      'Same password used elsewhere';
+  String get strengthTooLow =>
+      _localizedValues['strength_too_low'] ??
+      'Strength too low — consider changing';
   String get scoreGood => _localizedValues['score_good'] ?? 'Good';
   String get scoreFair => _localizedValues['score_fair'] ?? 'Fair';
   String get scorePoor => _localizedValues['score_poor'] ?? 'Poor';
 
   // Disclaimer
-  String get disclaimerTitle => _localizedValues['disclaimer_title'] ?? 'Disclaimer & Liability';
-  String get disclaimerText => _localizedValues['disclaimer_text'] ?? 'This software is provided "as is" without any express or implied warranty.\n\nAll your data is stored only on your device. Your master password is never stored, transmitted, or recoverable.\n\nIf you lose your master password, access to your data will not be possible.\n\nThe developer(s) shall not be held liable for loss of passwords, data, access, or any damages arising from the use of this software.\n\nIt is strongly recommended to regularly back up your vault (.pgvault) file.';
-  String get disclaimerAccept => _localizedValues['disclaimer_accept'] ?? 'I have read, understood, and accept';
-  String get disclaimerMustAccept => _localizedValues['disclaimer_must_accept'] ?? 'You must accept the disclaimer to continue';
-  String get masterPasswordUnrecoverable => _localizedValues['master_password_unrecoverable'] ?? 'This password cannot be recovered. Write it down in a safe place and back up regularly.';
+  String get disclaimerTitle =>
+      _localizedValues['disclaimer_title'] ?? 'Disclaimer & Liability';
+  String get disclaimerText =>
+      _localizedValues['disclaimer_text'] ??
+      'This software is provided "as is" without any express or implied warranty.\n\nAll your data is stored only on your device. Your master password is never stored, transmitted, or recoverable.\n\nIf you lose your master password, access to your data will not be possible.\n\nThe developer(s) shall not be held liable for loss of passwords, data, access, or any damages arising from the use of this software.\n\nIt is strongly recommended to regularly back up your vault (.pgvault) file.';
+  String get disclaimerAccept =>
+      _localizedValues['disclaimer_accept'] ??
+      'I have read, understood, and accept';
+  String get disclaimerMustAccept =>
+      _localizedValues['disclaimer_must_accept'] ??
+      'You must accept the disclaimer to continue';
+  String get masterPasswordUnrecoverable =>
+      _localizedValues['master_password_unrecoverable'] ??
+      'This password cannot be recovered. Write it down in a safe place and back up regularly.';
 }
-
-
 
 class _AppLocalizationsDelegate
     extends LocalizationsDelegate<AppLocalizations> {
@@ -2814,7 +3042,21 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) {
-    return ['tr', 'en', 'de', 'fr', 'ar', 'es', 'it', 'pt', 'ru', 'ja', 'zh', 'ko', 'nl'].contains(locale.languageCode);
+    return [
+      'tr',
+      'en',
+      'de',
+      'fr',
+      'ar',
+      'es',
+      'it',
+      'pt',
+      'ru',
+      'ja',
+      'zh',
+      'ko',
+      'nl'
+    ].contains(locale.languageCode);
   }
 
   @override

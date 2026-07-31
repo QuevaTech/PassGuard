@@ -88,13 +88,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           return;
         }
 
-        final biometricAvailable = await _biometricService.isBiometricAvailable();
+        final biometricAvailable =
+            await _biometricService.isBiometricAvailable();
         final biometricEnrolled = await _biometricService.isBiometricEnrolled();
 
         if (!mounted) return;
 
-        final biometricPref = prefs.getBool('biometric_enabled') ?? true;
-        final biometricEnabled = biometricAvailable && biometricEnrolled && biometricPref;
+        // Biometric unlock is opt-in. A device merely supporting biometrics
+        // must never enable it for a vault without the user's consent.
+        final biometricPref = prefs.getBool('biometric_enabled') ?? false;
+        final biometricEnabled =
+            biometricAvailable && biometricEnrolled && biometricPref;
 
         if (!mounted) return;
 
@@ -114,7 +118,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       } else {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const LoginScreen(isCreating: true)),
+          MaterialPageRoute(
+              builder: (_) => const LoginScreen(isCreating: true)),
         );
       }
     } catch (e) {

@@ -13,12 +13,16 @@ class GlassCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? margin;
   final EdgeInsetsGeometry? padding;
+
   /// Explicit border-radius override. Falls back to [AppThemeExtension.cardRadius].
   final double? borderRadius;
+
   /// Explicit blur override. Falls back to [AppThemeExtension.cardBlur].
   final double? blur;
+
   /// Explicit background colour override.
   final Color? color;
+
   /// Optional left accent bar.
   final Color? leftAccentColor;
 
@@ -39,7 +43,7 @@ class GlassCard extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final effectiveBlur = blur ?? ext?.cardBlur ?? 10.0;
-    final effectiveRadius = borderRadius ?? ext?.cardRadius ?? 12.0;
+    final effectiveRadius = borderRadius ?? ext?.cardRadius ?? 28.0;
 
     final fillColor = color ??
         ext?.cardBackground ??
@@ -52,25 +56,52 @@ class GlassCard extends StatelessWidget {
             ? Colors.white.withValues(alpha: 0.12)
             : Colors.white.withValues(alpha: 0.80));
 
-    final border = leftAccentColor != null
-        ? Border(
-            left: BorderSide(color: leftAccentColor!, width: 4),
-            top: BorderSide(color: borderColor, width: 1),
-            right: BorderSide(color: borderColor, width: 1),
-            bottom: BorderSide(color: borderColor, width: 1),
-          )
-        : Border.all(color: borderColor, width: 1);
+    final shadowColor = isDark
+        ? Colors.black.withValues(alpha: ext?.isFlat == true ? 0.16 : 0.22)
+        : (ext?.primaryAccent ?? Theme.of(context).colorScheme.primary)
+            .withValues(alpha: 0.10);
+
+    // BoxDecoration cannot paint a rounded [Border] whose sides have
+    // different colours. Keep the outer border uniform and render the colour
+    // tag as a clipped inner strip instead, so tagged entries work on every
+    // platform without a paint-time assertion.
+    final border = Border.all(color: borderColor, width: 1);
+
+    final contentChild = leftAccentColor == null
+        ? child
+        : Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 4),
+                child: Padding(
+                  padding: padding ?? EdgeInsets.zero,
+                  child: child,
+                ),
+              ),
+              Positioned(
+                left: 0,
+                top: 0,
+                bottom: 0,
+                child: Container(width: 4, color: leftAccentColor),
+              ),
+            ],
+          );
 
     Widget content = Container(
-      padding: padding,
+      padding: leftAccentColor == null ? padding : null,
       decoration: BoxDecoration(
-        borderRadius: leftAccentColor == null
-            ? BorderRadius.circular(effectiveRadius)
-            : null,
+        borderRadius: BorderRadius.circular(effectiveRadius),
         color: fillColor,
         border: border,
+        boxShadow: [
+          BoxShadow(
+            color: shadowColor,
+            blurRadius: 22,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
-      child: child,
+      child: contentChild,
     );
 
     if (effectiveBlur > 0) {

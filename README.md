@@ -27,6 +27,36 @@ The answer is a private notebook — not a platform.
 
 ---
 
+## A quick look
+
+<p align="center">
+  <img src="docs/images/passguard-overview.png" width="30%" alt="PassGuard Vault password overview with fictional entries"/>
+  <img src="docs/images/passguard-filters.png" width="30%" alt="PassGuard Vault smart collections filter"/>
+  <img src="docs/images/passguard-locked.png" width="30%" alt="PassGuard Vault locked screen"/>
+</p>
+
+<p align="center">
+  <sub>Fictional demonstration data only — no real accounts, people, or credentials appear in these images.</sub>
+</p>
+
+- Keep frequent accounts close with a compact favourites view.
+- Find what needs attention through smart collections for weak, old, or reused passwords.
+- Lock the vault in one tap; unlocked-session key material is cleared when the vault locks.
+
+### Make it yours
+
+<p align="center">
+  <img src="docs/images/passguard-theme-light.png" width="30%" alt="PassGuard Vault light theme setting"/>
+  <img src="docs/images/passguard-theme-dark.png" width="30%" alt="PassGuard Vault dark theme setting"/>
+  <img src="docs/images/passguard-health.png" width="30%" alt="PassGuard Vault password health overview"/>
+</p>
+
+<p align="center">
+  <sub>Choose light or dark mode, select a visual style, and review passwords that should be refreshed.</sub>
+</p>
+
+---
+
 ## The Notebook Philosophy
 
 Think about a physical notebook. It doesn't require an account. It doesn't phone home. It doesn't get breached when a company's servers are compromised. It doesn't expire when you stop paying a subscription. When you lose it, only the person who physically holds it can read it — and even then, only if they can break the lock.

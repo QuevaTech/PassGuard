@@ -27,7 +27,8 @@ class ThemedFab extends StatelessWidget {
     final gradient = ext?.ctaGradient;
     final primary = ext?.primaryAccent ?? Theme.of(context).colorScheme.primary;
     final secondary = ext?.secondaryAccent ?? primary;
-    final glowColor = (ext?.ctaGlowColors.firstOrNull) ?? primary.withValues(alpha: 0.4);
+    final glowColor =
+        (ext?.ctaGlowColors.firstOrNull) ?? primary.withValues(alpha: 0.4);
 
     return Tooltip(
       message: tooltip ?? '',
@@ -36,15 +37,13 @@ class ThemedFab extends StatelessWidget {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOut,
-          width: 56,
-          height: 56,
+          width: 60,
+          height: 60,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: isFlat ? null : gradient,
             color: isFlat ? primary : null,
-            border: isFlat
-                ? Border.all(color: primary, width: 2)
-                : null,
+            border: isFlat ? Border.all(color: primary, width: 2) : null,
             boxShadow: [
               BoxShadow(
                 color: glowColor,
@@ -62,7 +61,7 @@ class ThemedFab extends StatelessWidget {
           ),
           child: Icon(
             icon,
-            size: 26,
+            size: 27,
             color: isFlat
                 ? (primary.computeLuminance() > 0.35
                     ? const Color(0xFF1b1f3b)

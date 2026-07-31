@@ -11,14 +11,14 @@ class VaultTheme {
 
   // Elevated surface — visibly distinct from gradient background
   static const _darkSurface = Color(0xFF252B4E);
-  static const _darkCard   = Color(0xFF2A3060);
+  static const _darkCard = Color(0xFF2A3060);
 
   static const _lightBg0 = Color(0xFFfff7e3);
   static const _lightBg1 = Color(0xFFf4ecdb);
   static const _lightBg2 = Color(0xFFeee6d8);
 
   static const _lightSurface = Color(0xFFFDF6E8);
-  static const _lightCard    = Colors.white;
+  static const _lightCard = Colors.white;
 
   static const _darkText1 = Color(0xFFf4ecdb);
   static const _darkText2 = Color(0xFFc9c4b8);
@@ -51,13 +51,15 @@ class VaultTheme {
     final onAccent = accent.computeLuminance() > 0.35 ? _darkBg1 : Colors.white;
 
     final ext = isDark
-        ? _darkExtension.copyWith(primaryAccent: accent,
+        ? _darkExtension.copyWith(
+            primaryAccent: accent,
             ctaGradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [accent, _ember],
             ))
-        : _lightExtension.copyWith(primaryAccent: accent,
+        : _lightExtension.copyWith(
+            primaryAccent: accent,
             ctaGradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -65,6 +67,7 @@ class VaultTheme {
             ));
 
     return ThemeData(
+      useMaterial3: true,
       brightness: brightness,
       primaryColor: _darkBg1,
       scaffoldBackgroundColor: Colors.transparent,
@@ -75,7 +78,8 @@ class VaultTheme {
         elevation: 0,
         scrolledUnderElevation: 0,
         iconTheme: IconThemeData(color: isDark ? _darkText1 : _lightText1),
-        actionsIconTheme: IconThemeData(color: isDark ? _darkText1 : _lightText1),
+        actionsIconTheme:
+            IconThemeData(color: isDark ? _darkText1 : _lightText1),
       ),
       textTheme: TextTheme(
         displayLarge: TextStyle(
@@ -127,7 +131,7 @@ class VaultTheme {
         color: isDark ? _darkCard : _lightCard,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(28),
           side: BorderSide(
             color: isDark
                 ? _gold.withValues(alpha: 0.18)
@@ -139,25 +143,26 @@ class VaultTheme {
         filled: true,
         fillColor: isDark ? _darkCard : _lightCard,
         border: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(12)),
+          borderRadius: const BorderRadius.all(Radius.circular(28)),
           borderSide: BorderSide(color: accent.withValues(alpha: 0.3)),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(12)),
+          borderRadius: const BorderRadius.all(Radius.circular(28)),
           borderSide: BorderSide(color: accent.withValues(alpha: 0.20)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(12)),
+          borderRadius: const BorderRadius.all(Radius.circular(28)),
           borderSide: BorderSide(color: accent, width: 2),
         ),
         labelStyle: TextStyle(color: isDark ? _darkText2 : _lightText2),
-        hintStyle:  TextStyle(color: isDark ? _darkText3 : _lightText3),
+        hintStyle: TextStyle(color: isDark ? _darkText3 : _lightText3),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: accent,
           foregroundColor: onAccent,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 22),
           textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
           elevation: 0,
@@ -167,9 +172,23 @@ class VaultTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: accent,
           side: BorderSide(color: accent),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: const StadiumBorder(),
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 22),
         ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(shape: const StadiumBorder()),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: isDark ? _darkCard : _lightCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: isDark ? _darkSurface : _lightSurface,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        showDragHandle: true,
       ),
       iconTheme: IconThemeData(color: isDark ? _darkText1 : _lightText1),
       extensions: [ext],
@@ -185,7 +204,7 @@ class VaultTheme {
     cardBackground: Color(0x8C23284B),
     cardBorderColor: Color(0x29D4B038),
     cardBlur: 18.0,
-    cardRadius: 14.0,
+    cardRadius: 28.0,
     primaryAccent: _gold,
     secondaryAccent: _ember,
     ctaGradient: LinearGradient(
@@ -214,7 +233,7 @@ class VaultTheme {
     cardBackground: Color(0xA6FFFFFF),
     cardBorderColor: Color(0x29D4B038),
     cardBlur: 18.0,
-    cardRadius: 14.0,
+    cardRadius: 28.0,
     primaryAccent: _gold,
     secondaryAccent: _ember,
     ctaGradient: LinearGradient(

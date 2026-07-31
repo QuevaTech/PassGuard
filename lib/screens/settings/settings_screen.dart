@@ -16,9 +16,14 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../utils/app_localizations.dart';
 import '../../utils/vault_exceptions.dart';
 import '../../providers/theme_provider.dart'
-    show themeProvider, appThemeStyleProvider, accentColorProvider, accentColors;
+    show
+        themeProvider,
+        appThemeStyleProvider,
+        accentColorProvider,
+        accentColors;
 import '../../theme/app_theme_style.dart';
 import '../../widgets/app_scaffold.dart';
+import '../../widgets/glass_card.dart';
 import '../../services/pin_service.dart';
 import '../auth/pin_screen.dart';
 
@@ -52,7 +57,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       final available = await _biometricService.isBiometricAvailable();
       final enrolled = await _biometricService.isBiometricEnrolled();
       final prefs = await SharedPreferences.getInstance();
-      final saved = prefs.getBool('biometric_enabled') ?? (available && enrolled);
+      final saved = prefs.getBool('biometric_enabled') ?? false;
       final pinEnabled = await PinService.isPinEnabled();
       final packageInfo = await PackageInfo.fromPlatform();
       if (mounted) {
@@ -132,7 +137,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       setState(() => _isExporting = false);
 
       // Desktop: Save As dialog; Mobile: share sheet
-      final isDesktop = Platform.isMacOS || Platform.isWindows || Platform.isLinux;
+      final isDesktop =
+          Platform.isMacOS || Platform.isWindows || Platform.isLinux;
       bool exported = false;
       final fileName = backupPath.split(Platform.pathSeparator).last;
       if (isDesktop) {
@@ -203,7 +209,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       // The user's chosen copy (or share) is the real export — this temp file
       // would otherwise accumulate in AppData/.passguard on every export.
       if (backupPath != null) {
-        try { await File(backupPath).delete(); } catch (_) {}
+        try {
+          await File(backupPath).delete();
+        } catch (_) {}
       }
     }
   }
@@ -306,7 +314,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       }
     } finally {
       // Clean up temp file if one was created for the Android content:// case
-      try { await tempFile?.delete(); } catch (_) {}
+      try {
+        await tempFile?.delete();
+      } catch (_) {}
     }
   }
 
@@ -331,14 +341,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       final bytes = pickedFile.bytes;
       if (bytes == null) return;
       final tmpDir = await getTemporaryDirectory();
-      tempFile = File('${tmpDir.path}/pg_csv_${DateTime.now().millisecondsSinceEpoch}.csv');
+      tempFile = File(
+          '${tmpDir.path}/pg_csv_${DateTime.now().millisecondsSinceEpoch}.csv');
       await tempFile.writeAsBytes(bytes);
       filePath = tempFile.path;
     }
 
     try {
       setState(() => _isImporting = true);
-      final importResult = await VaultService.importCsv(csvPath: filePath, rawKey: rawKey);
+      final importResult =
+          await VaultService.importCsv(csvPath: filePath, rawKey: rawKey);
       setState(() => _isImporting = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -365,11 +377,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         );
       }
     } finally {
-      try { await tempFile?.delete(); } catch (_) {}
+      try {
+        await tempFile?.delete();
+      } catch (_) {}
     }
   }
 
-  Future<ImportMode?> _showImportModeDialog(Map<String, dynamic> manifest) async {
+  Future<ImportMode?> _showImportModeDialog(
+      Map<String, dynamic> manifest) async {
     final localizations = AppLocalizations.of(context);
     final entryCount = manifest['entry_count'] ?? '?';
     final createdAt = manifest['created_at'] ?? '?';
@@ -404,7 +419,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ElevatedButton(
             onPressed: () => Navigator.pop(context, ImportMode.replace),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: Text(localizations.replace, style: const TextStyle(color: Colors.white)),
+            child: Text(localizations.replace,
+                style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -429,136 +445,149 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final newController = TextEditingController();
     final confirmController = TextEditingController();
     try {
-    bool obscureCurrent = true;
-    bool obscureNew = true;
-    bool obscureConfirm = true;
-    String? errorText;
+      bool obscureCurrent = true;
+      bool obscureNew = true;
+      bool obscureConfirm = true;
+      String? errorText;
 
-    final confirmed = await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: Text(localizations.changeMasterPassword),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: currentController,
-                  obscureText: obscureCurrent,
-                  decoration: InputDecoration(
-                    labelText: localizations.masterPassword,
-                    prefixIcon: const Icon(Icons.lock),
-                    suffixIcon: IconButton(
-                      icon: Icon(obscureCurrent ? Icons.visibility : Icons.visibility_off),
-                      onPressed: () => setDialogState(() => obscureCurrent = !obscureCurrent),
+      final confirmed = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) => StatefulBuilder(
+          builder: (context, setDialogState) => AlertDialog(
+            title: Text(localizations.changeMasterPassword),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: currentController,
+                    obscureText: obscureCurrent,
+                    decoration: InputDecoration(
+                      labelText: localizations.masterPassword,
+                      prefixIcon: const Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                        icon: Icon(obscureCurrent
+                            ? Icons.visibility
+                            : Icons.visibility_off),
+                        onPressed: () => setDialogState(
+                            () => obscureCurrent = !obscureCurrent),
+                      ),
+                      border: const OutlineInputBorder(),
                     ),
-                    border: const OutlineInputBorder(),
                   ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: newController,
-                  obscureText: obscureNew,
-                  decoration: InputDecoration(
-                    labelText: localizations.newMasterPassword,
-                    prefixIcon: const Icon(Icons.vpn_key),
-                    suffixIcon: IconButton(
-                      icon: Icon(obscureNew ? Icons.visibility : Icons.visibility_off),
-                      onPressed: () => setDialogState(() => obscureNew = !obscureNew),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: newController,
+                    obscureText: obscureNew,
+                    decoration: InputDecoration(
+                      labelText: localizations.newMasterPassword,
+                      prefixIcon: const Icon(Icons.vpn_key),
+                      suffixIcon: IconButton(
+                        icon: Icon(obscureNew
+                            ? Icons.visibility
+                            : Icons.visibility_off),
+                        onPressed: () =>
+                            setDialogState(() => obscureNew = !obscureNew),
+                      ),
+                      border: const OutlineInputBorder(),
                     ),
-                    border: const OutlineInputBorder(),
                   ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: confirmController,
-                  obscureText: obscureConfirm,
-                  decoration: InputDecoration(
-                    labelText: localizations.confirmMasterPassword,
-                    prefixIcon: const Icon(Icons.vpn_key),
-                    suffixIcon: IconButton(
-                      icon: Icon(obscureConfirm ? Icons.visibility : Icons.visibility_off),
-                      onPressed: () => setDialogState(() => obscureConfirm = !obscureConfirm),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: confirmController,
+                    obscureText: obscureConfirm,
+                    decoration: InputDecoration(
+                      labelText: localizations.confirmMasterPassword,
+                      prefixIcon: const Icon(Icons.vpn_key),
+                      suffixIcon: IconButton(
+                        icon: Icon(obscureConfirm
+                            ? Icons.visibility
+                            : Icons.visibility_off),
+                        onPressed: () => setDialogState(
+                            () => obscureConfirm = !obscureConfirm),
+                      ),
+                      border: const OutlineInputBorder(),
                     ),
-                    border: const OutlineInputBorder(),
                   ),
-                ),
-                if (errorText != null) ...[
-                  const SizedBox(height: 12),
-                  Text(
-                    errorText!,
-                    style: const TextStyle(color: Colors.red, fontSize: 13),
-                  ),
+                  if (errorText != null) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      errorText!,
+                      style: const TextStyle(color: Colors.red, fontSize: 13),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, false),
+                child: Text(localizations.cancel),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  if (currentController.text.isEmpty ||
+                      newController.text.isEmpty ||
+                      confirmController.text.isEmpty) {
+                    setDialogState(
+                        () => errorText = localizations.enterMasterPassword);
+                    return;
+                  }
+                  if (newController.text.length < 8) {
+                    setDialogState(
+                        () => errorText = localizations.passwordTooShort);
+                    return;
+                  }
+                  if (newController.text != confirmController.text) {
+                    setDialogState(
+                        () => errorText = localizations.passwordMismatch);
+                    return;
+                  }
+                  if (newController.text == currentController.text) {
+                    setDialogState(
+                        () => errorText = localizations.newPasswordSameAsOld);
+                    return;
+                  }
+                  Navigator.pop(dialogContext, true);
+                },
+                child: Text(localizations.save),
+              ),
+            ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, false),
-              child: Text(localizations.cancel),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (currentController.text.isEmpty ||
-                    newController.text.isEmpty ||
-                    confirmController.text.isEmpty) {
-                  setDialogState(() => errorText = localizations.enterMasterPassword);
-                  return;
-                }
-                if (newController.text.length < 8) {
-                  setDialogState(() => errorText = localizations.passwordTooShort);
-                  return;
-                }
-                if (newController.text != confirmController.text) {
-                  setDialogState(() => errorText = localizations.passwordMismatch);
-                  return;
-                }
-                if (newController.text == currentController.text) {
-                  setDialogState(() => errorText = localizations.newPasswordSameAsOld);
-                  return;
-                }
-                Navigator.pop(dialogContext, true);
-              },
-              child: Text(localizations.save),
-            ),
-          ],
         ),
-      ),
-    );
-
-    if (confirmed != true) return;
-
-    try {
-      setState(() => _isExporting = true); // reuse loading state
-
-      await VaultService.changeMasterPassword(
-        currentPassword: currentController.text,
-        newPassword: newController.text,
       );
 
-      if (mounted) {
-        setState(() => _isExporting = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(localizations.passwordChanged),
-            backgroundColor: Colors.green,
-          ),
+      if (confirmed != true) return;
+
+      try {
+        setState(() => _isExporting = true); // reuse loading state
+
+        await VaultService.changeMasterPassword(
+          currentPassword: currentController.text,
+          newPassword: newController.text,
         );
+
+        if (mounted) {
+          setState(() => _isExporting = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(localizations.passwordChanged),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() => _isExporting = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(localizations.somethingWentWrong),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _isExporting = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(localizations.somethingWentWrong),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
     } finally {
       currentController.dispose();
       newController.dispose();
@@ -634,10 +663,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildStatRow(AppLocalizations.of(context).entries, stats['total_entries'].toString()),
-                _buildStatRow(AppLocalizations.of(context).passwords, stats['password_count'].toString()),
-                _buildStatRow(AppLocalizations.of(context).notes, stats['note_count'].toString()),
-                _buildStatRow(AppLocalizations.of(context).categories, stats['categories'].toString()),
+                _buildStatRow(AppLocalizations.of(context).entries,
+                    stats['total_entries'].toString()),
+                _buildStatRow(AppLocalizations.of(context).passwords,
+                    stats['password_count'].toString()),
+                _buildStatRow(AppLocalizations.of(context).notes,
+                    stats['note_count'].toString()),
+                _buildStatRow(AppLocalizations.of(context).categories,
+                    stats['categories'].toString()),
                 const SizedBox(height: 16),
                 Text(
                   '${AppLocalizations.of(context).categories}:',
@@ -721,6 +754,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   onChanged: (value) async {
                     final prefs = await SharedPreferences.getInstance();
                     await prefs.setBool('biometric_enabled', value);
+                    SessionService.setBiometricEnabled(value);
                     if (mounted) {
                       setState(() {
                         _biometricEnabled = value;
@@ -745,7 +779,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 color: _pinEnabled ? Colors.blue : Colors.grey,
               ),
               title: const Text('PIN Lock'),
-              subtitle: Text(_pinEnabled ? 'PIN is enabled' : 'Quick unlock with a 4-digit PIN'),
+              subtitle: Text(_pinEnabled
+                  ? 'PIN is enabled'
+                  : 'Quick unlock with a 4-digit PIN'),
               trailing: _pinEnabled
                   ? IconButton(
                       icon: const Icon(Icons.delete_outline, color: Colors.red),
@@ -795,9 +831,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   setState(() {
                     _autoLockEnabled = value;
                     if (value) {
-                      SessionService.initialize(timeout: Duration(minutes: _autoLockMinutes));
+                      SessionService.initialize(
+                          timeout: Duration(minutes: _autoLockMinutes));
                     } else {
-                      SessionService.initialize(timeout: Duration(hours: 1));
+                      SessionService.initialize(
+                          timeout: const Duration(hours: 1));
                     }
                   });
                 },
@@ -809,33 +847,68 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           // Theme
           _buildSectionHeader(localizations.theme),
           const SizedBox(height: 8),
-          Card(
+          GlassCard(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.all(18),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(localizations.theme, style: Theme.of(context).textTheme.bodyMedium),
-                  const SizedBox(height: 8),
-                  SegmentedButton<ThemeMode>(
-                    segments: [
-                      ButtonSegment(value: ThemeMode.light, label: Text(localizations.lightTheme), icon: const Icon(Icons.light_mode)),
-                      ButtonSegment(value: ThemeMode.system, label: Text(localizations.systemTheme), icon: const Icon(Icons.brightness_auto)),
-                      ButtonSegment(value: ThemeMode.dark, label: Text(localizations.darkTheme), icon: const Icon(Icons.dark_mode)),
+                  Row(
+                    children: [
+                      Container(
+                        width: 42,
+                        height: 42,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withValues(alpha: 0.14),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.palette_outlined,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        localizations.theme,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
                     ],
-                    selected: {ref.watch(themeProvider)},
-                    onSelectionChanged: (modes) => ref.read(themeProvider.notifier).setMode(modes.first),
                   ),
                   const SizedBox(height: 16),
-                  Text(localizations.accentColor, style: Theme.of(context).textTheme.bodyMedium),
+                  _ThemeModePicker(
+                    selected: ref.watch(themeProvider),
+                    onSelected: (mode) =>
+                        ref.read(themeProvider.notifier).setMode(mode),
+                  ),
+                  const SizedBox(height: 18),
+                  Divider(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.10),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(localizations.accentColor,
+                      style: Theme.of(context).textTheme.bodyMedium),
                   const SizedBox(height: 10),
                   _AccentColorPicker(
                     selected: ref.watch(accentColorProvider),
                     onSelected: (c) =>
                         ref.read(accentColorProvider.notifier).setColor(c),
                   ),
-                  const SizedBox(height: 16),
-                  Text('${localizations.theme} Style', style: Theme.of(context).textTheme.bodyMedium),
+                  const SizedBox(height: 18),
+                  Divider(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.10),
+                  ),
+                  const SizedBox(height: 12),
+                  Text('${localizations.theme} Style',
+                      style: Theme.of(context).textTheme.bodyMedium),
                   const SizedBox(height: 10),
                   _ThemeStylePicker(
                     selected: ref.watch(appThemeStyleProvider),
@@ -856,7 +929,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           Card(
             child: ListTile(
               leading: _isExporting
-                  ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2))
                   : const Icon(Icons.backup),
               title: Text(localizations.exportVault),
               subtitle: Text(localizations.exportVaultDesc),
@@ -869,7 +945,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           Card(
             child: ListTile(
               leading: _isImporting
-                  ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2))
                   : const Icon(Icons.restore),
               title: Text(localizations.importVault),
               subtitle: Text(localizations.importVaultDesc),
@@ -882,7 +961,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           Card(
             child: ListTile(
               leading: _isImporting
-                  ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2))
                   : const Icon(Icons.table_chart_outlined),
               title: Text(localizations.importCsv),
               subtitle: Text(localizations.importCsvDesc),
@@ -967,7 +1049,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               subtitle: Text(localizations.reportBugDesc),
               trailing: const Icon(Icons.open_in_new, size: 18),
               onTap: () async {
-                final uri = Uri.parse('https://github.com/QuevaTech/PassGuard/issues/new');
+                final uri = Uri.parse(
+                    'https://github.com/QuevaTech/PassGuard/issues/new');
                 if (await canLaunchUrl(uri)) {
                   await launchUrl(uri, mode: LaunchMode.externalApplication);
                 }
@@ -983,8 +1066,122 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return Text(
       title,
       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-        fontWeight: FontWeight.bold,
-        color: Theme.of(context).colorScheme.primary,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+    );
+  }
+}
+
+class _ThemeModePicker extends StatelessWidget {
+  const _ThemeModePicker({
+    required this.selected,
+    required this.onSelected,
+  });
+
+  final ThemeMode selected;
+  final ValueChanged<ThemeMode> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+
+    return Row(
+      children: [
+        _ThemeModeOption(
+          mode: ThemeMode.light,
+          icon: Icons.light_mode_rounded,
+          label: localizations.lightTheme,
+          selected: selected == ThemeMode.light,
+          onTap: onSelected,
+        ),
+        const SizedBox(width: 8),
+        _ThemeModeOption(
+          mode: ThemeMode.system,
+          icon: Icons.brightness_auto_rounded,
+          label: localizations.systemTheme,
+          selected: selected == ThemeMode.system,
+          onTap: onSelected,
+        ),
+        const SizedBox(width: 8),
+        _ThemeModeOption(
+          mode: ThemeMode.dark,
+          icon: Icons.dark_mode_rounded,
+          label: localizations.darkTheme,
+          selected: selected == ThemeMode.dark,
+          onTap: onSelected,
+        ),
+      ],
+    );
+  }
+}
+
+class _ThemeModeOption extends StatelessWidget {
+  const _ThemeModeOption({
+    required this.mode,
+    required this.icon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final ThemeMode mode;
+  final IconData icon;
+  final String label;
+  final bool selected;
+  final ValueChanged<ThemeMode> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final accent = theme.colorScheme.primary;
+    final muted = theme.colorScheme.onSurface.withValues(alpha: 0.62);
+
+    return Expanded(
+      child: Semantics(
+        button: true,
+        selected: selected,
+        label: label,
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(18),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(18),
+            onTap: () => onTap(mode),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              curve: Curves.easeOut,
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+              decoration: BoxDecoration(
+                color: selected
+                    ? accent.withValues(alpha: 0.14)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(
+                  color: selected
+                      ? accent.withValues(alpha: 0.55)
+                      : theme.colorScheme.onSurface.withValues(alpha: 0.12),
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(icon, size: 21, color: selected ? accent : muted),
+                  const SizedBox(height: 6),
+                  Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: selected ? accent : muted,
+                      fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -1027,7 +1224,12 @@ class _AccentColorPicker extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: color,
                 boxShadow: isSelected
-                    ? [BoxShadow(color: color.withValues(alpha: 0.5), blurRadius: 8, spreadRadius: 1)]
+                    ? [
+                        BoxShadow(
+                            color: color.withValues(alpha: 0.5),
+                            blurRadius: 8,
+                            spreadRadius: 1)
+                      ]
                     : null,
               ),
             ),
@@ -1165,9 +1367,7 @@ class _ThemeStyleCard extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected
-                ? accent
-                : Colors.transparent,
+            color: isSelected ? accent : Colors.transparent,
             width: 2,
           ),
           boxShadow: isSelected
@@ -1203,8 +1403,7 @@ class _ThemeStyleCard extends StatelessWidget {
                       color: _previewCardColor,
                       borderRadius: BorderRadius.circular(5),
                       border: Border.all(
-                          color: accent.withValues(alpha: 0.35),
-                          width: 0.5),
+                          color: accent.withValues(alpha: 0.35), width: 0.5),
                     ),
                   ),
                 ),
@@ -1238,8 +1437,8 @@ class _ThemeStyleCard extends StatelessWidget {
                   left: 0,
                   right: 0,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 6, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
                     decoration: const BoxDecoration(
                       color: Color(0xCC000000),
                     ),
@@ -1261,8 +1460,7 @@ class _ThemeStyleCard extends StatelessWidget {
                               ),
                             ),
                             if (isSelected)
-                              Icon(Icons.check_circle,
-                                  size: 11, color: accent),
+                              Icon(Icons.check_circle, size: 11, color: accent),
                           ],
                         ),
                         Text(

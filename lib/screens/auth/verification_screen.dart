@@ -60,8 +60,14 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
       );
 
       if (authenticated) {
-        // Biometric successful — session key stays in memory on lock, just unlock
-        if (SessionService.getSessionKey() != null) {
+        // A locked session has cleared its in-memory key. Only load the
+        // persisted key after the platform biometric prompt succeeds.
+        var sessionKey = SessionService.getSessionKey();
+        if (SessionService.isLocked()) {
+          sessionKey = await SessionService.loadSessionKey();
+        }
+
+        if (sessionKey != null) {
           AuthGuardService.recordSuccess();
           SessionService.unlockSession();
 
@@ -121,13 +127,16 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
     try {
       // Load vault with password, derive session key
       var vault = await VaultService.loadVault(_passwordController.text);
-      var sessionKey = await VaultService.deriveSessionKey(_passwordController.text, vault);
+      var sessionKey =
+          await VaultService.deriveSessionKey(_passwordController.text, vault);
 
       // Upgrade KDF params if the vault was created with older defaults.
       // Failure here is non-fatal — fall back to original vault/key.
       try {
         final migration = await VaultService.migrateKdfParamsIfNeeded(
-          vault, _passwordController.text, sessionKey,
+          vault,
+          _passwordController.text,
+          sessionKey,
         );
         if (migration != null) {
           EncryptionService.clearKey(sessionKey);
@@ -173,7 +182,8 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
               '${remaining.inSeconds} ${AppLocalizations.of(context).seconds}';
         } else {
           final attemptsLeft = AuthGuardService.remainingAttempts();
-          _errorMessage = '${AppLocalizations.of(context).invalidMasterPassword} '
+          _errorMessage =
+              '${AppLocalizations.of(context).invalidMasterPassword} '
               '($attemptsLeft ${AppLocalizations.of(context).attemptsRemaining})';
         }
       });
@@ -210,8 +220,8 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
                   Text(
                     localizations.useBiometric,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -260,7 +270,9 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
                         prefixIcon: const Icon(Icons.password),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                            _obscurePassword
+                                ? Icons.visibility
+                                : Icons.visibility_off,
                           ),
                           onPressed: () {
                             setState(() {
@@ -310,7 +322,8 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
                   onPressed: _isLoading ? null : _authenticateWithPassword,
                   child: _isLoading
                       ? const CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
                         )
                       : Text(localizations.unlockVault),
                 ),
